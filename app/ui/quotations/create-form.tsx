@@ -283,16 +283,17 @@ export default function CreateQuotationForm({
             {selectedProducts.map((selectedProduct, index) => (
               <div
                 key={index}
-                className="grid grid-cols-12 gap-2 mb-2 p-3 border rounded-md bg-white"
+                className="grid grid-cols-1 gap-2 sm:grid-cols-12 sm:items-center mb-2 p-3 border rounded-md bg-white"
               >
-                <div className="col-span-5">
+                {/* Product select */}
+                <div className="sm:col-span-5 min-w-0">
                   <select
                     name={`products[${index}][productId]`}
                     value={selectedProduct.productId}
                     onChange={(e) =>
                       updateProduct(index, "productId", e.target.value)
                     }
-                    className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
+                    className="block w-full truncate rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
                   >
                     <option value="">Select product</option>
                     {products.map((product) => (
@@ -302,7 +303,9 @@ export default function CreateQuotationForm({
                     ))}
                   </select>
                 </div>
-                <div className="col-span-2">
+
+                {/* Quantity */}
+                <div className="sm:col-span-2">
                   <div className="relative">
                     <input
                       type="number"
@@ -315,7 +318,7 @@ export default function CreateQuotationForm({
                       placeholder="Qty"
                       className="block w-full rounded-md border border-gray-200 py-2 px-3 pr-8 text-sm outline-2"
                     />
-                    <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex flex-col">
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex flex-col">
                       <button
                         type="button"
                         onClick={() => updateQuantity(index, true)}
@@ -333,7 +336,9 @@ export default function CreateQuotationForm({
                     </div>
                   </div>
                 </div>
-                <div className="col-span-3">
+
+                {/* Unit price */}
+                <div className="sm:col-span-3">
                   <input
                     type="number"
                     name={`products[${index}][price]`}
@@ -346,8 +351,10 @@ export default function CreateQuotationForm({
                     className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
                   />
                 </div>
-                <div className="col-span-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">
+
+                {/* Line total + remove */}
+                <div className="sm:col-span-2 flex items-center justify-between sm:justify-end gap-3">
+                  <span className="text-sm font-medium whitespace-nowrap">
                     $
                     {(selectedProduct.price * selectedProduct.quantity).toFixed(
                       2
@@ -357,7 +364,8 @@ export default function CreateQuotationForm({
                     <button
                       type="button"
                       onClick={() => removeProduct(index)}
-                      className="text-red-600 hover:text-red-500"
+                      className="shrink-0 text-red-600 hover:text-red-500"
+                      aria-label="Remove product"
                     >
                       <TrashIcon className="h-4 w-4" />
                     </button>

@@ -14,6 +14,7 @@ import Image from "next/image";
 import { useNotification } from "@/app/hooks/useNotifications";
 import NotificationModal from "@/app/ui/notification-modal";
 import { useRouter } from "next/navigation";
+import { CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function CreateProductForm({
   products,
@@ -217,72 +218,55 @@ export default function CreateProductForm({
           {/* Image Upload */}
           <div className="mb-4">
             <label className="mb-2 block text-sm font-medium">Image</label>
-            <CldUploadWidget
-              uploadPreset="products-images"
-              options={{ multiple: false, folder: "products" }}
-              onSuccess={(result) => {
-                const info =
-                  (result?.info as {
-                    secure_url?: string;
-                    public_id?: string;
-                  }) || {};
-                const url = info.secure_url as string | undefined;
-                const pid = info.public_id as string | undefined;
-                if (url) {
-                  setImageUrl(url);
-                  updateData({ imageUrl: url });
-                }
-                if (pid) setPublicId(pid);
-              }}
-            >
-              {({ open }) => (
-                <button
-                  type="button"
-                  onClick={() => open?.()}
-                  className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 transition-colors"
-                >
-                  Upload Image
-                </button>
-              )}
-            </CldUploadWidget>
-
-            {(publicId || imageUrl) && (
-              <div className="mt-3 flex items-center gap-3">
-                {publicId ? (
-                  <CldImage
-                    src={publicId}
-                    width="96"
-                    height="96"
-                    alt="Preview"
-                    className="h-24 w-24 rounded object-cover"
-                    crop="fill"
-                    gravity="auto"
-                  />
-                ) : (
-                  <Image
-                    src={imageUrl!}
-                    alt="Preview"
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 rounded object-cover"
-                  />
+            {!imageUrl && (
+              <CldUploadWidget
+                uploadPreset="products-images"
+                options={{ multiple: false, folder: "products" }}
+                onSuccess={(result) => {
+                  const info =
+                    (result?.info as {
+                      secure_url?: string;
+                      public_id?: string;
+                    }) || {};
+                  const url = info.secure_url as string | undefined;
+                  if (url) setImageUrl(url);
+                }}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open?.()}
+                    className="inline-flex items-center gap-2 rounded-lg border border-dashed border-blue-300 bg-blue-50 px-3 py-2 text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  >
+                    <CloudArrowUpIcon className="h-5 w-5" />
+                    Upload Image
+                  </button>
                 )}
+              </CldUploadWidget>
+            )}
+
+            {imageUrl && (
+              <div className="mt-3 relative inline-block">
+                <Image
+                  src={imageUrl}
+                  width={96}
+                  height={96}
+                  alt="Preview"
+                  className="h-24 w-24 rounded object-cover"
+                />
                 <button
                   type="button"
-                  onClick={() => {
-                    setImageUrl("");
-                    setPublicId("");
-                    updateData({ imageUrl: "" });
-                  }}
-                  className="text-red-600 hover:text-red-700 text-sm"
+                  aria-label="Remove image"
+                  onClick={() => setImageUrl("")}
+                  className="absolute -top-2 -right-2 grid h-7 w-7 place-items-center rounded-full bg-white text-gray-600 shadow ring-1 ring-black/10 hover:bg-red-50 hover:text-red-600"
                 >
-                  Remove Image
+                  <XMarkIcon className="h-4 w-4" />
                 </button>
               </div>
             )}
 
             <input type="hidden" name="imageUrl" value={imageUrl ?? ""} />
-            <input type="hidden" name="imagePublicId" value={publicId ?? ""} />
+            {/* <input type="hidden" name="imagePublicId" value={publicId ?? ""} /> */}
 
             <div id="image-error" aria-live="polite" aria-atomic="true">
               {state.errors?.imageUrl?.map((e) => (

@@ -8,6 +8,19 @@ import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
+import {
+  BanknotesIcon,
+  BuildingLibraryIcon,
+  BuildingOfficeIcon,
+  CreditCardIcon,
+  EnvelopeIcon,
+  HashtagIcon,
+  HomeIcon,
+  IdentificationIcon,
+  MapPinIcon,
+  PhoneIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 
 export type BillingDetailsEditFormProps = {
   billingDetails: {
@@ -72,14 +85,17 @@ export default function EditBillingDetailsForm({
             <label htmlFor="name" className="mb-2 block text-sm font-medium">
               Name
             </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              defaultValue={billingDetails.name}
-              placeholder="Enter name"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                defaultValue={billingDetails.name}
+                placeholder="Enter name"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="name-error" aria-live="polite" aria-atomic="true">
               {state.errors?.name &&
                 state.errors.name.map((error: string) => (
@@ -98,14 +114,17 @@ export default function EditBillingDetailsForm({
             >
               Last Name
             </label>
-            <input
-              id="lastname"
-              name="lastname"
-              type="text"
-              defaultValue={billingDetails.lastname}
-              placeholder="Enter last name"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="lastname"
+                name="lastname"
+                type="text"
+                defaultValue={billingDetails.lastname}
+                placeholder="Enter last name"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="lastname-error" aria-live="polite" aria-atomic="true">
               {state.errors?.lastname &&
                 state.errors.lastname.map((error: string) => (
@@ -124,14 +143,17 @@ export default function EditBillingDetailsForm({
             <label htmlFor="company" className="mb-2 block text-sm font-medium">
               Company
             </label>
-            <input
-              id="company"
-              name="company"
-              type="text"
-              defaultValue={billingDetails.company}
-              placeholder="Enter company name"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="company"
+                name="company"
+                type="text"
+                defaultValue={billingDetails.company}
+                placeholder="Enter company name"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <BuildingOfficeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="company-error" aria-live="polite" aria-atomic="true">
               {state.errors?.company &&
                 state.errors.company.map((error: string) => (
@@ -147,14 +169,17 @@ export default function EditBillingDetailsForm({
             <label htmlFor="rfc" className="mb-2 block text-sm font-medium">
               RFC
             </label>
-            <input
-              id="rfc"
-              name="rfc"
-              type="text"
-              defaultValue={billingDetails.rfc}
-              placeholder="Enter RFC"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="rfc"
+                name="rfc"
+                type="text"
+                defaultValue={billingDetails.rfc}
+                placeholder="Enter RFC"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <IdentificationIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="rfc-error" aria-live="polite" aria-atomic="true">
               {state.errors?.rfc &&
                 state.errors.rfc.map((error: string) => (
@@ -173,14 +198,17 @@ export default function EditBillingDetailsForm({
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email
             </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={billingDetails.email}
-              placeholder="Enter email"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                defaultValue={billingDetails.email}
+                placeholder="Enter email"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="email-error" aria-live="polite" aria-atomic="true">
               {state.errors?.email &&
                 state.errors.email.map((error: string) => (
@@ -196,14 +224,17 @@ export default function EditBillingDetailsForm({
             <label htmlFor="phone" className="mb-2 block text-sm font-medium">
               Phone
             </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              defaultValue={billingDetails.phone || ""}
-              placeholder="Enter phone number"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                defaultValue={billingDetails.phone || ""}
+                placeholder="Enter phone number"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <PhoneIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="phone-error" aria-live="polite" aria-atomic="true">
               {state.errors?.phone &&
                 state.errors.phone.map((error: string) => (
@@ -225,14 +256,17 @@ export default function EditBillingDetailsForm({
             >
               Card Number
             </label>
-            <input
-              id="cardNumber"
-              name="cardNumber"
-              type="text"
-              defaultValue={billingDetails.cardNumber}
-              placeholder="Enter Card Number"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="cardNumber"
+                name="cardNumber"
+                type="text"
+                defaultValue={billingDetails.cardNumber}
+                placeholder="Enter Card Number"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <CreditCardIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="cardNumber-error" aria-live="polite" aria-atomic="true">
               {state.errors?.cardNumber &&
                 state.errors.cardNumber.map((error: string) => (
@@ -248,14 +282,17 @@ export default function EditBillingDetailsForm({
             <label htmlFor="clabe" className="mb-2 block text-sm font-medium">
               CLABE
             </label>
-            <input
-              id="clabe"
-              name="clabe"
-              type="text"
-              defaultValue={billingDetails.clabe}
-              placeholder="Enter CLABE"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="clabe"
+                name="clabe"
+                type="text"
+                defaultValue={billingDetails.clabe}
+                placeholder="Enter CLABE"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3text-sm outline-2 placeholder:text-gray-500"
+              />
+              <BanknotesIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="clabe-error" aria-live="polite" aria-atomic="true">
               {state.errors?.clabe &&
                 state.errors.clabe.map((error: string) => (
@@ -274,14 +311,17 @@ export default function EditBillingDetailsForm({
             >
               Check Account
             </label>
-            <input
-              id="checkAccount"
-              name="checkAccount"
-              type="text"
-              defaultValue={billingDetails.checkAccount}
-              placeholder="Enter check account"
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="checkAccount"
+                name="checkAccount"
+                type="text"
+                defaultValue={billingDetails.checkAccount}
+                placeholder="Enter check account"
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <BuildingLibraryIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="checkAccount-error" aria-live="polite" aria-atomic="true">
               {state.errors?.checkAccount &&
                 state.errors.checkAccount.map((error: string) => (
@@ -308,14 +348,17 @@ export default function EditBillingDetailsForm({
               >
                 Street
               </label>
-              <input
-                id="street"
-                name="street"
-                type="text"
-                defaultValue={billingDetails.address?.street || ""}
-                placeholder="Enter street"
-                className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-              />
+              <div className="relative">
+                <input
+                  id="street"
+                  name="street"
+                  type="text"
+                  defaultValue={billingDetails.address?.street || ""}
+                  placeholder="Enter street"
+                  className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+                />
+                <HomeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
               <div id="street-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.street &&
                   state.errors.street.map((error: string) => (
@@ -334,14 +377,17 @@ export default function EditBillingDetailsForm({
               >
                 Outside Number
               </label>
-              <input
-                id="outsideNumber"
-                name="outsideNumber"
-                type="text"
-                defaultValue={billingDetails.address?.outsideNumber || ""}
-                placeholder="Enter outside number"
-                className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-              />
+              <div className="relative">
+                <input
+                  id="outsideNumber"
+                  name="outsideNumber"
+                  type="text"
+                  defaultValue={billingDetails.address?.outsideNumber || ""}
+                  placeholder="Enter outside number"
+                  className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
+                />
+                <HashtagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
               <div
                 id="outsideNumber-error"
                 aria-live="polite"
@@ -366,14 +412,17 @@ export default function EditBillingDetailsForm({
               >
                 Colony
               </label>
-              <input
-                id="colony"
-                name="colony"
-                type="text"
-                defaultValue={billingDetails.address?.colony || ""}
-                placeholder="Enter colony"
-                className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-              />
+              <div className="relative">
+                <input
+                  id="colony"
+                  name="colony"
+                  type="text"
+                  defaultValue={billingDetails.address?.colony || ""}
+                  placeholder="Enter colony"
+                  className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
+                />
+                <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
               <div id="colony-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.colony &&
                   state.errors.colony.map((error: string) => (
@@ -389,14 +438,17 @@ export default function EditBillingDetailsForm({
               <label htmlFor="city" className="mb-2 block text-sm font-medium">
                 City
               </label>
-              <input
-                id="city"
-                name="city"
-                type="text"
-                defaultValue={billingDetails.address?.city || ""}
-                placeholder="Enter city"
-                className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-              />
+              <div className="relative">
+                <input
+                  id="city"
+                  name="city"
+                  type="text"
+                  defaultValue={billingDetails.address?.city || ""}
+                  placeholder="Enter city"
+                  className="block w-full rounded-md border border-gray-200 py-2 pr-3 pl-10  text-sm outline-2 placeholder:text-gray-500"
+                />
+                <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
               <div id="city-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.city &&
                   state.errors.city.map((error: string) => (
@@ -412,14 +464,17 @@ export default function EditBillingDetailsForm({
               <label htmlFor="cp" className="mb-2 block text-sm font-medium">
                 Postal Code
               </label>
-              <input
-                id="cp"
-                name="cp"
-                type="text"
-                defaultValue={billingDetails.address?.cp || ""}
-                placeholder="Enter postal code"
-                className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-              />
+              <div className="relative">
+                <input
+                  id="cp"
+                  name="cp"
+                  type="text"
+                  defaultValue={billingDetails.address?.cp || ""}
+                  placeholder="Enter postal code"
+                  className="block w-full rounded-md border border-gray-200 py-2 pr-3 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                />
+                <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
               <div id="cp-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.cp &&
                   state.errors.cp.map((error: string) => (

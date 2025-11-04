@@ -138,7 +138,7 @@ export default function EditQuotationForm({
               <select
                 id="customer"
                 name="customerId"
-                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 text-sm outline-2 placeholder:text-gray-500"
                 defaultValue={quotation.customerId}
                 aria-describedby="customer-error"
               >
@@ -222,16 +222,16 @@ export default function EditQuotationForm({
             {selectedProducts.map((selectedProduct, index) => (
               <div
                 key={index}
-                className="grid grid-cols-12 gap-2 mb-2 p-3 border rounded-md bg-white"
+                className="grid grid-cols-1 gap-2 sm:grid-cols-12 sm:items-center mb-2 p-3 border rounded-md bg-white"
               >
-                <div className="col-span-5">
+                <div className="sm:col-span-5 min-w-0">
                   <select
                     name={`products[${index}][productId]`}
                     value={selectedProduct.productId}
                     onChange={(e) =>
                       updateProduct(index, "productId", e.target.value)
                     }
-                    className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
+                    className="block w-full truncate rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
                   >
                     <option value="">Select product</option>
                     {products.map((product) => (
@@ -241,7 +241,8 @@ export default function EditQuotationForm({
                     ))}
                   </select>
                 </div>
-                <div className="col-span-2">
+
+                <div className="sm:col-span-2">
                   <div className="relative">
                     <input
                       type="number"
@@ -254,7 +255,7 @@ export default function EditQuotationForm({
                       placeholder="Qty"
                       className="block w-full rounded-md border border-gray-200 py-2 px-3 pr-8 text-sm outline-2"
                     />
-                    <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex flex-col">
+                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex flex-col">
                       <button
                         type="button"
                         onClick={() => updateQuantity(index, true)}
@@ -272,7 +273,8 @@ export default function EditQuotationForm({
                     </div>
                   </div>
                 </div>
-                <div className="col-span-3">
+
+                <div className="sm:col-span-3">
                   <input
                     type="number"
                     name={`products[${index}][price]`}
@@ -285,8 +287,9 @@ export default function EditQuotationForm({
                     className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2"
                   />
                 </div>
-                <div className="col-span-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">
+
+                <div className="sm:col-span-2 flex items-center justify-between sm:justify-end gap-3">
+                  <span className="text-sm font-medium whitespace-nowrap">
                     $
                     {(selectedProduct.price * selectedProduct.quantity).toFixed(
                       2
@@ -296,7 +299,8 @@ export default function EditQuotationForm({
                     <button
                       type="button"
                       onClick={() => removeProduct(index)}
-                      className="text-red-600 hover:text-red-500"
+                      className="shrink-0 text-red-600 hover:text-red-500"
+                      aria-label="Remove product"
                     >
                       <TrashIcon className="h-4 w-4" />
                     </button>

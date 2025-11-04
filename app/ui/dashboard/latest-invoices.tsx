@@ -17,45 +17,34 @@ export default async function LatestInvoices() {
         <div className="bg-white px-6">
           {latestInvoices.map((quotation, i) => {
             const total = quotation.total;
-            console.log(
-              "Total original:",
-              quotation.total,
-              "Convertido:",
-              total
-            );
+
             return (
               <div
                 key={quotation.id}
                 className={clsx(
-                  "flex flex-row items-center justify-between py-4",
-                  {
-                    "border-t": i !== 0,
-                  }
+                  "grid grid-cols-[44px,1fr,auto] items-center gap-3 sm:gap-6 py-3 sm:py-4",
+                  { "border-t": i !== 0 }
                 )}
               >
-                <div className="flex items-center">
-                  {/* <Image
-                    src={quotation.image_url}
-                    alt={`${quotation.name}'s profile picture`}
-                    className="mr-4 rounded-full"
-                    width={32}
-                    height={32}
-                  /> */}
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold md:text-base">
-                      <span className="text-gray-500">({quotation.id})</span>
-                      {quotation.customer.name} {quotation.customer.lastname}
-                    </p>
-                    <p className="truncate text-sm font-semibold md:text-base">
-                      {quotation.customer.company}
-                    </p>
-                    <p className="hidden text-sm text-gray-500 sm:block">
-                      {quotation.customer.email}
-                    </p>
-                  </div>
+                <span className="text-xs font-medium text-gray-500 shrink-0">
+                  #{quotation.id}
+                </span>
+
+                {/* Nombre + empresa (+ email en lg+) */}
+                <div className="min-w-0 leading-tight">
+                  <p className="truncate text-sm font-semibold md:text-base">
+                    {quotation.customer.name} {quotation.customer.lastname}
+                  </p>
+                  <p className="truncate text-xs text-gray-500 md:text-sm">
+                    {quotation.customer.company}
+                  </p>
+                  <p className="truncate text-xs text-gray-500 hidden lg:block">
+                    {quotation.customer.email}
+                  </p>
                 </div>
+
                 <p
-                  className={`${lusitana.className} truncate text-sm font-medium md:text-base`}
+                  className={`${lusitana.className} text-sm md:text-base text-right whitespace-nowrap shrink-0`}
                 >
                   {formatCurrency(total)}
                 </p>

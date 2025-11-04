@@ -8,6 +8,13 @@ import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
+import {
+  BuildingOfficeIcon,
+  EnvelopeIcon,
+  IdentificationIcon,
+  PhoneIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 
 export type CustomerEditFormProps = {
   customer: {
@@ -53,15 +60,18 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
           <label htmlFor="name" className="mb-2 block text-sm font-medium">
             Name
           </label>
-          <input
-            ref={nameRef}
-            id="name"
-            name="name"
-            type="text"
-            defaultValue={customer.name}
-            placeholder="Enter first name"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              ref={nameRef}
+              id="name"
+              name="name"
+              type="text"
+              defaultValue={customer.name}
+              placeholder="Enter first name"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="name-error" aria-live="polite" aria-atomic="true">
             {state.errors?.name &&
               state.errors.name.map((error: string) => (
@@ -77,14 +87,17 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
           <label htmlFor="lastname" className="mb-2 block text-sm font-medium">
             Lastname
           </label>
-          <input
-            id="lastname"
-            name="lastname"
-            type="text"
-            defaultValue={customer.lastname}
-            placeholder="Enter last name"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              id="lastname"
+              name="lastname"
+              type="text"
+              defaultValue={customer.lastname}
+              placeholder="Enter last name"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="lastname-error" aria-live="polite" aria-atomic="true">
             {state.errors?.lastname &&
               state.errors.lastname.map((error: string) => (
@@ -96,18 +109,21 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
         </div>
 
         {/* Email */}
-        <div className="mb-4">
+        <div className="mb-4 mt-2">
           <label htmlFor="email" className="mb-2 block text-sm font-medium">
             Email
           </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            defaultValue={customer.email}
-            placeholder="Enter email"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              defaultValue={customer.email}
+              placeholder="Enter email"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="email-error" aria-live="polite" aria-atomic="true">
             {state.errors?.email &&
               state.errors.email.map((error: string) => (
@@ -123,14 +139,17 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
           <label htmlFor="company" className="mb-2 block text-sm font-medium">
             Company
           </label>
-          <input
-            id="company"
-            name="company"
-            type="text"
-            defaultValue={customer.company}
-            placeholder="Enter company"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              id="company"
+              name="company"
+              type="text"
+              defaultValue={customer.company}
+              placeholder="Enter company"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <BuildingOfficeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="company-error" aria-live="polite" aria-atomic="true">
             {state.errors?.company &&
               state.errors.company.map((error: string) => (
@@ -146,14 +165,17 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
           <label htmlFor="rfc" className="mb-2 block text-sm font-medium">
             RFC
           </label>
-          <input
-            id="rfc"
-            name="rfc"
-            type="text"
-            defaultValue={customer.rfc}
-            placeholder="Enter RFC"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              id="rfc"
+              name="rfc"
+              type="text"
+              defaultValue={customer.rfc}
+              placeholder="Enter RFC"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <IdentificationIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="rfc-error" aria-live="polite" aria-atomic="true">
             {state.errors?.rfc &&
               state.errors.rfc.map((error: string) => (
@@ -169,14 +191,17 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
           <label htmlFor="phone" className="mb-2 block text-sm font-medium">
             Phone
           </label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            defaultValue={customer.phone?.toString()}
-            placeholder="Enter phone number"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              defaultValue={customer.phone?.toString()}
+              placeholder="Enter phone number"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <PhoneIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="phone-error" aria-live="polite" aria-atomic="true">
             {state.errors?.phone &&
               state.errors.phone.map((error: string) => (

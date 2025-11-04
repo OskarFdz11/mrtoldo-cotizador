@@ -62,7 +62,7 @@ export default async function RevenueChart() {
             {validRevenue.map((month, index) => (
               <div
                 key={month.month || index}
-                className="flex flex-col items-center justify-end w-12 md:w-10 pt-4"
+                className="flex flex-col items-center justify-end w-10 md:w-12 pt-4"
               >
                 <div
                   className="w-full rounded-md bg-blue-300"
@@ -70,7 +70,7 @@ export default async function RevenueChart() {
                     height: `${(chartHeight / topLabel) * month.revenue}px`,
                   }}
                 ></div>
-                <p className="-rotate-90 text-sm text-gray-400 sm:rotate-0 mt-2 whitespace-nowrap">
+                <p className="mt-1 w-full text-center text-[11px] sm:text-xs text-gray-500">
                   {month.month}
                 </p>
               </div>

@@ -11,6 +11,7 @@ import { CategoryField } from "@/app/lib/definitions";
 import { useRouter } from "next/navigation";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
 import { applyPersistedToFormData } from "@/app/lib/utils";
+import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
 
 export default function CreateCategoryForm({
   categories,
@@ -69,16 +70,19 @@ export default function CreateCategoryForm({
           <label htmlFor="name" className="mb-2 block text-sm font-medium">
             Name
           </label>
-          <input
-            ref={nameRef}
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={(e) => updateData({ name: e.target.value })}
-            placeholder="Enter first name"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <input
+              ref={nameRef}
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={(e) => updateData({ name: e.target.value })}
+              placeholder="Enter category name"
+              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
           <div id="name-error" aria-live="polite" aria-atomic="true">
             {state.errors?.name &&
               state.errors.name.map((error: string) => (
@@ -97,15 +101,17 @@ export default function CreateCategoryForm({
           >
             Description
           </label>
-          <input
-            id="description"
-            name="description"
-            type="text"
-            value={formData.description}
-            onChange={(e) => updateData({ description: e.target.value })}
-            placeholder="Enter description"
-            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-          />
+          <div className="relative">
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={(e) => updateData({ description: e.target.value })}
+              placeholder="Enter description"
+              className="block w-full rounded-md border border-gray-200 py-2.5 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+            />
+            <DocumentTextIcon className="pointer-events-none absolute left-3 top-3 h-[18px] w-[18px]   text-gray-500" />
+          </div>
           <div id="description-error" aria-live="polite" aria-atomic="true">
             {state.errors?.description &&
               state.errors.description.map((error: string) => (

@@ -12,6 +12,7 @@ import { CldImage, CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { ProductField } from "@/app/lib/definitions";
 import { useRouter } from "next/navigation";
+import { CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function EditProductForm({
   product,
@@ -122,43 +123,52 @@ export default function EditProductForm({
         <div className="mb-4">
           <label className="mb-2 block text-sm font-medium">Image</label>
           <div className="flex items-end gap-4">
-            {imageUrl && (
-              <Image
-                src={imageUrl}
-                width={96}
-                height={96}
-                alt="Preview"
-                className="h-24 w-24 rounded object-cover"
-              />
-            )}
-
-            <CldUploadWidget
-              uploadPreset="products-images"
-              options={{ multiple: false, folder: "products" }}
-              onSuccess={(result) => {
-                const info =
-                  (result?.info as {
-                    secure_url?: string;
-                    public_id?: string;
-                  }) || {};
-                const url = info.secure_url as string | undefined;
-                const pid = info.public_id as string | undefined;
-                if (url) setImageUrl(url);
-                if (pid) setPublicId(pid);
-              }}
-            >
-              {({ open }) => {
-                return (
+            {!imageUrl && (
+              <CldUploadWidget
+                uploadPreset="products-images"
+                options={{ multiple: false, folder: "products" }}
+                onSuccess={(result) => {
+                  const info =
+                    (result?.info as {
+                      secure_url?: string;
+                      public_id?: string;
+                    }) || {};
+                  const url = info.secure_url as string | undefined;
+                  if (url) setImageUrl(url);
+                }}
+              >
+                {({ open }) => (
                   <button
                     type="button"
                     onClick={() => open?.()}
-                    className="rounded bg-blue-600 px-3 py-2 text-white"
+                    className="inline-flex items-center gap-2 rounded-lg border border-dashed border-blue-300 bg-blue-50 px-3 py-2 text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
+                    <CloudArrowUpIcon className="h-5 w-5" />
                     Upload Image
                   </button>
-                );
-              }}
-            </CldUploadWidget>
+                )}
+              </CldUploadWidget>
+            )}
+
+            {imageUrl && (
+              <div className="mt-3 relative inline-block">
+                <Image
+                  src={imageUrl}
+                  width={96}
+                  height={96}
+                  alt="Preview"
+                  className="h-24 w-24 rounded object-cover"
+                />
+                <button
+                  type="button"
+                  aria-label="Remove image"
+                  onClick={() => setImageUrl("")}
+                  className="absolute -top-2 -right-2 grid h-7 w-7 place-items-center rounded-full bg-white text-gray-600 shadow ring-1 ring-black/10 hover:bg-red-50 hover:text-red-600"
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Hidden inputs to send to server */}
