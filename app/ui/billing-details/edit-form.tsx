@@ -4,7 +4,7 @@ import {
   BillingDetailsFormState,
   updateBillingDetails,
 } from "@/app/lib/billing-details-actions/billing-details-actions";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import {
   PhoneIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export type BillingDetailsEditFormProps = {
   billingDetails: {
@@ -62,8 +63,19 @@ export default function EditBillingDetailsForm({
     updateBillingDetailsWithId,
     initialState
   );
+  const { show, hide } = useTransitionOverlay();
 
   const nameRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -75,8 +87,16 @@ export default function EditBillingDetailsForm({
     }
   }, [state.success, router, billingDetails.name]);
 
+  const handleSubmit = async (fd: FormData) => {
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
+  };
+
   return (
-    <form action={formAction}>
+    <form action={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

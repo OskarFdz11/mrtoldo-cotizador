@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useRef } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -12,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
 import { applyPersistedToFormData } from "@/app/lib/utils";
 import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export default function CreateCategoryForm({
   categories,
@@ -26,6 +33,7 @@ export default function CreateCategoryForm({
   };
   const [state, formAction] = useActionState(createCategory, initialState);
   const nameRef = useRef<HTMLInputElement>(null);
+  const { show, hide } = useTransitionOverlay();
 
   const {
     data: formData,
@@ -45,6 +53,16 @@ export default function CreateCategoryForm({
   }, [clearData]);
 
   useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
+
+  useEffect(() => {
     if (state.success) {
       const currentName = nameRef.current?.value || categories[0]?.name || "";
       // Redirige a la lista con el flag de "created"
@@ -56,8 +74,11 @@ export default function CreateCategoryForm({
   }, [state.success, router, categories]);
 
   const handleSubmit = async (fd: FormData) => {
-    applyPersistedToFormData(fd, formData);
-    await formAction(fd);
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
   };
 
   if (!isLoaded) return null;

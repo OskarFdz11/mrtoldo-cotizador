@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useRef } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -23,6 +29,7 @@ import {
   MapPinIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export default function CreateBillingDetailsForm({
   billingDetails,
@@ -39,6 +46,7 @@ export default function CreateBillingDetailsForm({
     createBillingDetails,
     initialState
   );
+  const { show, hide } = useTransitionOverlay();
 
   const {
     data: formData,
@@ -60,7 +68,7 @@ export default function CreateBillingDetailsForm({
     colony: string;
     city: string;
     cp: string;
-  }>("create-customer-form", {
+  }>("create-billing-details-form", {
     name: "",
     lastname: "",
     email: "",
@@ -85,6 +93,16 @@ export default function CreateBillingDetailsForm({
   }, [clearData]);
 
   useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
+
+  useEffect(() => {
     if (state.success) {
       const currentName =
         nameRef.current?.value || billingDetails[0]?.name || "";
@@ -96,8 +114,12 @@ export default function CreateBillingDetailsForm({
   }, [state.success, router, billingDetails[0]?.name]);
 
   const handleSubmit = async (fd: FormData) => {
-    applyPersistedToFormData(fd, formData);
-    await formAction(fd);
+    try {
+      show("Creando detalles de pago...");
+      applyPersistedToFormData(fd, formData);
+      await formAction(fd);
+    } finally {
+    }
   };
 
   if (!isLoaded) return null;
@@ -293,7 +315,8 @@ export default function CreateBillingDetailsForm({
                 id="cardNumber"
                 name="cardNumber"
                 type="text"
-                // ...existing props...
+                value={formData.cardNumber}
+                onChange={(e) => updateData({ cardNumber: e.target.value })}
                 placeholder="Enter Card Number"
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
@@ -318,7 +341,8 @@ export default function CreateBillingDetailsForm({
                 id="clabe"
                 name="clabe"
                 type="text"
-                // ...existing props...
+                value={formData.clabe}
+                onChange={(e) => updateData({ clabe: e.target.value })}
                 placeholder="Enter CLABE"
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
@@ -347,7 +371,8 @@ export default function CreateBillingDetailsForm({
                 id="checkAccount"
                 name="checkAccount"
                 type="text"
-                // ...existing props...
+                value={formData.checkAccount}
+                onChange={(e) => updateData({ checkAccount: e.target.value })}
                 placeholder="Enter check account"
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />

@@ -2,7 +2,7 @@ import Table from "@/app/ui/categories/table";
 import { lusitana } from "@/app/ui/fonts";
 import Pagination from "@/app/ui/quotations/pagination";
 import Search from "@/app/ui/search";
-import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { CategoriesTableInlineSkeleton } from "@/app/ui/skeletons";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchFilteredCategories } from "@/app/lib/categories-actions/categories-data";
@@ -32,9 +32,13 @@ export default async function Page(props: {
         <Search placeholder="Search categories..." />
         <CreateCategory />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense
+        key={query + currentPage}
+        fallback={<CategoriesTableInlineSkeleton />}
+      >
         <FlashFromQuery
-          entity="categoria"
+          entity="categoría"
+          gender="f"
           clearToPath="/dashboard/categories"
         />
         <Table query={query} currentPage={currentPage} />

@@ -9,12 +9,17 @@ import {
   ProductFormState,
 } from "@/app/lib/products-actions/products-actions";
 import { CategoryField, ProductField } from "@/app/lib/definitions";
-import { CldImage, CldUploadWidget } from "next-cloudinary";
+import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { useNotification } from "@/app/hooks/useNotifications";
 import NotificationModal from "@/app/ui/notification-modal";
 import { useRouter } from "next/navigation";
 import { CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { applyPersistedToFormData } from "@/app/lib/utils";
+import {
+  GlobalTransitionOverlay,
+  useTransitionOverlay,
+} from "@/app/ui/global-transition-overlay";
 
 export default function CreateProductForm({
   products,
@@ -31,6 +36,7 @@ export default function CreateProductForm({
   };
   const [state, formAction] = useActionState(createProduct, initialState);
   const [imageUrl, setImageUrl] = useState<string | null>("");
+  const [submitting, setSubmitting] = useState(false);
   const [publicId, setPublicId] = useState<string | null>("");
   const { notification, showSuccess, showError, hideNotification } =
     useNotification();
@@ -58,11 +64,24 @@ export default function CreateProductForm({
     imageUrl: "",
   });
 
+  const { show, hide } = useTransitionOverlay();
+
   const clearCompleteForm = useCallback(() => {
     clearData();
     setImageUrl("");
     setPublicId("");
+    updateData({ imageUrl: "" });
   }, [clearData]);
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -85,19 +104,12 @@ export default function CreateProductForm({
     }
   };
 
-  const handleSubmit = async (formDataObj: FormData) => {
-    // Agregar datos persistidos al FormData
-    formDataObj.set("name", formData.name);
-    formDataObj.set("description", formData.description);
-    formDataObj.set("category", formData.category);
-    formDataObj.set("price", formData.price);
-    formDataObj.set("brand", formData.brand);
-    formDataObj.set("quantity", formData.quantity);
-
-    const finalImageUrl = imageUrl || formData.imageUrl || "";
-    formDataObj.set("imageUrl", finalImageUrl);
-
-    await formAction(formDataObj);
+  const handleSubmit = async (fd: FormData) => {
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
   };
 
   const handleClearForm = () => {
@@ -113,7 +125,8 @@ export default function CreateProductForm({
         !formData.name &&
         !formData.description &&
         !formData.price &&
-        !formData.brand;
+        !formData.brand &&
+        !formData.imageUrl;
       if (isEmpty) {
         clearCompleteForm();
       }
@@ -229,7 +242,11 @@ export default function CreateProductForm({
                       public_id?: string;
                     }) || {};
                   const url = info.secure_url as string | undefined;
-                  if (url) setImageUrl(url);
+                  if (url) {
+                    setImageUrl(url);
+                    updateData({ imageUrl: url });
+                  }
+                  console.log("Upload success, info:", info);
                 }}
               >
                 {({ open }) => (

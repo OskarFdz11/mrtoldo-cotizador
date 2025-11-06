@@ -42,8 +42,8 @@ export async function fetchFilteredCategories(
     const [categories, totalCount] = await Promise.all([
       prisma.category.findMany({
         where: {
+          deleted_at: null,
           OR: [
-            { deleted_at: null },
             { name: { contains: query, mode: "insensitive" } },
             { description: { contains: query, mode: "insensitive" } },
           ],
@@ -51,7 +51,7 @@ export async function fetchFilteredCategories(
         include: {
           products: true,
         },
-        orderBy: { name: "asc" },
+        orderBy: { id: "desc" },
         skip: (currentPage - 1) * ITEMS_PER_PAGE,
         take: ITEMS_PER_PAGE,
       }),

@@ -2,13 +2,12 @@ import Table from "@/app/ui/products/table";
 import { lusitana } from "@/app/ui/fonts";
 import Pagination from "@/app/ui/quotations/pagination";
 import Search from "@/app/ui/search";
-import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchFilteredProducts } from "@/app/lib/products-actions/products-data";
 import { CreateProduct } from "@/app/ui/products/buttons";
-import ProductsFlash from "@/app/ui/products/products-flash";
 import FlashFromQuery from "@/app/ui/flash-from-query";
+import { ProductsTableInlineSkeleton } from "@/app/ui/skeletons";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -33,7 +32,10 @@ export default async function Page(props: {
         <Search placeholder="Search products..." />
         <CreateProduct />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense
+        key={query + currentPage}
+        fallback={<ProductsTableInlineSkeleton />}
+      >
         <FlashFromQuery entity="producto" clearToPath="/dashboard/products" />
         <Table query={query} currentPage={currentPage} />
       </Suspense>

@@ -13,6 +13,7 @@ import Image from "next/image";
 import { ProductField } from "@/app/lib/definitions";
 import { useRouter } from "next/navigation";
 import { CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export default function EditProductForm({
   product,
@@ -27,9 +28,19 @@ export default function EditProductForm({
   const [imageUrl, setImageUrl] = useState<string | null>(
     product.image_url || ""
   );
-  const [publicId, setPublicId] = useState<string | null>("");
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
+  const { show, hide } = useTransitionOverlay();
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -41,8 +52,16 @@ export default function EditProductForm({
     }
   }, [state.success, router, product.name]);
 
+  const handleSubmit = async (fd: FormData) => {
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
+  };
+
   return (
-    <form action={formAction}>
+    <form action={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Name */}
         <div className="mb-4">

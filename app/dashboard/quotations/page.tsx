@@ -3,7 +3,7 @@ import Search from "@/app/ui/search";
 import QuotationsTable from "@/app/ui/quotations/table";
 import { CreateQuotation } from "@/app/ui/quotations/buttons";
 import { lusitana } from "@/app/ui/fonts";
-import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { QuotationsTableInlineSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchQuotationsPages } from "@/app/lib/quotations-actions/quotations-data";
 import { Metadata } from "next";
@@ -33,9 +33,13 @@ export default async function Page(props: {
         <Search placeholder="Search quotations..." />
         <CreateQuotation />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense
+        key={query + currentPage}
+        fallback={<QuotationsTableInlineSkeleton />}
+      >
         <FlashFromQuery
           entity="cotización"
+          gender="f"
           clearToPath="/dashboard/quotations"
         />
         <QuotationsTable query={query} currentPage={currentPage} />

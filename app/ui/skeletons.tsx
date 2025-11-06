@@ -1,6 +1,6 @@
 // Loading animation
 const shimmer =
-  'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
+  "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent";
 
 export function CardSkeleton() {
   return (
@@ -139,7 +139,7 @@ export function TableRowSkeleton() {
   );
 }
 
-export function InvoicesMobileSkeleton() {
+export function MobileSkeleton() {
   return (
     <div className="mb-2 w-full rounded-md bg-white p-4">
       <div className="flex items-center justify-between border-b border-gray-100 pb-8">
@@ -163,18 +163,292 @@ export function InvoicesMobileSkeleton() {
   );
 }
 
-export function InvoicesTableSkeleton() {
+function RowDivider() {
+  return <div className="col-span-full h-px bg-gray-100" />;
+}
+function Pill({ w = "w-12" }: { w?: string }) {
+  return <div className={`h-5 ${w} rounded-full bg-gray-200`} />;
+}
+
+export function QuotationsTableInlineSkeleton({ rows = 8 }: { rows?: number }) {
+  return (
+    <div className="overflow-hidden rounded-lg bg-white">
+      {/* Header */}
+      <div className="grid grid-cols-[44px,2fr,1.4fr,1fr,1fr,70px,1.4fr,110px,120px] items-center gap-3 border-b px-4 py-3">
+        {[
+          "w-6", // ID
+          "w-28 md:w-40", // Cliente
+          "w-28 md:w-40", // Empresa
+          "w-16 md:w-20", // Subtotal
+          "w-16 md:w-20", // Total
+          "w-10", // IVA
+          "w-20 md:w-28", // Fecha
+          "w-16", // Estado
+          "w-20", // Acciones
+        ].map((w, i) => (
+          <div key={i} className={`h-4 rounded bg-gray-100 ${w}`} />
+        ))}
+      </div>
+
+      {/* Rows */}
+      <ul className="divide-y">
+        {Array.from({ length: rows }).map((_, i) => (
+          <li
+            key={i}
+            className="grid grid-cols-[44px,2fr,1.4fr,1fr,1fr,70px,1.4fr,110px,120px] items-center gap-3 px-4 py-3"
+          >
+            {/* ID */}
+            <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+
+            {/* Cliente (nombre + email) */}
+            <div className="min-w-0">
+              <div className="h-4 w-28 md:w-44 animate-pulse rounded bg-gray-200" />
+              <div className="mt-1 h-3 w-32 md:w-56 animate-pulse rounded bg-gray-100" />
+            </div>
+
+            {/* Empresa */}
+            <div className="h-4 w-28 md:w-48 animate-pulse rounded bg-gray-200" />
+
+            {/* Subtotal */}
+            <div className="h-4 w-16 md:w-20 animate-pulse rounded bg-gray-200" />
+
+            {/* Total */}
+            <div className="h-4 w-16 md:w-20 animate-pulse rounded bg-gray-200" />
+
+            {/* IVA (pill) */}
+            <div className="flex items-center">
+              <Pill w="w-12" />
+            </div>
+
+            {/* Fecha */}
+            <div className="h-4 w-24 md:w-28 animate-pulse rounded bg-gray-200" />
+
+            {/* Estado (pill) */}
+            <div className="flex items-center justify-start">
+              <Pill w="w-14" />
+            </div>
+
+            {/* Acciones (botón principal simulado) */}
+            <div className="ml-auto flex items-center gap-2">
+              <div className="h-8 w-24 animate-pulse rounded-md bg-gray-200" />
+              <div className="h-8 w-8 animate-pulse rounded-md bg-gray-200" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export const CustomersTableInlineSkeleton = ({
+  rows = 8,
+}: {
+  rows?: number;
+}) => {
+  const headerCols = [
+    "w-12", // ID
+    "w-36 md:w-44", // Nombre
+    "w-36 md:w-44", // Apellido
+    "w-40 md:w-60", // Email
+    "w-40 md:w-60", // Empresa
+    "w-28 md:w-36", // RFC
+    "w-24 md:w-28", // Teléfono
+    "w-24", // Acciones
+  ];
+
+  return (
+    <div className="rounded-xl bg-gray-50 p-4">
+      <div className="mt-4 overflow-hidden rounded-lg bg-white">
+        {/* Header */}
+        <div className="grid grid-cols-[44px,1.3fr,1.3fr,2fr,2fr,1.2fr,1.2fr,110px] items-center gap-3 border-b px-4 py-3">
+          {headerCols.map((w, i) => (
+            <div key={i} className={`h-4 rounded bg-gray-100 ${w}`} />
+          ))}
+        </div>
+
+        {/* Rows */}
+        <ul className="divide-y">
+          {Array.from({ length: rows }).map((_, idx) => (
+            <li
+              key={idx}
+              className="grid grid-cols-[44px,1.3fr,1.3fr,2fr,2fr,1.2fr,1.2fr,110px] items-center gap-3 px-4 py-3"
+            >
+              {/* ID */}
+              <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+              {/* Nombre */}
+              <div className="h-4 w-28 md:w-36 animate-pulse rounded bg-gray-200" />
+              {/* Apellido */}
+              <div className="h-4 w-28 md:w-36 animate-pulse rounded bg-gray-200" />
+              {/* Email */}
+              <div className="h-4 w-40 md:w-64 animate-pulse rounded bg-gray-200" />
+              {/* Empresa */}
+              <div className="h-4 w-40 md:w-64 animate-pulse rounded bg-gray-200" />
+              {/* RFC */}
+              <div className="h-4 w-24 md:w-36 animate-pulse rounded bg-gray-200" />
+              {/* Teléfono */}
+              <div className="h-4 w-20 md:w-28 animate-pulse rounded bg-gray-200" />
+              {/* Estado */}
+              <div className="h-4 w-20 md:w-28 animate-pulse rounded bg-gray-200" />
+              {/* Acciones */}
+              <div className="flex items-center justify-end gap-2">
+                <div className="h-8 w-20 animate-pulse rounded-md bg-gray-200" />
+                <div className="h-8 w-8 animate-pulse rounded-md bg-gray-200" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export function ProductsTableInlineSkeleton({ rows = 6 }: { rows?: number }) {
+  return (
+    <div className="overflow-hidden rounded-lg bg-white">
+      {/* Header */}
+      <div className="grid grid-cols-[44px,72px,2fr,1fr,2fr,1fr,90px,110px] items-center gap-3 border-b px-4 py-3">
+        {["w-6", "w-10", "w-32", "w-20", "w-32", "w-16", "w-10", "w-16"].map(
+          (w, i) => (
+            <div key={i} className={`h-4 rounded bg-gray-100 ${w}`} />
+          )
+        )}
+      </div>
+
+      {/* Rows */}
+      <ul className="divide-y">
+        {Array.from({ length: rows }).map((_, i) => (
+          <li
+            key={i}
+            className="grid grid-cols-[44px,72px,2fr,1fr,2fr,1fr,90px,110px] items-center gap-3 px-4 py-3"
+          >
+            {/* ID */}
+            <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+
+            {/* Imagen */}
+            <div className="h-10 w-10 animate-pulse rounded-md bg-gray-200" />
+
+            {/* Producto */}
+            <div className="h-4 w-40 md:w-64 animate-pulse rounded bg-gray-200" />
+
+            {/* Marca */}
+            <div className="h-4 w-24 md:w-28 animate-pulse rounded bg-gray-200" />
+
+            {/* Descripción */}
+            <div className="h-4 w-48 md:w-80 animate-pulse rounded bg-gray-200" />
+
+            {/* Precio */}
+            <div className="h-4 w-16 md:w-24 animate-pulse rounded bg-gray-200" />
+
+            {/* Stock (pill) */}
+            <div className="flex items-center">
+              <Pill w="w-10" />
+            </div>
+
+            {/* Acciones */}
+            <div className="ml-auto flex items-center gap-2">
+              <div className="h-8 w-8 animate-pulse rounded-md bg-gray-200" />
+              <div className="h-8 w-8 animate-pulse rounded-md bg-gray-200" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function CategoriesTableInlineSkeleton({ rows = 6 }: { rows?: number }) {
+  return (
+    <div className="overflow-hidden rounded-lg bg-white">
+      <div className="grid grid-cols-[44px,2fr,3fr,110px] items-center gap-3 border-b px-4 py-3">
+        {["w-6", "w-28 md:w-44", "w-40 md:w-80", "w-16"].map((w, i) => (
+          <div key={i} className={`h-4 rounded bg-gray-100 ${w}`} />
+        ))}
+      </div>
+
+      <ul className="divide-y">
+        {Array.from({ length: rows }).map((_, i) => (
+          <li
+            key={i}
+            className="grid grid-cols-[44px,2fr,3fr,110px] items-center gap-3 px-4 py-3"
+          >
+            <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-40 md:w-64 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-60 md:w-[28rem] animate-pulse rounded bg-gray-200" />
+            <div className="ml-auto flex items-center gap-2">
+              <div className="h-8 w-20 animate-pulse rounded-md bg-gray-200" />
+              <div className="h-8 w-8 animate-pulse rounded-md bg-gray-200" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function BillingDetailsTableInlineSkeleton({
+  rows = 4,
+}: {
+  rows?: number;
+}) {
+  return (
+    <div className="overflow-hidden rounded-lg bg-white">
+      <div className="grid grid-cols-[44px,1.2fr,1.2fr,1.6fr,1.2fr,2fr,1.2fr,1.4fr,1.6fr,1.6fr,110px] items-center gap-3 border-b px-4 py-3">
+        {[
+          "w-6", // ID
+          "w-24", // Nombre
+          "w-24", // Apellido
+          "w-32", // Empresa
+          "w-24", // RFC
+          "w-40", // Email
+          "w-28", // Teléfono
+          "w-36", // Num tarjeta
+          "w-40", // CLABE
+          "w-36", // Cuenta cheques
+          "w-16", // Acciones
+        ].map((w, i) => (
+          <div key={i} className={`h-4 rounded bg-gray-100 ${w}`} />
+        ))}
+      </div>
+
+      <ul className="divide-y">
+        {Array.from({ length: rows }).map((_, i) => (
+          <li
+            key={i}
+            className="grid grid-cols-[44px,1.2fr,1.2fr,1.6fr,1.2fr,2fr,1.2fr,1.4fr,1.6fr,1.6fr,110px] items-center gap-3 px-4 py-3"
+          >
+            <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-44 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-28 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-36 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-36 animate-pulse rounded bg-gray-200" />
+            <div className="ml-auto flex items-center gap-2">
+              <div className="h-8 w-20 animate-pulse rounded-md bg-gray-200" />
+              <div className="h-8 w-8 animate-pulse rounded-md bg-gray-200" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function QuotationsTableSkeleton() {
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           <div className="md:hidden">
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
-            <InvoicesMobileSkeleton />
+            <MobileSkeleton />
+            <MobileSkeleton />
+            <MobileSkeleton />
+            <MobileSkeleton />
+            <MobileSkeleton />
+            <MobileSkeleton />
           </div>
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">

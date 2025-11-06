@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
 import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export type CategoryEditFormProps = {
   category: {
@@ -31,6 +32,17 @@ export default function EditCategoryForm({ category }: CategoryEditFormProps) {
     initialState
   );
   const nameRef = useRef<HTMLInputElement>(null);
+  const { show, hide } = useTransitionOverlay();
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -42,8 +54,16 @@ export default function EditCategoryForm({ category }: CategoryEditFormProps) {
     }
   }, [state.success, router, category.name]);
 
+  const handleSubmit = async (fd: FormData) => {
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
+  };
+
   return (
-    <form action={formAction}>
+    <form action={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Name */}
         <div className="mb-4">

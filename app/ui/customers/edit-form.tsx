@@ -4,7 +4,7 @@ import {
   CustomerFormState,
   updateCustomer,
 } from "@/app/lib/customer-actions/customer-actions";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import {
   PhoneIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export type CustomerEditFormProps = {
   customer: {
@@ -41,7 +42,19 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
     initialState
   );
 
+  const { show, hide } = useTransitionOverlay();
+
   const nameRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -52,8 +65,16 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
     }
   }, [state.success, router, customer]);
 
+  const handleSubmit = async (fd: FormData) => {
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
+  };
+
   return (
-    <form action={formAction}>
+    <form action={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Name */}
         <div className="mb-4">

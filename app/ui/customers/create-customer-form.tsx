@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useRef } from "react";
+import {
+  useActionState,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -18,6 +24,7 @@ import {
   PhoneIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export default function CreateCustomerForm({
   customers,
@@ -34,6 +41,8 @@ export default function CreateCustomerForm({
     createCustomer,
     initialState
   );
+
+  const { show, hide } = useTransitionOverlay();
 
   const {
     data: formData,
@@ -63,6 +72,16 @@ export default function CreateCustomerForm({
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
+
+  useEffect(() => {
     if (state.success) {
       const currentName = nameRef.current?.value || customers[0]?.name || "";
       // Redirige a la lista con el flag de "created"
@@ -75,8 +94,11 @@ export default function CreateCustomerForm({
   }, [state.success, router, customers]);
 
   const handleSubmit = async (fd: FormData) => {
-    applyPersistedToFormData(fd, formData);
-    await formAction(fd);
+    try {
+      show("Actualizando detalles de pago...");
+      await formAction(fd);
+    } finally {
+    }
   };
 
   if (!isLoaded) return null;

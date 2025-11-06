@@ -25,6 +25,7 @@ import {
   updateQuotation,
   State,
 } from "@/app/lib/quotations-actions/quotations-actions";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 type QuotationProduct = {
   productId: string;
@@ -50,6 +51,17 @@ export default function EditQuotationForm({
     updateQuotationWithId,
     initialState
   );
+  const { show, hide } = useTransitionOverlay();
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -122,9 +134,17 @@ export default function EditQuotationForm({
     return iva ? subtotal * 1.16 : subtotal;
   };
 
+  const handleSubmit = async (fd: FormData) => {
+    try {
+      show("Actualizando cotización...");
+      await formAction(fd);
+    } finally {
+    }
+  };
+
   return (
     <>
-      <form action={formAction}>
+      <form action={handleSubmit}>
         <div className="rounded-md bg-gray-50 p-4 md:p-6">
           {/* Customer Selection */}
           <div className="mb-4">
@@ -138,7 +158,7 @@ export default function EditQuotationForm({
               <select
                 id="customer"
                 name="customerId"
-                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 text-sm outline-2 placeholder:text-gray-500"
+                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 defaultValue={quotation.customerId}
                 aria-describedby="customer-error"
               >

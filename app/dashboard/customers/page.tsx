@@ -4,10 +4,10 @@ import { lusitana } from "@/app/ui/fonts";
 import { CreateCustomer } from "@/app/ui/customers/buttons";
 import Pagination from "@/app/ui/quotations/pagination";
 import Search from "@/app/ui/search";
-import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import FlashFromQuery from "@/app/ui/flash-from-query";
+import { CustomersTableInlineSkeleton } from "@/app/ui/skeletons";
 
 export const metadata: Metadata = {
   title: "Customers",
@@ -32,7 +32,10 @@ export default async function Page(props: {
         <Search placeholder="Search customers..." />
         <CreateCustomer />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense
+        key={query + currentPage}
+        fallback={<CustomersTableInlineSkeleton rows={8} />}
+      >
         <FlashFromQuery entity="cliente" clearToPath="/dashboard/customers" />
         <Table query={query} currentPage={currentPage} />
       </Suspense>

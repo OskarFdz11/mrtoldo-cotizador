@@ -25,13 +25,13 @@ import {
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@/app/ui/button";
-import SuccessModal from "@/app/ui/success-modal";
 import {
   createQuotation,
   State,
 } from "@/app/lib/quotations-actions/quotations-actions";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
 import { applyPersistedToFormData } from "@/app/lib/utils";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 type QuotationProduct = {
   productId: string;
@@ -54,6 +54,8 @@ export default function CreateQuotationForm({
     createQuotation,
     initialState
   );
+
+  const { show, hide } = useTransitionOverlay();
 
   const [selectedProducts, setSelectedProducts] = useState<QuotationProduct[]>([
     { productId: "", quantity: 1, price: 0 },
@@ -102,6 +104,16 @@ export default function CreateQuotationForm({
   useEffect(() => {
     updateData({ iva });
   }, [iva, updateData]);
+
+  useEffect(() => {
+    if (
+      !state.success &&
+      state.errors &&
+      Object.keys(state.errors).length > 0
+    ) {
+      hide();
+    }
+  }, [state.errors, state.success, hide]);
 
   useEffect(() => {
     if (state.success) {
@@ -165,16 +177,19 @@ export default function CreateQuotationForm({
   };
 
   const handleSubmit = async (fd: FormData) => {
-    // aseguramos que los datos actuales están en persisted
-    updateData({
-      productsJSON: JSON.stringify(selectedProducts),
-      iva,
-      notes: persisted.notes,
-      status: persisted.status,
-    });
-    // volcamos todo lo persistido al FormData
-    applyPersistedToFormData(fd, persisted);
-    await formAction(fd);
+    try {
+      show("Creando cotización...");
+      updateData({
+        productsJSON: JSON.stringify(selectedProducts),
+        iva,
+        notes: persisted.notes,
+        status: persisted.status,
+      });
+      // volcamos todo lo persistido al FormData
+      applyPersistedToFormData(fd, persisted);
+      await formAction(fd);
+    } finally {
+    }
   };
 
   if (!isLoaded) return null;

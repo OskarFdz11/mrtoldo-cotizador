@@ -2,7 +2,7 @@ import Table from "@/app/ui/billing-details/table";
 import { lusitana } from "@/app/ui/fonts";
 import Pagination from "@/app/ui/quotations/pagination";
 import Search from "@/app/ui/search";
-import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { BillingDetailsTableInlineSkeleton } from "@/app/ui/skeletons";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchFilteredBillingDetails } from "@/app/lib/billing-details-actions/billing-details-data";
@@ -32,7 +32,10 @@ export default async function Page(props: {
         <Search placeholder="Search billing details..." />
         <CreateBillingDetails />
       </div>
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense
+        key={query + currentPage}
+        fallback={<BillingDetailsTableInlineSkeleton />}
+      >
         <FlashFromQuery
           entity="detalles de pago"
           clearToPath="/dashboard/billing-details"
