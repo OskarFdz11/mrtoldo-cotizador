@@ -117,7 +117,6 @@ export default function CreateQuotationForm({
 
   useEffect(() => {
     if (state.success) {
-      // Ideal: que la acción devuelva quotationId
       const label = state.quotationId ? `#${state.quotationId}` : "";
       clearCompleteForm();
       router.replace(

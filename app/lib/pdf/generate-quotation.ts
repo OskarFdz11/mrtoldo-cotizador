@@ -1,6 +1,4 @@
 // app/lib/pdf/generate-quotation.ts
-import puppeteer from "puppeteer";
-import { generateQuotationHTML } from "./quotation-template";
 import { generateSimpleQuotationHTML } from "./simple-template";
 
 export async function generateQuotationPDF(

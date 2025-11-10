@@ -260,7 +260,11 @@ export async function getQuotationDataForPDF(quotationId: number) {
       where: { id: quotationId, deleted_at: null },
       include: {
         customer: true,
-        billingDetails: true,
+        billingDetails: {
+          include: {
+            address: true,
+          },
+        },
         products: {
           include: {
             product: true,
