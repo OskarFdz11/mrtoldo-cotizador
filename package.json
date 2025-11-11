@@ -7,9 +7,10 @@
     "lint": "next lint",
     "postinstall": "prisma generate",
     "vercel-build": "prisma generate && next build",
+    "db:studio": "prisma studio",
+    "db:studio-staging": "DATABASE_URL=DATABASE_URL_STAGING prisma studio",
     "db:seed-staging": "tsx prisma/seed-staging.ts",
     "db:reset-staging": "prisma migrate reset --force && pnpm db:seed-staging",
-    "db:studio-staging": "prisma studio",
     "db:migrate-staging": "prisma migrate deploy && pnpm db:seed-staging"
   },
   "prisma": {
