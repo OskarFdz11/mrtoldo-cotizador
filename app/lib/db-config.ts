@@ -1,31 +1,39 @@
 const getEnvironmentConfig = () => {
-  const env = process.env.NODE_ENV;
-  const vercelEnv = process.env.VERCEL_ENV;
+  // Durante el build, pueden no estar todas las variables
+  const vercelEnv = process.env.VERCEL_ENV || "development";
+  const nodeEnv = process.env.NODE_ENV || "development";
 
-  // Determinar el entorno actual
+  // Para build time, usar configuración básica
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return {
+      environment: "build",
+      authUrl: process.env.AUTH_URL || "https://localhost:3000",
+      databaseUrl:
+        process.env.DATABASE_URL ||
+        "postgresql://build:build@localhost:5432/build",
+      cloudinaryFolder: "build",
+    };
+  }
+
+  // Configuraciones runtime
   if (vercelEnv === "production") {
+    const authUrl = process.env.AUTH_URL;
+    if (!authUrl) {
+      throw new Error("AUTH_URL is required in production");
+    }
+
     return {
       environment: "production",
-      databaseUrl: process.env.DATABASE_URL,
-      authUrl: process.env.AUTH_URL!,
-      cloudinaryFolder: "production",
+      authUrl,
+      databaseUrl: process.env.DATABASE_URL!,
+      cloudinaryFolder: authUrl.includes("staging") ? "staging" : "production",
     };
   }
 
-  if (vercelEnv === "preview") {
-    return {
-      environment: "staging",
-      databaseUrl: process.env.DATABASE_URL_STAGING!,
-      authUrl: process.env.AUTH_URL_STAGING!,
-      cloudinaryFolder: "staging",
-    };
-  }
-
-  // Development (local)
   return {
     environment: "development",
-    databaseUrl: process.env.DATABASE_URL_STAGING!,
-    authUrl: "http://localhost:3000",
+    authUrl: process.env.AUTH_URL || "http://localhost:3000",
+    databaseUrl: process.env.DATABASE_URL || "postgresql://localhost:5432/dev",
     cloudinaryFolder: "development",
   };
 };
