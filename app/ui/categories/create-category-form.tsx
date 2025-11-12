@@ -75,7 +75,7 @@ export default function CreateCategoryForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Actualizando detalles de pago...");
+      show("Creando categoría...");
       await formAction(fd);
     } finally {
     }

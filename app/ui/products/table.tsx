@@ -211,9 +211,7 @@ export default async function ProductsTable({
                         </td>
                         <td className="px-4 py-3">
                           <div className="max-w-[150px]">
-                            <p className="font-medium truncate">
-                              {product.name}
-                            </p>
+                            <p className="font-medium">{product.name}</p>
                           </div>
                         </td>
                         <td className="px-3 py-3 hidden lg:table-cell">

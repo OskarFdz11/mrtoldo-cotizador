@@ -106,7 +106,7 @@ export default function CreateProductForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Actualizando detalles de pago...");
+      show("Creando producto...");
       await formAction(fd);
     } finally {
     }

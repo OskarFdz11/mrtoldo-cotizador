@@ -54,7 +54,7 @@ export default function EditProductForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Actualizando detalles de pago...");
+      show("Actualizando producto...");
       await formAction(fd);
     } finally {
     }
