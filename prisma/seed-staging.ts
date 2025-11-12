@@ -7,22 +7,22 @@ async function main() {
   console.log("🌱 Seeding staging database...");
 
   // Crear usuario admin para staging
-  const hashedPassword = await bcrypt.hash("staging123", 10);
+  const hashedPassword = await bcrypt.hash("Pol25896", 10);
 
   // Verificar si el usuario ya existe
   const existingUser = await prisma.user.findUnique({
-    where: { email: "admin@staging.com" },
+    where: { email: "carlos@mrtoldo.com" },
   });
 
   if (!existingUser) {
     await prisma.user.create({
       data: {
-        email: "admin@staging.com",
+        email: "carlos@mrtoldo.com",
         password: hashedPassword,
-        name: "Admin Staging",
+        name: "Carlos Fernández",
       },
     });
-    console.log("✅ Created admin user: admin@staging.com / staging123");
+    console.log("✅ Created admin user: carlos@mrtoldo.com / Pol25896");
   } else {
     console.log("ℹ️ Admin user already exists");
   }
