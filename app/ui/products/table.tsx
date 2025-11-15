@@ -4,15 +4,19 @@ import Image from "next/image";
 import { formatCurrency, truncate } from "@/app/lib/utils";
 import ConfirmDeleteButton from "@/app/ui/confirm-delete-button";
 import { deleteProduct } from "@/app/lib/products-actions/products-actions";
+import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
 
 export default async function ProductsTable({
   query,
   currentPage,
+  lang,
 }: {
   query: string;
   currentPage: number;
+  lang: string;
 }) {
   const products = (await fetchFilteredProducts(query, currentPage)).products;
+  const dict: Dictionary = await getDictionary(lang as "es" | "en");
 
   return (
     <div className="mt-6 flow-root">
@@ -37,7 +41,9 @@ export default async function ProductsTable({
                   />
                 </svg>
                 <p className="mt-4 text-lg font-medium text-gray-900">
-                  No hay productos
+                  {query
+                    ? dict.products.noProductsFound.replace("{query}", query)
+                    : dict.products.getStarted}
                 </p>
                 <p className="mt-2 text-sm text-gray-500">
                   {query
@@ -98,7 +104,7 @@ export default async function ProductsTable({
                       <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col items-start">
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Precio
+                            {dict.products.price}
                           </p>
                           <p className="text-lg font-bold text-green-600">
                             {formatCurrency(Number(product.price))}
@@ -106,7 +112,7 @@ export default async function ProductsTable({
                         </div>
                         <div className="flex flex-col items-end">
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1 ">
-                            Stock
+                            {dict.products.stock}
                           </p>
                           <span
                             className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${
@@ -152,40 +158,40 @@ export default async function ProductsTable({
                         scope="col"
                         className="px-4 py-5 font-medium min-w-[80px]"
                       >
-                        Imagen
+                        {dict.products.image}
                       </th>
                       <th
                         scope="col"
                         className="px-4 py-5 font-medium min-w-[150px]"
                       >
-                        Producto
+                        {dict.products.name}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px] hidden lg:table-cell"
                       >
-                        Marca
+                        {dict.products.brand}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[200px] hidden xl:table-cell"
                       >
-                        Descripción
+                        {dict.products.description}
                       </th>
                       <th
                         scope="col"
                         className="px-4 py-5 font-medium min-w-[100px]"
                       >
-                        Precio
+                        {dict.products.price}
                       </th>
                       <th
                         scope="col"
                         className="px-4 py-5 font-medium min-w-[80px]"
                       >
-                        Stock
+                        {dict.products.stock}
                       </th>
                       <th className="px-3 py-5 font-medium text-left min-w-[120px]">
-                        Acciones
+                        {dict.common.actions}
                       </th>
                     </tr>
                   </thead>

@@ -2,23 +2,27 @@ import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
 import { Metadata } from "next";
 import { GlobalTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { getDictionary } from "@/app/lib/dictionaries";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Acme Dashboard",
-    default: "Acme Dashboard",
+    template: "MrToldo Cotizador",
+    default: "MrToldo Cotizador",
   },
-  description: "The official Next.js Learn Dashboard built with App Router.",
-  metadataBase: new URL("https://next-learn-dashboard.vercel.sh"),
+  description: "A dashboard to manage your quotes",
+  metadataBase: new URL("https://mrtoldo-cotizador.vercel.app"),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ lang: string }>;
 }) {
+  const { lang } = await params;
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body className={`${inter.className} antialiased`}>
         {children}
         <GlobalTransitionOverlay />

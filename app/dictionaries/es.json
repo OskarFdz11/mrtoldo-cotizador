@@ -1,0 +1,110 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "actions": "Acciones",
+    "yes": "Sí",
+    "no": "No",
+    "close": "Cerrar",
+    "accept": "Aceptar"
+  },
+  "auth": {
+    "loginTitle": "Por favor inicia sesión.",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Ingresa tu contraseña",
+    "loginButton": "Iniciar sesión"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalCollected": "Cobrado",
+    "totalCustomers": "Total de Clientes",
+    "totalPending": "Pendiente",
+    "totalQuotations": "Total de Cotizaciones",
+    "recentRevenue": "Ingresos Recientes",
+    "lastQuotations": "Últimas Cotizaciones",
+    "noData": "No hay datos disponibles",
+    "updatedAt": "Actualizado justo ahora",
+    "lastTwelveMonths": "Últimos 12 Meses"
+  },
+  "navigation": {
+    "menu": "Menú",
+    "home": "Inicio",
+    "dashboard": "Dashboard",
+    "customers": "Clientes",
+    "products": "Productos",
+    "categories": "Categorías",
+    "quotations": "Cotizaciones",
+    "billingDetails": "Detalles de facturación"
+  },
+  "products": {
+    "title": "Productos",
+    "createProduct": "Crear Producto",
+    "searchPlaceholder": "Buscar productos...",
+    "noProducts": "No hay productos",
+    "noProductsFound": "No se encontraron productos para \"{query}\"",
+    "getStarted": "Comienza agregando tu primer producto",
+    "name": "Producto",
+    "brand": "Marca",
+    "description": "Descripción",
+    "price": "Precio",
+    "stock": "Stock",
+    "image": "Imagen",
+    "quantity": "Cantidad",
+    "productCreated": "Producto creado correctamente",
+    "productUpdated": "Producto actualizado correctamente",
+    "productDeleted": "Producto eliminado correctamente",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este producto?",
+    "deleteWarning": "Esta acción no se puede deshacer."
+  },
+  "customers": {
+    "title": "Clientes",
+    "createCustomer": "Crear Cliente",
+    "searchPlaceholder": "Buscar clientes...",
+    "noCustomers": "No hay clientes",
+    "name": "Nombre",
+    "lastname": "Apellido",
+    "email": "Correo electrónico",
+    "company": "Empresa",
+    "phone": "Teléfono",
+    "rfc": "RFC"
+  },
+  "categories": {
+    "title": "Categorías",
+    "createCategory": "Crear Categoría",
+    "searchPlaceholder": "Buscar categorías...",
+    "name": "Nombre",
+    "description": "Descripción"
+  },
+  "quotations": {
+    "title": "Cotizaciones",
+    "createQuotation": "Crear Cotización",
+    "searchPlaceholder": "Buscar cotizaciones...",
+    "customer": "Cliente",
+    "date": "Fecha",
+    "total": "Total",
+    "status": "Estado",
+    "downloadPdf": "Descargar PDF"
+  },
+  "billingDetails": {
+    "title": "Detalles de Pago",
+    "createBillingDetail": "Crear Detalle de Pago",
+    "clabe": "CLABE",
+    "checkAccount": "Cuenta de Cheques"
+  },
+  "forms": {
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Correo electrónico inválido",
+    "invalidPrice": "Precio inválido",
+    "processing": "Procesando...",
+    "createSuccess": "Creado exitosamente",
+    "updateSuccess": "Actualizado exitosamente",
+    "deleteSuccess": "Eliminado exitosamente"
+  }
+}

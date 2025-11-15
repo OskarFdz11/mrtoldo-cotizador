@@ -9,50 +9,65 @@ import {
   BanknotesIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { Dictionary } from "@/app/lib/dictionaries";
+import { usePathname } from "next/navigation";
 
 type NavLinksProps = {
-  showTextOnAllSizes?: boolean; // ← muestra el texto también en mobile (para el drawer)
-  onNavigate?: () => void; // ← cierra el drawer al hacer click
+  lang: string;
+  showTextOnAllSizes?: boolean;
+  dict: Dictionary;
+  onNavigate?: () => void;
 };
 
-const links = [
-  { name: "Home", href: "/dashboard", icon: HomeIcon },
-  {
-    name: "Quotations",
-    href: "/dashboard/quotations",
-    icon: DocumentDuplicateIcon,
-  },
-  { name: "Customers", href: "/dashboard/customers", icon: UserGroupIcon },
-  {
-    name: "Products",
-    href: "/dashboard/products",
-    icon: BuildingStorefrontIcon,
-  },
-  { name: "Categories", href: "/dashboard/categories", icon: TagIcon },
-  {
-    name: "Billing Details",
-    href: "/dashboard/billing-details",
-    icon: BanknotesIcon,
-  },
-];
-
 export default function NavLinks({
+  lang,
+  dict,
   showTextOnAllSizes = false,
   onNavigate,
 }: NavLinksProps) {
   const pathname = usePathname();
 
+  const links = [
+    { name: dict.navigation.home, href: `/${lang}/dashboard`, icon: HomeIcon },
+    {
+      name: dict.navigation.quotations,
+      href: `/${lang}/dashboard/quotations`,
+      icon: DocumentDuplicateIcon,
+    },
+    {
+      name: dict.navigation.customers,
+      href: `/${lang}/dashboard/customers`,
+      icon: UserGroupIcon,
+    },
+    {
+      name: dict.navigation.products,
+      href: `/${lang}/dashboard/products`,
+      icon: BuildingStorefrontIcon,
+    },
+    {
+      name: dict.navigation.categories,
+      href: `/${lang}/dashboard/categories`,
+      icon: TagIcon,
+    },
+    {
+      name: dict.navigation.billingDetails,
+      href: `/${lang}/dashboard/billing-details`,
+      icon: BanknotesIcon,
+    },
+  ];
+
   return (
     <>
       {links.map((link) => {
         const LinkIcon = link.icon;
-        const active = pathname === link.href;
+        const cleanPathname = pathname.replace(`/${lang}`, "");
+        const linkPath = link.href.replace(`/${lang}`, "");
+        const isActive = cleanPathname === linkPath;
 
         const baseClasses = clsx(
           "flex h-[48px] items-center gap-2 rounded-md text-sm font-medium transition-colors",
-          active
+          isActive
             ? "bg-sky-100 text-blue-600"
             : "bg-gray-50 hover:bg-sky-100 hover:text-blue-600",
           showTextOnAllSizes

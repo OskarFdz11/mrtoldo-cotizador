@@ -7,8 +7,15 @@ import NavLinks from "@/app/ui/dashboard/nav-links";
 import AcmeLogo from "@/app/ui/acme-logo";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import ConfirmLogoutButton from "../confirm-logout-button";
+import LanguageToggle from "../language-toggle";
+import { Dictionary } from "@/app/lib/dictionaries";
 
-export default function SideNav() {
+interface SideNavProps {
+  lang: string;
+  dict: Dictionary;
+}
+
+export default function SideNav({ lang, dict }: SideNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -16,19 +23,22 @@ export default function SideNav() {
       {/* Topbar móvil con logo y botón de menú */}
       <div className="md:hidden sticky top-0 z-40 p-3">
         <div className="flex items-center justify-between rounded-md bg-blue-600 px-4 py-3 ">
-          <Link href="/" className="flex items-center">
+          <Link href={`/${lang}/dashboard`} className="flex items-center">
             <div className="w-28 text-white">
               <AcmeLogo />
             </div>
           </Link>
-          <button
-            type="button"
-            aria-label="Abrir menú"
-            onClick={() => setOpen(true)}
-            className="inline-flex items-center rounded-lg p-2 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
-          >
-            <Bars3Icon className="h-6 w-6" />
-          </button>
+          <div className="flex items-center">
+            <LanguageToggle currentLocale={lang} variant="blue" />
+            <button
+              type="button"
+              aria-label="Abrir menú"
+              onClick={() => setOpen(true)}
+              className="inline-flex items-center rounded-lg p-2 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -58,7 +68,7 @@ export default function SideNav() {
             {/* Encabezado del drawer (sin logo) */}
             <div className="flex h-14 items-center justify-between border-b px-4">
               <span className=" text-sm font-medium transition-colors">
-                Menu
+                {dict.navigation.menu}
               </span>
               <button
                 type="button"
@@ -72,7 +82,12 @@ export default function SideNav() {
 
             {/* Contenido scrollable */}
             <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2">
-              <NavLinks showTextOnAllSizes onNavigate={() => setOpen(false)} />
+              <NavLinks
+                lang={lang}
+                dict={dict}
+                showTextOnAllSizes
+                onNavigate={() => setOpen(false)}
+              />
             </div>
 
             {/* Footer con Sign Out */}
@@ -95,7 +110,7 @@ export default function SideNav() {
         </Link>
 
         <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-          <NavLinks showTextOnAllSizes />
+          <NavLinks lang={lang} dict={dict} showTextOnAllSizes />
           <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block" />
           <ConfirmLogoutButton />
         </div>

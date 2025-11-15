@@ -2,6 +2,7 @@ import { formatCurrencyCompact, generateYAxis } from "@/app/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchRevenue } from "@/app/lib/quotations-actions/quotations-data";
+import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -9,8 +10,9 @@ import { fetchRevenue } from "@/app/lib/quotations-actions/quotations-data";
 // https://www.chartjs.org/
 // https://airbnb.io/visx/
 
-export default async function RevenueChart() {
+export default async function RevenueChart({ lang }: { lang: string }) {
   const revenue = await fetchRevenue();
+  const dict: Dictionary = await getDictionary(lang as "es" | "en");
 
   const chartHeight = 350;
 
@@ -23,11 +25,11 @@ export default async function RevenueChart() {
     return (
       <div className="w-full md:col-span-4">
         <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-          Ingresos Recientes
+          {dict.dashboard.recentRevenue}
         </h2>
         <div className="rounded-xl bg-gray-50 p-4">
           <p className="mt-4 text-gray-400 text-center py-8">
-            No hay datos disponibles
+            {dict.dashboard.noData}
           </p>
         </div>
       </div>
@@ -39,7 +41,7 @@ export default async function RevenueChart() {
   return (
     <div className="w-full md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Ingresos Recientes
+        {dict.dashboard.recentRevenue}
       </h2>
 
       <div className="rounded-xl bg-gray-50 p-4">
@@ -80,7 +82,9 @@ export default async function RevenueChart() {
 
         <div className="flex items-center pb-2 pt-6">
           <CalendarIcon className="h-5 w-5 text-gray-500" />
-          <h3 className="ml-2 text-sm text-gray-500">Últimos 12 meses</h3>
+          <h3 className="ml-2 text-sm text-gray-500">
+            {dict.dashboard.lastTwelveMonths}
+          </h3>
         </div>
       </div>
     </div>
