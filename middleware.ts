@@ -1,76 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 const locales = ["es", "en"] as const;
 const defaultLocale = "es";
 
-const PUBLIC_PATHS = ["/login", "/"];
-
-const PROTECTED_PREFIX = "/dashboard";
-
-function extractOrDetectLocale(req: NextRequest): string {
-  const pathname = req.nextUrl.pathname;
-  const directLocale = locales.find(
-    (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
+function getLocale(request: NextRequest): string {
+  const pathname = request.nextUrl.pathname;
+  const pathnameHasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
-  if (directLocale) return directLocale;
 
-  const accept = req.headers.get("Accept-Language") || "";
-  if (accept.includes("es")) return "es";
-  if (accept.includes("en")) return "en";
+  if (pathnameHasLocale) return pathname.split("/")[1];
+
+  const acceptLanguage = request.headers.get("Accept-Language") || "";
+  if (acceptLanguage.includes("es")) return "es";
+  if (acceptLanguage.includes("en")) return "en";
+
   return defaultLocale;
 }
 
-function hasLocale(pathname: string) {
-  return locales.some(
-    (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
-  );
-}
+export default auth((req) => {
+  const pathname = req.nextUrl.pathname;
 
-function hasSession(req: NextRequest): boolean {
-  const cookies = req.cookies;
-  return (
-    cookies.has("authjs.session-token") ||
-    cookies.has("__Secure-authjs.session-token") ||
-    cookies.has("next-auth.session-token") ||
-    cookies.has("__Secure-next-auth.session-token")
-  );
-}
-
-function needsAuth(pathWithoutLocale: string) {
-  if (PUBLIC_PATHS.includes(pathWithoutLocale)) return false;
-  if (pathWithoutLocale.startsWith(PROTECTED_PREFIX)) return true;
-  return false;
-}
-
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
+  // Skip API routes and static files
   if (
-    pathname.startsWith("/_next/") ||
     pathname.startsWith("/api/") ||
+    pathname.startsWith("/_next/") ||
     pathname.includes(".")
   ) {
-    return NextResponse.next();
+    return;
   }
 
-  if (!hasLocale(pathname)) {
-    const locale = extractOrDetectLocale(req);
-    const url = new URL(`/${locale}${pathname}`, req.url);
-    return NextResponse.redirect(url);
+  // Verificar si pathname ya tiene locale
+  const pathnameHasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  );
+
+  if (!pathnameHasLocale) {
+    // Redirect si no hay locale
+    const locale = getLocale(req);
+    const newUrl = new URL(`/${locale}${pathname}`, req.url);
+    return NextResponse.redirect(newUrl);
   }
 
-  const segments = pathname.split("/");
-  const currentLocale = segments[1];
-  const pathWithoutLocale = `/${segments.slice(2).join("/")}` || "/";
+  // Auth logic para rutas protegidas
+  const currentLocale = pathname.split("/")[1];
+  const pathWithoutLocale = pathname.replace(`/${currentLocale}`, "");
 
-  if (needsAuth(pathWithoutLocale) && !hasSession(req)) {
+  if (pathWithoutLocale.startsWith("/dashboard") && !req.auth) {
     const loginUrl = new URL(`/${currentLocale}/login`, req.url);
     loginUrl.searchParams.set("callbackUrl", req.url);
     return NextResponse.redirect(loginUrl);
   }
-
-  return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
