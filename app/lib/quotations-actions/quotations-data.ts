@@ -5,6 +5,7 @@ import { prisma } from "@/app/lib/prisma";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function fetchRevenue() {
+  noStore();
   try {
     const data = await prisma.quotation.findMany({
       select: {
@@ -57,6 +58,7 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestQuotations() {
+  noStore();
   try {
     const data = await prisma.quotation.findMany({
       orderBy: { date: "desc" },
@@ -81,6 +83,7 @@ export async function fetchLatestQuotations() {
 }
 
 export async function fetchCardData() {
+  noStore();
   try {
     const [quotationsCount, customer, paid, pending] = await Promise.all([
       prisma.quotation.count(),

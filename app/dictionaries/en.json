@@ -1,0 +1,110 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "accept": "Accept"
+  },
+  "auth": {
+    "loginTitle": "Please log in to continue.",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "loginButton": "Log in"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalCollected": "Collected",
+    "totalCustomers": "Total Customers",
+    "totalPending": "Pending",
+    "totalQuotations": "Total Quotations",
+    "recentRevenue": "Recent Revenue",
+    "lastQuotations": "Last Quotations",
+    "noData": "No data available",
+    "updatedAt": "Updated just now",
+    "lastTwelveMonths": "Last 12 Months"
+  },
+  "navigation": {
+    "menu": "Menu",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "customers": "Customers",
+    "products": "Products",
+    "categories": "Categories",
+    "quotations": "Quotations",
+    "billingDetails": "Billing Details"
+  },
+  "products": {
+    "title": "Products",
+    "createProduct": "Create Product",
+    "searchPlaceholder": "Search products...",
+    "noProducts": "No products",
+    "noProductsFound": "No products found for \"{query}\"",
+    "getStarted": "Get started by adding your first product",
+    "name": "Product",
+    "brand": "Brand",
+    "description": "Description",
+    "price": "Price",
+    "stock": "Stock",
+    "image": "Image",
+    "quantity": "Quantity",
+    "productCreated": "Product created successfully",
+    "productUpdated": "Product updated successfully",
+    "productDeleted": "Product deleted successfully",
+    "confirmDelete": "Are you sure you want to delete this product?",
+    "deleteWarning": "This action cannot be undone."
+  },
+  "customers": {
+    "title": "Customers",
+    "createCustomer": "Create Customer",
+    "searchPlaceholder": "Search customers...",
+    "noCustomers": "No customers",
+    "name": "Name",
+    "lastname": "Last Name",
+    "email": "Email",
+    "company": "Company",
+    "phone": "Phone",
+    "rfc": "RFC"
+  },
+  "categories": {
+    "title": "Categories",
+    "createCategory": "Create Category",
+    "searchPlaceholder": "Search categories...",
+    "name": "Name",
+    "description": "Description"
+  },
+  "quotations": {
+    "title": "Quotations",
+    "createQuotation": "Create Quotation",
+    "searchPlaceholder": "Search quotations...",
+    "customer": "Customer",
+    "date": "Date",
+    "total": "Total",
+    "status": "Status",
+    "downloadPdf": "Download PDF"
+  },
+  "billingDetails": {
+    "title": "Billing Details",
+    "createBillingDetail": "Create Billing Detail",
+    "clabe": "CLABE",
+    "checkAccount": "Check Account"
+  },
+  "forms": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "invalidPrice": "Invalid price",
+    "processing": "Processing...",
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted successfully"
+  }
+}

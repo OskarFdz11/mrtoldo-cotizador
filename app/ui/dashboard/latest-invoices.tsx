@@ -3,13 +3,15 @@ import clsx from "clsx";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchLatestQuotations } from "@/app/lib/quotations-actions/quotations-data";
 import { formatCurrency } from "@/app/lib/utils";
+import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
 
-export default async function LatestInvoices() {
+export default async function LatestInvoices({ lang }: { lang: string }) {
   const latestInvoices = await fetchLatestQuotations();
+  const dict: Dictionary = await getDictionary(lang as "es" | "en");
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Últimas Cotizaciones
+        {dict.dashboard.lastQuotations}
       </h2>
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
         {/* NOTE: Uncomment this code in Chapter 7 */}
@@ -54,7 +56,9 @@ export default async function LatestInvoices() {
         </div>
         <div className="flex items-center pb-2 pt-6">
           <ArrowPathIcon className="h-5 w-5 text-gray-500" />
-          <h3 className="ml-2 text-sm text-gray-500 ">Updated just now</h3>
+          <h3 className="ml-2 text-sm text-gray-500 ">
+            {dict.dashboard.updatedAt}
+          </h3>
         </div>
       </div>
     </div>

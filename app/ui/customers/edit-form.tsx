@@ -67,7 +67,7 @@ export default function EditCustomerForm({ customer }: CustomerEditFormProps) {
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Actualizando detalles de pago...");
+      show("Actualizando cliente...");
       await formAction(fd);
     } finally {
     }

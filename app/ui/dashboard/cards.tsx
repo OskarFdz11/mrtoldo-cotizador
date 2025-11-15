@@ -7,6 +7,7 @@ import {
 import { lusitana } from "@/app/ui/fonts";
 import { fetchCardData } from "@/app/lib/quotations-actions/quotations-data";
 import { formatCurrency, formatNumber } from "@/app/lib/utils";
+import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -15,34 +16,36 @@ const iconMap = {
   invoices: InboxIcon,
 };
 
-export default async function CardWrapper() {
+export default async function CardWrapper({ lang }: { lang: string }) {
   const {
     totalPaidQuotations,
     totalPendingQuotations,
     numberOfQuotations,
     numberOfCustomers,
   } = await fetchCardData();
+
+  const dict: Dictionary = await getDictionary(lang as "es" | "en");
   return (
     <>
       {/* NOTE: Uncomment this code in Chapter 9 */}
 
       <Card
-        title="Cobrado"
+        title={dict.dashboard.totalCollected}
         value={formatCurrency(totalPaidQuotations)}
         type="collected"
       />
       <Card
-        title="Pendiente"
+        title={dict.dashboard.totalPending}
         value={formatCurrency(totalPendingQuotations)}
         type="pending"
       />
       <Card
-        title="Total Cotizaciones"
+        title={dict.dashboard.totalQuotations}
         value={formatNumber(numberOfQuotations)}
         type="invoices"
       />
       <Card
-        title="Total Clientes"
+        title={dict.dashboard.totalCustomers}
         value={formatNumber(numberOfCustomers)}
         type="customers"
       />

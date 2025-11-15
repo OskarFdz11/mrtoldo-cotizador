@@ -95,7 +95,7 @@ export default function CreateCustomerForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Actualizando detalles de pago...");
+      show("Creando cliente...");
       await formAction(fd);
     } finally {
     }
