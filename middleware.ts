@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 
 const locales = ["es", "en"] as const;
 const defaultLocale = "es";
@@ -19,7 +18,16 @@ function getLocale(request: NextRequest): string {
   return defaultLocale;
 }
 
-export default auth((req) => {
+function hasAuthCookie(req: NextRequest): boolean {
+  return (
+    req.cookies.has("authjs.session-token") ||
+    req.cookies.has("__Secure-authjs.session-token") ||
+    req.cookies.has("next-auth.session-token") ||
+    req.cookies.has("__Secure-next-auth.session-token")
+  );
+}
+
+export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   // Skip API routes and static files
@@ -28,7 +36,7 @@ export default auth((req) => {
     pathname.startsWith("/_next/") ||
     pathname.includes(".")
   ) {
-    return;
+    return NextResponse.next();
   }
 
   // Verificar si pathname ya tiene locale
@@ -47,12 +55,14 @@ export default auth((req) => {
   const currentLocale = pathname.split("/")[1];
   const pathWithoutLocale = pathname.replace(`/${currentLocale}`, "");
 
-  if (pathWithoutLocale.startsWith("/dashboard") && !req.auth) {
+  if (pathWithoutLocale.startsWith("/dashboard") && !hasAuthCookie(req)) {
     const loginUrl = new URL(`/${currentLocale}/login`, req.url);
     loginUrl.searchParams.set("callbackUrl", req.url);
     return NextResponse.redirect(loginUrl);
   }
-});
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
