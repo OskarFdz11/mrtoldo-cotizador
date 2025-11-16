@@ -4,20 +4,18 @@ import Image from "next/image";
 import { formatCurrency, truncate } from "@/app/lib/utils";
 import ConfirmDeleteButton from "@/app/ui/confirm-delete-button";
 import { deleteProduct } from "@/app/lib/products-actions/products-actions";
-import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
-import { useRouter } from "next/router";
+import { type Dictionary } from "@/app/lib/dictionaries";
 
 export default async function ProductsTable({
   query,
   currentPage,
+  dict,
 }: {
   query: string;
   currentPage: number;
+  dict: Dictionary;
 }) {
   const products = (await fetchFilteredProducts(query, currentPage)).products;
-  const router = useRouter();
-  const { locale } = router;
-  const dict: Dictionary = await getDictionary(locale as "es" | "en");
 
   return (
     <div className="mt-6 flow-root">

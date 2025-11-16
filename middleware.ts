@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { defaultLocale, isLocale, locales } from "@/app/lib/i18n";
+import { defaultLocale, isLocale } from "@/app/lib/i18n";
 
 export default auth((req: NextRequest & { auth?: unknown }) => {
   const { pathname } = req.nextUrl;
@@ -15,16 +15,15 @@ export default auth((req: NextRequest & { auth?: unknown }) => {
     return;
   }
 
-  const segments = pathname.split("/");
-  const maybeLocale = segments[1];
+  const seg = pathname.split("/")[1];
 
-  if (!isLocale(maybeLocale)) {
+  if (!isLocale(seg)) {
     const url = req.nextUrl.clone();
     url.pathname = `/${defaultLocale}${pathname}`;
     return NextResponse.redirect(url);
   }
 
-  const locale = maybeLocale;
+  const locale = seg;
 
   if (pathname.startsWith(`/${locale}/dashboard`) && !req.auth) {
     const url = req.nextUrl.clone();

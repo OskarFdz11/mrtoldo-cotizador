@@ -1,4 +1,3 @@
-import type { Locale } from "@/app/lib/i18n";
 import { isLocale } from "@/app/lib/i18n";
 import { getDictionary } from "@/app/lib/dictionaries";
 import { I18nProvider } from "@/app/ui/i18n-provider";
@@ -17,19 +16,16 @@ export default async function LocaleLayout({
   params,
   children,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
   children: React.ReactNode;
 }) {
-  const locale = isLocale(params.locale) ? params.locale : "es";
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : "es";
   const dict = await getDictionary(locale);
 
   return (
-    <html lang={locale}>
-      <body>
-        <I18nProvider locale={locale} dict={dict}>
-          {children}
-        </I18nProvider>
-      </body>
-    </html>
+    <I18nProvider locale={locale} dict={dict}>
+      {children}
+    </I18nProvider>
   );
 }

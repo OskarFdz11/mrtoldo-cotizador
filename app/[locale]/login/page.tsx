@@ -4,28 +4,20 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { getDictionary } from "@/app/lib/dictionaries";
 import LanguageToggle from "@/app/ui/language-toggle";
-import { headers } from "next/headers";
+import { Locale } from "@/app/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Login",
 };
 
-export default async function LoginPage({}: {}) {
-  const headersList = await headers();
-  const localeHeader = headersList.get("x-nextjs-locale");
-  const locale = (localeHeader === "en" ? "en" : "es") as "es" | "en";
-  const dict = await getDictionary(locale);
+export default async function LoginPage({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+  const dict = await getDictionary(locale ?? "es");
 
-  const loginTranslations = {
-    title: dict.auth?.loginTitle || "Por favor inicia sesión para continuar.",
-    email: dict.auth?.email || "Correo electrónico",
-    emailPlaceholder:
-      dict.auth?.emailPlaceholder || "Ingresa tu correo electrónico",
-    password: dict.auth?.password || "Contraseña",
-    passwordPlaceholder:
-      dict.auth?.passwordPlaceholder || "Ingresa tu contraseña",
-    loginButton: dict.auth?.loginButton || "Iniciar sesión",
-  };
   return (
     <main className="flex items-center justify-center md:h-screen">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
@@ -34,7 +26,7 @@ export default async function LoginPage({}: {}) {
           <LanguageToggle />
         </div>
         <Suspense>
-          <LoginForm translations={loginTranslations} />
+          <LoginForm dict={dict} />
         </Suspense>
       </div>
     </main>

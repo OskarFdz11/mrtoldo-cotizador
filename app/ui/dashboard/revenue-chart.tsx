@@ -2,8 +2,7 @@ import { formatCurrencyCompact, generateYAxis } from "@/app/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchRevenue } from "@/app/lib/quotations-actions/quotations-data";
-import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
-import { useRouter } from "next/router";
+import { type Dictionary } from "@/app/lib/dictionaries";
 
 // This component is representational only.
 // For data visualization UI, check out:

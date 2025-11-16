@@ -8,21 +8,18 @@ import AcmeLogo from "@/app/ui/acme-logo";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import ConfirmLogoutButton from "../confirm-logout-button";
 import LanguageToggle from "../language-toggle";
-import { Dictionary, getDictionary } from "@/app/lib/dictionaries";
-import { useRouter } from "next/router";
+import { useI18n } from "@/app/ui/i18n-provider";
 
-export default async function SideNav() {
+export default function SideNav() {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const { locale } = router;
-  const dict: Dictionary = await getDictionary(locale as "es" | "en");
+  const { locale, dict } = useI18n();
 
   return (
     <>
       {/* Topbar móvil con logo y botón de menú */}
       <div className="md:hidden sticky top-0 z-40 p-3">
         <div className="flex items-center justify-between rounded-md bg-blue-600 px-4 py-3 ">
-          <Link href="/dashboard" className="flex items-center">
+          <Link href={`/${locale}/dashboard`} className="flex items-center">
             <div className="w-28 text-white">
               <AcmeLogo />
             </div>
@@ -81,11 +78,7 @@ export default async function SideNav() {
 
             {/* Contenido scrollable */}
             <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2">
-              <NavLinks
-                dict={dict}
-                showTextOnAllSizes
-                onNavigate={() => setOpen(false)}
-              />
+              <NavLinks showTextOnAllSizes onNavigate={() => setOpen(false)} />
             </div>
 
             {/* Footer con Sign Out */}
@@ -108,7 +101,7 @@ export default async function SideNav() {
         </Link>
 
         <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-          <NavLinks dict={dict} showTextOnAllSizes />
+          <NavLinks showTextOnAllSizes />
           <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block" />
           <ConfirmLogoutButton />
         </div>

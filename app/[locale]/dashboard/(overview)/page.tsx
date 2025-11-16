@@ -2,8 +2,8 @@ import CardWrapper from "@/app/ui/dashboard/cards";
 import RevenueChart from "@/app/ui/dashboard/revenue-chart";
 import LatestInvoices from "@/app/ui/dashboard/latest-invoices";
 import { lusitana } from "@/app/ui/fonts";
-import { GetServerSideProps, Metadata } from "next";
-import { Dictionary, getDictionary } from "@/app/lib/dictionaries";
+import { Metadata } from "next";
+import { getDictionary } from "@/app/lib/dictionaries";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -19,8 +19,13 @@ import { Locale } from "@/app/lib/i18n";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function Page({ params }: { params: { locale: Locale } }) {
-  const dict = await getDictionary(params.locale || "es");
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+  const dict = await getDictionary(locale ?? "es");
 
   return (
     <main>

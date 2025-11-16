@@ -3,14 +3,10 @@ import clsx from "clsx";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchLatestQuotations } from "@/app/lib/quotations-actions/quotations-data";
 import { formatCurrency } from "@/app/lib/utils";
-import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
-import { useRouter } from "next/router";
+import { type Dictionary } from "@/app/lib/dictionaries";
 
-export default async function LatestInvoices() {
+export default async function LatestInvoices({ dict }: { dict: Dictionary }) {
   const latestInvoices = await fetchLatestQuotations();
-  const router = useRouter();
-  const { locale } = router;
-  const dict: Dictionary = await getDictionary(locale as "es" | "en");
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>

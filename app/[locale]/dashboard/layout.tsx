@@ -1,13 +1,7 @@
 import SideNav from "@/app/ui/dashboard/sidenav";
-import { getDictionary } from "@/app/lib/dictionaries";
 import DesktopHeader from "@/app/ui/dashboard/desktop-header";
-import { GetServerSideProps } from "next";
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
       <div className="w-full flex-none md:w-64">

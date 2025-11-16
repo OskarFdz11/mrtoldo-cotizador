@@ -10,24 +10,20 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import clsx from "clsx";
-import { Dictionary } from "@/app/lib/dictionaries";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 type NavLinksProps = {
   showTextOnAllSizes?: boolean;
-  dict: Dictionary;
   onNavigate?: () => void;
 };
 
 export default function NavLinks({
-  dict,
   showTextOnAllSizes = false,
   onNavigate,
 }: NavLinksProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { locale } = router;
+  const { locale, dict } = useI18n();
 
   const links = [
     { name: dict.navigation.home, href: "/dashboard", icon: HomeIcon },
@@ -62,7 +58,8 @@ export default function NavLinks({
     <>
       {links.map((link) => {
         const LinkIcon = link.icon;
-        const isActive = pathname;
+        const href = `/${locale}${link.href}`;
+        const isActive = pathname === href || pathname.startsWith(href + "/");
 
         const baseClasses = clsx(
           "flex h-[48px] items-center gap-2 rounded-md text-sm font-medium transition-colors",
@@ -78,7 +75,6 @@ export default function NavLinks({
           <Link
             key={link.name}
             href={link.href}
-            locale={locale}
             onClick={onNavigate}
             className={baseClasses}
           >

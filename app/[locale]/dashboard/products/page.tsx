@@ -9,26 +9,23 @@ import { CreateProduct } from "@/app/ui/products/buttons";
 import FlashFromQuery from "@/app/ui/flash-from-query";
 import { ProductsTableInlineSkeleton } from "@/app/ui/skeletons";
 import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
+import { Locale } from "@/app/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Products",
 };
 export default async function Page({
   searchParams,
-  locale,
+  params,
 }: {
-  searchParams?: {
-    query?: string;
-    page?: string;
-  };
-  locale: GetServerSideProps;
+  params: Promise<{ locale: Locale }>;
+  searchParams: Promise<{ query?: string; page?: string }>;
 }) {
-  const query = searchParams?.query || "";
-  const currentPage = Number(searchParams?.page) || 1;
+  const [{ locale }, sp] = await Promise.all([params, searchParams]);
+  const dict = await getDictionary(locale ?? "es");
+  const query = sp?.query ?? "";
+  const currentPage = Number(sp?.page ?? "1");
   const { totalPages } = await fetchFilteredProducts(query, currentPage);
-  const dict: Dictionary = await getDictionary(
-    locale as unknown as "es" | "en"
-  );
 
   return (
     <div className="w-full">
@@ -46,7 +43,7 @@ export default async function Page({
         fallback={<ProductsTableInlineSkeleton />}
       >
         <FlashFromQuery entity="producto" clearToPath="/dashboard/products" />
-        <Table query={query} currentPage={currentPage} />
+        <Table query={query} currentPage={currentPage} dict={dict} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />
