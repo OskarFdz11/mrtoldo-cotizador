@@ -1,67 +1,58 @@
-// app/ui/language-toggle.tsx
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LanguageIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 
-interface LanguageToggleProps {
-  currentLocale: string;
-  variant?: "blue" | "white" | "sidebar" | "header";
-  className?: string;
+const LOCALES = ["es", "en"] as const;
+const DEFAULT_LOCALE = "es";
+
+function extractLocale(pathname: string): string {
+  const seg = pathname.split("/")[1];
+  return LOCALES.includes(seg as any) ? seg : DEFAULT_LOCALE;
 }
 
-export default function LanguageToggle({
-  currentLocale,
-  variant = "blue",
-  className,
-}: LanguageToggleProps) {
-  const pathname = usePathname();
-  const router = useRouter();
+function stripLocale(pathname: string): string {
+  const parts = pathname.split("/");
+  const first = parts[1];
+  if (LOCALES.includes(first as any)) {
+    return "/" + parts.slice(2).join("/");
+  }
+  return pathname;
+}
 
-  const toggleLanguage = () => {
-    const newLocale = currentLocale === "es" ? "en" : "es";
-    const segments = pathname.split("/");
-    segments[1] = newLocale;
-    const newPath = segments.join("/");
-    router.push(newPath);
+export default function LanguageToggle() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const currentLocale = extractLocale(pathname);
+  const basePath = stripLocale(pathname) || "/";
+
+  const switchLanguage = (newLocale: string) => {
+    const nextPath =
+      basePath === "/" ? `/${newLocale}` : `/${newLocale}${basePath}`;
+    router.push(nextPath);
   };
 
   return (
-    <button
-      onClick={toggleLanguage}
-      className={clsx(
-        // Estilos base
-        "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2",
-
-        // Estilos por variante
-        {
-          // Fondo azul (sidebar móvil, header azul)
-          "text-white hover:bg-white/10 focus:ring-white/50":
-            variant === "blue",
-
-          // Fondo blanco (header, modales)
-          "text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-blue-500":
-            variant === "white" || variant === "header",
-
-          // Sidebar de desktop (fondo gris claro)
-          "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-blue-500":
-            variant === "sidebar",
-        },
-
-        // Clase personalizada opcional
-        className
-      )}
-      title={`Cambiar a ${currentLocale === "es" ? "English" : "Español"}`}
-    >
-      <LanguageIcon
-        className={clsx("h-4 w-4", {
-          "text-white": variant === "blue",
-          "text-gray-600": variant === "white" || variant === "header",
-          "text-gray-500 group-hover:text-gray-700": variant === "sidebar",
-        })}
-      />
-      <span>{currentLocale === "es" ? "ES" : "EN"}</span>
-    </button>
+    <div className="flex items-center gap-2">
+      {LOCALES.map((lng) => {
+        const active = lng === currentLocale;
+        return (
+          <button
+            key={lng}
+            onClick={() => switchLanguage(lng)}
+            className={`flex items-center gap-1 rounded px-2 py-1 text-sm transition-colors ${
+              active
+                ? "bg-blue-600 text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+            aria-pressed={active}
+          >
+            <GlobeAltIcon className="h-4 w-4" />
+            <span className="font-medium">{lng.toUpperCase()}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

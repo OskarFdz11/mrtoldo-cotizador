@@ -2,7 +2,7 @@ import Table from "@/app/ui/products/table";
 import { lusitana } from "@/app/ui/fonts";
 import Pagination from "@/app/ui/quotations/pagination";
 import Search from "@/app/ui/search";
-import { Metadata } from "next";
+import { GetServerSideProps, Metadata } from "next";
 import { Suspense } from "react";
 import { fetchFilteredProducts } from "@/app/lib/products-actions/products-data";
 import { CreateProduct } from "@/app/ui/products/buttons";
@@ -15,18 +15,20 @@ export const metadata: Metadata = {
 };
 export default async function Page({
   searchParams,
-  params,
+  locale,
 }: {
   searchParams?: {
     query?: string;
     page?: string;
   };
-  params: { lang: string };
+  locale: GetServerSideProps;
 }) {
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
   const { totalPages } = await fetchFilteredProducts(query, currentPage);
-  const dict: Dictionary = await getDictionary(params.lang as "es" | "en");
+  const dict: Dictionary = await getDictionary(
+    locale as unknown as "es" | "en"
+  );
 
   return (
     <div className="w-full">
@@ -36,15 +38,15 @@ export default async function Page({
         </h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search products..." />
-        <CreateProduct lang={params.lang} />
+        <Search placeholder={dict.products.searchPlaceholder} />
+        <CreateProduct />
       </div>
       <Suspense
         key={query + currentPage}
         fallback={<ProductsTableInlineSkeleton />}
       >
         <FlashFromQuery entity="producto" clearToPath="/dashboard/products" />
-        <Table query={query} currentPage={currentPage} lang={params.lang} />
+        <Table query={query} currentPage={currentPage} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />

@@ -7,7 +7,7 @@ import {
 import { lusitana } from "@/app/ui/fonts";
 import { fetchCardData } from "@/app/lib/quotations-actions/quotations-data";
 import { formatCurrency, formatNumber } from "@/app/lib/utils";
-import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
+import { type Dictionary } from "@/app/lib/dictionaries";
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -16,7 +16,7 @@ const iconMap = {
   invoices: InboxIcon,
 };
 
-export default async function CardWrapper({ lang }: { lang: string }) {
+export default async function CardWrapper({ dict }: { dict: Dictionary }) {
   const {
     totalPaidQuotations,
     totalPendingQuotations,
@@ -24,7 +24,6 @@ export default async function CardWrapper({ lang }: { lang: string }) {
     numberOfCustomers,
   } = await fetchCardData();
 
-  const dict: Dictionary = await getDictionary(lang as "es" | "en");
   return (
     <>
       {/* NOTE: Uncomment this code in Chapter 9 */}

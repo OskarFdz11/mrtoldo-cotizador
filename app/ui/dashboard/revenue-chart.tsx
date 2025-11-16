@@ -3,6 +3,7 @@ import { CalendarIcon } from "@heroicons/react/24/outline";
 import { lusitana } from "@/app/ui/fonts";
 import { fetchRevenue } from "@/app/lib/quotations-actions/quotations-data";
 import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
+import { useRouter } from "next/router";
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -10,9 +11,8 @@ import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
 // https://www.chartjs.org/
 // https://airbnb.io/visx/
 
-export default async function RevenueChart({ lang }: { lang: string }) {
+export default async function RevenueChart({ dict }: { dict: Dictionary }) {
   const revenue = await fetchRevenue();
-  const dict: Dictionary = await getDictionary(lang as "es" | "en");
 
   const chartHeight = 350;
 

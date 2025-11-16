@@ -5,18 +5,19 @@ import { formatCurrency, truncate } from "@/app/lib/utils";
 import ConfirmDeleteButton from "@/app/ui/confirm-delete-button";
 import { deleteProduct } from "@/app/lib/products-actions/products-actions";
 import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
+import { useRouter } from "next/router";
 
 export default async function ProductsTable({
   query,
   currentPage,
-  lang,
 }: {
   query: string;
   currentPage: number;
-  lang: string;
 }) {
   const products = (await fetchFilteredProducts(query, currentPage)).products;
-  const dict: Dictionary = await getDictionary(lang as "es" | "en");
+  const router = useRouter();
+  const { locale } = router;
+  const dict: Dictionary = await getDictionary(locale as "es" | "en");
 
   return (
     <div className="mt-6 flow-root">

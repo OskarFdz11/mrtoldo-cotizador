@@ -12,47 +12,48 @@ import Link from "next/link";
 import clsx from "clsx";
 import { Dictionary } from "@/app/lib/dictionaries";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 
 type NavLinksProps = {
-  lang: string;
   showTextOnAllSizes?: boolean;
   dict: Dictionary;
   onNavigate?: () => void;
 };
 
 export default function NavLinks({
-  lang,
   dict,
   showTextOnAllSizes = false,
   onNavigate,
 }: NavLinksProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { locale } = router;
 
   const links = [
-    { name: dict.navigation.home, href: `/${lang}/dashboard`, icon: HomeIcon },
+    { name: dict.navigation.home, href: "/dashboard", icon: HomeIcon },
     {
       name: dict.navigation.quotations,
-      href: `/${lang}/dashboard/quotations`,
+      href: "/dashboard/quotations",
       icon: DocumentDuplicateIcon,
     },
     {
       name: dict.navigation.customers,
-      href: `/${lang}/dashboard/customers`,
+      href: "/dashboard/customers",
       icon: UserGroupIcon,
     },
     {
       name: dict.navigation.products,
-      href: `/${lang}/dashboard/products`,
+      href: "/dashboard/products",
       icon: BuildingStorefrontIcon,
     },
     {
       name: dict.navigation.categories,
-      href: `/${lang}/dashboard/categories`,
+      href: "/dashboard/categories",
       icon: TagIcon,
     },
     {
       name: dict.navigation.billingDetails,
-      href: `/${lang}/dashboard/billing-details`,
+      href: "/dashboard/billing-details",
       icon: BanknotesIcon,
     },
   ];
@@ -61,9 +62,7 @@ export default function NavLinks({
     <>
       {links.map((link) => {
         const LinkIcon = link.icon;
-        const cleanPathname = pathname.replace(`/${lang}`, "");
-        const linkPath = link.href.replace(`/${lang}`, "");
-        const isActive = cleanPathname === linkPath;
+        const isActive = pathname;
 
         const baseClasses = clsx(
           "flex h-[48px] items-center gap-2 rounded-md text-sm font-medium transition-colors",
@@ -79,6 +78,7 @@ export default function NavLinks({
           <Link
             key={link.name}
             href={link.href}
+            locale={locale}
             onClick={onNavigate}
             className={baseClasses}
           >

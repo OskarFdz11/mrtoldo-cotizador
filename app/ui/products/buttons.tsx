@@ -2,7 +2,7 @@ import { deleteProduct } from "@/app/lib/products-actions/products-actions";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
-export function CreateProduct({ lang }: { lang: string }) {
+export function CreateProduct() {
   return (
     <Link
       href="/dashboard/products/create"

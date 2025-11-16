@@ -4,10 +4,13 @@ import { lusitana } from "@/app/ui/fonts";
 import { fetchLatestQuotations } from "@/app/lib/quotations-actions/quotations-data";
 import { formatCurrency } from "@/app/lib/utils";
 import { getDictionary, type Dictionary } from "@/app/lib/dictionaries";
+import { useRouter } from "next/router";
 
-export default async function LatestInvoices({ lang }: { lang: string }) {
+export default async function LatestInvoices() {
   const latestInvoices = await fetchLatestQuotations();
-  const dict: Dictionary = await getDictionary(lang as "es" | "en");
+  const router = useRouter();
+  const { locale } = router;
+  const dict: Dictionary = await getDictionary(locale as "es" | "en");
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>

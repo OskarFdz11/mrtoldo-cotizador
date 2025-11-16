@@ -3,16 +3,10 @@ import { Dictionary } from "@/app/lib/dictionaries";
 import LanguageToggle from "@/app/ui/language-toggle";
 
 interface DesktopHeaderProps {
-  lang: string;
   title?: string;
-  dict: Dictionary;
 }
 
-export default function DesktopHeader({
-  lang,
-  title,
-  dict,
-}: DesktopHeaderProps) {
+export default function DesktopHeader({ title }: DesktopHeaderProps) {
   return (
     <header className="hidden md:flex items-center justify-between bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30">
       <div className="flex items-center">
@@ -22,7 +16,7 @@ export default function DesktopHeader({
       </div>
 
       <div className="flex items-center gap-4">
-        <LanguageToggle currentLocale={lang} variant="header" />
+        <LanguageToggle />
         {/* Aquí podrías agregar otras acciones como notificaciones, perfil, etc. */}
       </div>
     </header>
