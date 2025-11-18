@@ -1,12 +1,15 @@
+"use client";
 import { deleteCategory } from "@/app/lib/categories-actions/categories-actions";
 import { Dictionary } from "@/app/lib/dictionaries";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 export function CreateCategory({ dict }: { dict: Dictionary }) {
+  const { locale } = useI18n();
   return (
     <Link
-      href="/dashboard/categories/create"
+      href={`/${locale}/dashboard/categories/create`}
       className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
     >
       <span className="hidden md:block">{dict.categories.createCategory}</span>{" "}

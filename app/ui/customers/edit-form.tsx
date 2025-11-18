@@ -14,14 +14,14 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   BuildingOffice2Icon,
-  MapPinIcon,
-  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import { useNotification } from "@/app/hooks/useNotifications";
 import NotificationModal from "@/app/ui/notification-modal";
 import { useRouter } from "next/navigation";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
+import { useI18n } from "@/app/ui/i18n-provider";
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
 
 export default function EditCustomerForm({
   customer,
@@ -30,7 +30,8 @@ export default function EditCustomerForm({
   customer: CustomerField;
   dict: Dictionary;
 }) {
-  const router = useRouter();
+  const localeRouter = useLocaleRouter();
+  const { locale } = useI18n();
   const updateCustomerWithId = updateCustomer.bind(null, customer.id);
   const initialState: CustomerFormState = {
     message: null,
@@ -84,7 +85,7 @@ export default function EditCustomerForm({
   const handleCloseModal = () => {
     hideNotification();
     if (notification.type === "success") {
-      router.push("/dashboard/customers");
+      localeRouter.push("/dashboard/customers");
     }
   };
 
@@ -297,7 +298,7 @@ export default function EditCustomerForm({
 
         <div className="mt-6 flex justify-end gap-4">
           <Link
-            href="/dashboard/customers"
+            href={`/${locale}/dashboard/customers`}
             className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
           >
             {dict.common?.cancel || "Cancelar"}

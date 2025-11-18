@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useActionState,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react";
+import { useActionState, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   CustomerField,
@@ -17,12 +11,9 @@ import Link from "next/link";
 import {
   CheckIcon,
   ClockIcon,
-  CurrencyDollarIcon,
   UserCircleIcon,
   PlusIcon,
   TrashIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
   BuildingOfficeIcon,
   CubeIcon,
 } from "@heroicons/react/24/outline";
@@ -32,10 +23,10 @@ import {
   State,
 } from "@/app/lib/quotations-actions/quotations-actions";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
-import { applyPersistedToFormData } from "@/app/lib/utils";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import SearchableSelect from "../searchable-select";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 type QuotationProduct = {
   productId: string;
@@ -55,6 +46,7 @@ export default function CreateQuotationForm({
   dict: Dictionary;
 }) {
   const router = useRouter();
+  const { locale } = useI18n();
   const initialState: State = { message: "", errors: {}, success: false };
   const [state, formAction] = useActionState<State, FormData>(
     createQuotation,
@@ -550,7 +542,7 @@ export default function CreateQuotationForm({
 
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/quotations"
+          href={`/${locale}/dashboard/quotations`}
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           {dict.common?.cancel || "Cancelar"}

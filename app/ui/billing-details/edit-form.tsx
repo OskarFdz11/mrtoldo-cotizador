@@ -22,6 +22,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 export type BillingDetailsEditFormProps = {
   billingDetails: {
@@ -50,6 +51,7 @@ export default function EditBillingDetailsForm({
   billingDetails,
 }: BillingDetailsEditFormProps) {
   const router = useRouter();
+  const { locale } = useI18n();
   const initialState: BillingDetailsFormState = {
     message: null,
     errors: {},
@@ -510,7 +512,7 @@ export default function EditBillingDetailsForm({
 
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/billing-details"
+          href={`/${locale}/dashboard/billing-details`}
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel

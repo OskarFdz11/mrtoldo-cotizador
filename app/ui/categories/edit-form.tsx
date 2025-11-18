@@ -10,6 +10,7 @@ import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
 import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 export type CategoryEditFormProps = {
   category: {
@@ -21,6 +22,7 @@ export type CategoryEditFormProps = {
 
 export default function EditCategoryForm({ category }: CategoryEditFormProps) {
   const router = useRouter();
+  const { locale } = useI18n();
   const initialState: CategoryFormState = {
     message: null,
     errors: {},
@@ -123,7 +125,7 @@ export default function EditCategoryForm({ category }: CategoryEditFormProps) {
 
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/categories"
+          href={`/${locale}/dashboard/categories`}
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel

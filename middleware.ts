@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Mantenerlo inline para ser muy liviano
 const locales = ["es", "en"] as const;
 type Locale = (typeof locales)[number];
 const defaultLocale: Locale = "es";
@@ -37,17 +36,25 @@ export default function middleware(req: NextRequest) {
   }
 
   const seg = pathname.split("/")[1];
+  const cookieLocale = req.cookies.get(LOCALE_COOKIE)?.value;
+  const preferredLocale = isLocale(cookieLocale) ? cookieLocale : defaultLocale;
 
-  // 1) Inyectar locale preferido (cookie) si falta
   if (!isLocale(seg)) {
-    const cookiePref = req.cookies.get(LOCALE_COOKIE)?.value;
-    const chosen = isLocale(cookiePref) ? cookiePref : defaultLocale;
     const url = req.nextUrl.clone();
-    url.pathname = `/${chosen}${pathname}`;
+    url.pathname = `/${preferredLocale}${pathname}`;
     return NextResponse.redirect(url);
   }
 
-  // 2) Bloqueo ligero de rutas protegidas (basado solo en cookie)
+  if (seg !== preferredLocale) {
+    const url = req.nextUrl.clone();
+    const pathWithoutLocale = "/" + pathname.split("/").slice(2).join("/");
+    url.pathname = `/${preferredLocale}${pathWithoutLocale}`.replace(
+      /\/+/g,
+      "/"
+    );
+    return NextResponse.redirect(url);
+  }
+
   if (pathname.startsWith(`/${seg}/dashboard`) && !hasSessionCookie(req)) {
     const url = req.nextUrl.clone();
     url.pathname = `/${seg}/login`;

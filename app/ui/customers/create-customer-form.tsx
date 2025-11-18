@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useActionState,
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import { useActionState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -16,7 +10,6 @@ import {
 import { CustomerField } from "@/app/lib/definitions";
 import { useRouter } from "next/navigation";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
-import { applyPersistedToFormData } from "@/app/lib/utils";
 import {
   BuildingOfficeIcon,
   EnvelopeIcon,
@@ -26,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 export default function CreateCustomerForm({
   customers,
@@ -35,6 +29,7 @@ export default function CreateCustomerForm({
   dict: Dictionary;
 }) {
   const router = useRouter();
+  const { locale } = useI18n();
   const initialState: CustomerFormState = {
     message: null,
     errors: {},
@@ -264,7 +259,7 @@ export default function CreateCustomerForm({
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/customers"
+          href={`/${locale}/dashboard/customers`}
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           {dict.common.cancel}

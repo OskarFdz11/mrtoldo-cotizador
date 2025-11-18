@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useActionState,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useActionState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -16,10 +10,10 @@ import {
 import { CategoryField } from "@/app/lib/definitions";
 import { useRouter } from "next/navigation";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
-import { applyPersistedToFormData } from "@/app/lib/utils";
 import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 export default function CreateCategoryForm({
   categories,
@@ -29,6 +23,7 @@ export default function CreateCategoryForm({
   dict: Dictionary;
 }) {
   const router = useRouter();
+  const { locale } = useI18n();
   const initialState: CategoryFormState = {
     message: null,
     errors: {},
@@ -148,7 +143,7 @@ export default function CreateCategoryForm({
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/categories"
+          href={`/${locale}/dashboard/categories`}
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           {dict.common.cancel}

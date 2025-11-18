@@ -29,7 +29,9 @@ import {
   useTransitionOverlay,
 } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
-import SearchableSelect from "../searchable-select";
+import SearchableSelect from "@/app/ui/searchable-select";
+import { useI18n } from "@/app/ui/i18n-provider";
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
 
 export default function EditProductForm({
   product,
@@ -40,7 +42,8 @@ export default function EditProductForm({
   categories: CategoryField[];
   dict: Dictionary;
 }) {
-  const router = useRouter();
+  const localeRouter = useLocaleRouter();
+  const { locale } = useI18n();
   const updateProductWithId = updateProduct.bind(null, product.id);
   const initialState: ProductFormState = {
     message: null,
@@ -94,7 +97,7 @@ export default function EditProductForm({
   const handleCloseModal = () => {
     hideNotification();
     if (notification.type === "success") {
-      router.push("/dashboard/products");
+      localeRouter.push("/dashboard/products");
     }
   };
 
@@ -389,7 +392,7 @@ export default function EditProductForm({
 
         <div className="mt-6 flex justify-end gap-4">
           <Link
-            href="/dashboard/products"
+            href={`/${locale}/dashboard/products`}
             className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
           >
             {dict.common.cancel}

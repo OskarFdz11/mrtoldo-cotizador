@@ -16,8 +16,6 @@ import {
   UserCircleIcon,
   PlusIcon,
   TrashIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
   BuildingOfficeIcon,
   CubeIcon,
 } from "@heroicons/react/24/outline";
@@ -29,6 +27,7 @@ import {
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import SearchableSelect from "../searchable-select";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 type QuotationProduct = {
   productId: string;
@@ -50,6 +49,7 @@ export default function EditQuotationForm({
   dict: Dictionary;
 }) {
   const router = useRouter();
+  const { locale } = useI18n();
   const initialState: State = { message: "", errors: {}, success: false };
   const updateQuotationWithId = updateQuotation.bind(null, quotation.id);
   const [state, formAction] = useActionState(
@@ -58,7 +58,6 @@ export default function EditQuotationForm({
   );
   const { show, hide } = useTransitionOverlay();
 
-  // ✅ NUEVO: Estados para manejar los campos del formulario
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>(
     String(quotation.customerId)
   );
@@ -66,7 +65,6 @@ export default function EditQuotationForm({
     useState<string>(String(quotation.billingDetailsId));
   const [notes, setNotes] = useState<string>(quotation.notes || "");
 
-  // Inicializar productos desde la cotización existente
   const [selectedProducts, setSelectedProducts] = useState<QuotationProduct[]>(
     quotation.products.map((p) => ({
       productId: p.productId.toString(),
@@ -518,7 +516,7 @@ export default function EditQuotationForm({
 
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/quotations"
+          href={`/${locale}/dashboard/quotations`}
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           {dict.common?.cancel || "Cancelar"}

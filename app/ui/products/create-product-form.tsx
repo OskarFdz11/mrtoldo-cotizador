@@ -38,7 +38,7 @@ export default function CreateProductForm({
   categories: CategoryField[];
   dict: Dictionary;
 }) {
-  const router = useLocaleRouter();
+  const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
   const initialState: ProductFormState = {
     message: null,
@@ -101,7 +101,7 @@ export default function CreateProductForm({
       // limpiar persistencia antes de navegar (para que no queden valores al volver)
       clearCompleteForm();
       // redirigir a la tabla y pasar el nombre para mostrar el modal allí
-      router.replace(
+      localeRouter.replace(
         `/dashboard/products?created=${encodeURIComponent(productName)}`
       );
     } else if (state.message && state.success === false) {
@@ -112,7 +112,7 @@ export default function CreateProductForm({
   const handleCloseModal = () => {
     hideNotification();
     if (notification.type === "success") {
-      router.push("/dashboard/products");
+      localeRouter.push("/dashboard/products");
     }
   };
 

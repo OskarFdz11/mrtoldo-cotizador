@@ -19,7 +19,6 @@ function stripLocale(pathname: string): string {
   const first = parts[1];
   if ((LOCALES as readonly string[]).includes(first as any)) {
     const stripped = "/" + parts.slice(2).join("/");
-    // Normaliza: "/" si quedó vacío o doble slash
     return stripped === "//" || stripped === "/"
       ? "/"
       : stripped.replace(/\/+$/, "") || "/";
@@ -35,13 +34,22 @@ export default function LanguageToggle() {
   const basePath = stripLocale(pathname) || "/";
 
   const switchLanguage = (newLocale: string) => {
+    if (newLocale === currentLocale) return;
+
     try {
-      // 1 año
       document.cookie = `${LOCALE_COOKIE}=${newLocale}; Path=/; Max-Age=31536000; SameSite=Lax`;
     } catch {}
+
     const nextPath =
       basePath === "/" ? `/${newLocale}` : `/${newLocale}${basePath}`;
+
     router.push(nextPath);
+
+    setTimeout(() => {
+      if (window.location.pathname !== nextPath) {
+        window.location.href = nextPath;
+      }
+    }, 100);
   };
 
   return (

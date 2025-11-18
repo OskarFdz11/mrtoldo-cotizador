@@ -3,14 +3,23 @@
 import { useRouter, usePathname } from "next/navigation";
 import { useI18n } from "@/app/ui/i18n-provider";
 
+const LOCALE_COOKIE = "NEXT_LOCALE";
+
 function withLocalePrefix(locale: string, href: string) {
-  // deja intacto si ya trae http(s)
+  // URLs externas
   if (/^https?:\/\//i.test(href)) return href;
-  // ya trae locale
+  // Ya tiene prefijo de locale
   if (/^\/(es|en)(\/|$)/.test(href)) return href;
-  // fuerza prefijo
+  // Agregar prefijo
   if (href.startsWith("/")) return `/${locale}${href}`;
   return `/${locale}/${href}`.replace(/\/{2,}/g, "/");
+}
+
+// Leer cookie del lado cliente
+function getLocaleFromCookie(): string {
+  if (typeof document === "undefined") return "es";
+  const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/);
+  return match?.[1] || "es";
 }
 
 export function useLocaleRouter() {
@@ -18,12 +27,22 @@ export function useLocaleRouter() {
   const pathname = usePathname();
   const { locale } = useI18n();
 
+  // Usar cookie como fuente de verdad si está disponible
+  const effectiveLocale = getLocaleFromCookie();
+
   return {
-    locale,
+    locale: effectiveLocale,
     pathname,
-    push: (href: string) => router.push(withLocalePrefix(locale, href)),
-    replace: (href: string) => router.replace(withLocalePrefix(locale, href)),
-    prefetch: (href: string) => router.prefetch(withLocalePrefix(locale, href)),
+    push: (href: string) => {
+      const finalHref = withLocalePrefix(effectiveLocale, href);
+      router.push(finalHref);
+    },
+    replace: (href: string) => {
+      const finalHref = withLocalePrefix(effectiveLocale, href);
+      router.replace(finalHref);
+    },
+    prefetch: (href: string) =>
+      router.prefetch(withLocalePrefix(effectiveLocale, href)),
     back: router.back,
     forward: router.forward,
     refresh: router.refresh,
