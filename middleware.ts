@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Mantén todo inline para minimizar el bundle del Edge Function
+// Mantenerlo inline para ser muy liviano
 const locales = ["es", "en"] as const;
 type Locale = (typeof locales)[number];
 const defaultLocale: Locale = "es";
+const LOCALE_COOKIE = "NEXT_LOCALE";
 
 function isLocale(v?: string): v is Locale {
   return !!v && (locales as readonly string[]).includes(v as any);
 }
 
-// Cookies de sesión que puede establecer NextAuth (v5/v4, con y sin __Secure-)
 const SESSION_COOKIE_CANDIDATES = [
   "authjs.session-token",
   "__Secure-authjs.session-token",
@@ -27,7 +27,6 @@ function hasSessionCookie(req: NextRequest) {
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Ignora assets, API y archivos
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
@@ -39,14 +38,16 @@ export default function middleware(req: NextRequest) {
 
   const seg = pathname.split("/")[1];
 
-  // 1) Inyectar locale si falta
+  // 1) Inyectar locale preferido (cookie) si falta
   if (!isLocale(seg)) {
+    const cookiePref = req.cookies.get(LOCALE_COOKIE)?.value;
+    const chosen = isLocale(cookiePref) ? cookiePref : defaultLocale;
     const url = req.nextUrl.clone();
-    url.pathname = `/${defaultLocale}${pathname}`;
+    url.pathname = `/${chosen}${pathname}`;
     return NextResponse.redirect(url);
   }
 
-  // 2) Bloqueo ligero de rutas protegidas (basado en cookie)
+  // 2) Bloqueo ligero de rutas protegidas (basado solo en cookie)
   if (pathname.startsWith(`/${seg}/dashboard`) && !hasSessionCookie(req)) {
     const url = req.nextUrl.clone();
     url.pathname = `/${seg}/login`;

@@ -30,11 +30,14 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default function CreateBillingDetailsForm({
   billingDetails,
+  dict,
 }: {
   billingDetails: BillingDetailsField[];
+  dict: Dictionary;
 }) {
   const router = useRouter();
   const initialState: BillingDetailsFormState = {
@@ -115,7 +118,7 @@ export default function CreateBillingDetailsForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Creando detalles de pago...");
+      show(dict.billingDetails.creating);
       applyPersistedToFormData(fd, formData);
       await formAction(fd);
     } finally {
@@ -132,7 +135,7 @@ export default function CreateBillingDetailsForm({
           {/* Name */}
           <div>
             <label htmlFor="name" className="mb-2 block text-sm font-medium">
-              Name
+              {dict.billingDetails.name}
             </label>
             <div className="relative">
               <input
@@ -140,7 +143,7 @@ export default function CreateBillingDetailsForm({
                 id="name"
                 name="name"
                 type="text"
-                placeholder="Enter first name"
+                placeholder={dict.billingDetails.namePlaceholder}
                 value={formData.name}
                 onChange={(e) => updateData({ name: e.target.value })}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
@@ -163,7 +166,7 @@ export default function CreateBillingDetailsForm({
               htmlFor="lastname"
               className="mb-2 block text-sm font-medium"
             >
-              Last Name
+              {dict.billingDetails.lastname}
             </label>
             <div className="relative">
               <input
@@ -172,7 +175,7 @@ export default function CreateBillingDetailsForm({
                 type="text"
                 value={formData.lastname}
                 onChange={(e) => updateData({ lastname: e.target.value })}
-                placeholder="Enter last name"
+                placeholder={dict.billingDetails.lastnamePlaceholder}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
               <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -193,14 +196,14 @@ export default function CreateBillingDetailsForm({
           {/* Company */}
           <div>
             <label htmlFor="company" className="mb-2 block text-sm font-medium">
-              Company
+              {dict.billingDetails.company}
             </label>
             <div className="relative">
               <input
                 id="company"
                 name="company"
                 type="text"
-                placeholder="Enter company"
+                placeholder={dict.billingDetails.companyPlaceholder}
                 value={formData.company}
                 onChange={(e) => updateData({ company: e.target.value })}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
@@ -220,14 +223,14 @@ export default function CreateBillingDetailsForm({
           {/* RFC */}
           <div>
             <label htmlFor="rfc" className="mb-2 block text-sm font-medium">
-              RFC
+              {dict.billingDetails.rfc}
             </label>
             <div className="relative">
               <input
                 id="rfc"
                 name="rfc"
                 type="text"
-                placeholder="Enter RFC"
+                placeholder={dict.billingDetails.rfcPlaceholder}
                 value={formData.rfc}
                 onChange={(e) => updateData({ rfc: e.target.value })}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
@@ -250,7 +253,7 @@ export default function CreateBillingDetailsForm({
           {/* Email */}
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
-              Email
+              {dict.billingDetails.email}
             </label>
             <div className="relative">
               <input
@@ -259,7 +262,7 @@ export default function CreateBillingDetailsForm({
                 type="email"
                 value={formData.email}
                 onChange={(e) => updateData({ email: e.target.value })}
-                placeholder="Enter email"
+                placeholder={dict.billingDetails.emailPlaceholder}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
               <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -277,7 +280,7 @@ export default function CreateBillingDetailsForm({
           {/* Phone */}
           <div>
             <label htmlFor="phone" className="mb-2 block text-sm font-medium">
-              Phone
+              {dict.billingDetails.phone}
             </label>
             <input
               id="phone"
@@ -285,7 +288,7 @@ export default function CreateBillingDetailsForm({
               type="tel"
               value={formData.phone}
               onChange={(e) => updateData({ phone: e.target.value })}
-              placeholder="Enter phone number"
+              placeholder={dict.billingDetails.phonePlaceholder}
               className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
             />
             <div id="phone-error" aria-live="polite" aria-atomic="true">
@@ -308,7 +311,7 @@ export default function CreateBillingDetailsForm({
               htmlFor="cardNumber"
               className="mb-2 block text-sm font-medium"
             >
-              Card Number
+              {dict.billingDetails.cardNumber}
             </label>
             <div className="relative">
               <input
@@ -317,7 +320,7 @@ export default function CreateBillingDetailsForm({
                 type="text"
                 value={formData.cardNumber}
                 onChange={(e) => updateData({ cardNumber: e.target.value })}
-                placeholder="Enter Card Number"
+                placeholder={dict.billingDetails.cardNumberPlaceholder}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
               <CreditCardIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -334,7 +337,7 @@ export default function CreateBillingDetailsForm({
           {/* CLABE */}
           <div>
             <label htmlFor="clabe" className="mb-2 block text-sm font-medium">
-              CLABE
+              {dict.billingDetails.clabe}
             </label>
             <div className="relative">
               <input
@@ -343,7 +346,7 @@ export default function CreateBillingDetailsForm({
                 type="text"
                 value={formData.clabe}
                 onChange={(e) => updateData({ clabe: e.target.value })}
-                placeholder="Enter CLABE"
+                placeholder={dict.billingDetails.clabePlaceholder}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
               <BanknotesIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -364,7 +367,7 @@ export default function CreateBillingDetailsForm({
               htmlFor="checkAccount"
               className="mb-2 block text-sm font-medium"
             >
-              Check Account
+              {dict.billingDetails.checkAccount}
             </label>
             <div className="relative">
               <input
@@ -373,7 +376,7 @@ export default function CreateBillingDetailsForm({
                 type="text"
                 value={formData.checkAccount}
                 onChange={(e) => updateData({ checkAccount: e.target.value })}
-                placeholder="Enter check account"
+                placeholder={dict.billingDetails.checkAccountPlaceholder}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
               <BuildingLibraryIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -392,7 +395,7 @@ export default function CreateBillingDetailsForm({
         {/* Address Information */}
         <div className="border-t pt-6">
           <h3 className="mb-4 text-lg font-medium text-gray-900">
-            Address Information
+            {dict.billingDetails.addressInformation}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -402,7 +405,7 @@ export default function CreateBillingDetailsForm({
                 htmlFor="street"
                 className="mb-2 block text-sm font-medium"
               >
-                Street
+                {dict.billingDetails.street}
               </label>
               <div className="relative">
                 <input
@@ -411,7 +414,7 @@ export default function CreateBillingDetailsForm({
                   onChange={(e) => updateData({ street: e.target.value })}
                   name="street"
                   type="text"
-                  placeholder="Enter street"
+                  placeholder={dict.billingDetails.streetPlaceholder}
                   className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <HomeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -432,7 +435,7 @@ export default function CreateBillingDetailsForm({
                 htmlFor="outsideNumber"
                 className="mb-2 block text-sm font-medium"
               >
-                Outside Number
+                {dict.billingDetails.externalNumber}
               </label>
               <div className="relative">
                 <input
@@ -443,7 +446,7 @@ export default function CreateBillingDetailsForm({
                   }
                   name="outsideNumber"
                   type="text"
-                  placeholder="Enter outside number"
+                  placeholder={dict.billingDetails.externalNumberPlaceholder}
                   className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <HashtagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -470,7 +473,7 @@ export default function CreateBillingDetailsForm({
                 htmlFor="colony"
                 className="mb-2 block text-sm font-medium"
               >
-                Colony
+                {dict.billingDetails.colony}
               </label>
               <div className="relative">
                 <input
@@ -479,7 +482,7 @@ export default function CreateBillingDetailsForm({
                   value={formData.colony}
                   onChange={(e) => updateData({ colony: e.target.value })}
                   type="text"
-                  placeholder="Enter colony"
+                  placeholder={dict.billingDetails.colonyPlaceholder}
                   className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -497,7 +500,7 @@ export default function CreateBillingDetailsForm({
             {/* City */}
             <div>
               <label htmlFor="city" className="mb-2 block text-sm font-medium">
-                City
+                {dict.billingDetails.city}
               </label>
               <div className="relative">
                 <input
@@ -506,7 +509,7 @@ export default function CreateBillingDetailsForm({
                   value={formData.city}
                   onChange={(e) => updateData({ city: e.target.value })}
                   type="text"
-                  placeholder="Enter city"
+                  placeholder={dict.billingDetails.cityPlaceholder}
                   className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -524,7 +527,7 @@ export default function CreateBillingDetailsForm({
             {/* Postal Code */}
             <div>
               <label htmlFor="cp" className="mb-2 block text-sm font-medium">
-                Postal Code
+                {dict.billingDetails.cp}
               </label>
               <div className="relative">
                 <input
@@ -533,7 +536,7 @@ export default function CreateBillingDetailsForm({
                   value={formData.cp}
                   onChange={(e) => updateData({ cp: e.target.value })}
                   type="text"
-                  placeholder="Enter postal code"
+                  placeholder={dict.billingDetails.cpPlaceholder}
                   className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <MapPinIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -556,9 +559,11 @@ export default function CreateBillingDetailsForm({
           href="/dashboard/billing-details"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
-          Cancel
+          {dict.common.cancel}
         </Link>
-        <Button type="submit">Create Billing Details</Button>
+        <Button type="submit">
+          {dict.common.create} {dict.billingDetails.title}
+        </Button>
       </div>
     </form>
   );

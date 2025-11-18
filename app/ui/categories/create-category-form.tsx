@@ -19,11 +19,14 @@ import { useFormPersistence } from "@/app/hooks/useFormPersisence";
 import { applyPersistedToFormData } from "@/app/lib/utils";
 import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default function CreateCategoryForm({
   categories,
+  dict,
 }: {
   categories: CategoryField[];
+  dict: Dictionary;
 }) {
   const router = useRouter();
   const initialState: CategoryFormState = {
@@ -75,7 +78,7 @@ export default function CreateCategoryForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Creando categoría...");
+      show(dict.categories.creating);
       await formAction(fd);
     } finally {
     }
@@ -89,7 +92,7 @@ export default function CreateCategoryForm({
         {/* Name */}
         <div className="mb-4">
           <label htmlFor="name" className="mb-2 block text-sm font-medium">
-            Name
+            {dict.categories.name}
           </label>
           <div className="relative">
             <input
@@ -99,7 +102,7 @@ export default function CreateCategoryForm({
               type="text"
               value={formData.name}
               onChange={(e) => updateData({ name: e.target.value })}
-              placeholder="Enter category name"
+              placeholder={dict.categories.namePlaceholder}
               className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
             />
             <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -120,7 +123,7 @@ export default function CreateCategoryForm({
             htmlFor="description"
             className="mb-2 block text-sm font-medium"
           >
-            Description
+            {dict.categories.description}
           </label>
           <div className="relative">
             <textarea
@@ -128,7 +131,7 @@ export default function CreateCategoryForm({
               name="description"
               value={formData.description}
               onChange={(e) => updateData({ description: e.target.value })}
-              placeholder="Enter description"
+              placeholder={dict.categories.descriptionPlaceholder}
               className="block w-full rounded-md border border-gray-200 py-2.5 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
             />
             <DocumentTextIcon className="pointer-events-none absolute left-3 top-3 h-[18px] w-[18px]   text-gray-500" />
@@ -148,9 +151,11 @@ export default function CreateCategoryForm({
           href="/dashboard/categories"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
-          Cancel
+          {dict.common.cancel}
         </Link>
-        <Button type="submit">Create Category</Button>
+        <Button type="submit">
+          {dict.common.create} {dict.categories.singleTitle}
+        </Button>
       </div>
     </form>
   );

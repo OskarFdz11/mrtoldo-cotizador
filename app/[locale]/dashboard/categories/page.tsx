@@ -8,29 +8,37 @@ import { Suspense } from "react";
 import { fetchFilteredCategories } from "@/app/lib/categories-actions/categories-data";
 import { CreateCategory } from "@/app/ui/categories/buttons";
 import FlashFromQuery from "@/app/ui/flash-from-query";
+import { getDictionary, Locale } from "@/app/lib/dictionaries";
 
 export const metadata: Metadata = {
   title: "Categories",
 };
-export default async function Page(props: {
-  searchParams?: Promise<{
+export default async function Page({
+  searchParams,
+  params,
+}: {
+  searchParams: Promise<{
     query?: string;
     page?: string;
   }>;
+  params: Promise<{ locale: Locale }>;
 }) {
-  const searchParams = await props.searchParams;
-  const query = searchParams?.query || "";
-  const currentPage = Number(searchParams?.page) || 1;
+  const [{ locale }, sp] = await Promise.all([params, searchParams]);
+  const dict = await getDictionary(locale ?? "es");
+  const query = sp?.query || "";
+  const currentPage = Number(sp?.page) || 1;
   const { totalPages } = await fetchFilteredCategories(query, currentPage);
 
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
-        <h1 className={`${lusitana.className} text-2xl`}>Categories</h1>
+        <h1 className={`${lusitana.className} text-2xl`}>
+          {dict.categories.title}
+        </h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search categories..." />
-        <CreateCategory />
+        <Search placeholder={dict.categories.searchPlaceholder} />
+        <CreateCategory dict={dict} />
       </div>
       <Suspense
         key={query + currentPage}
@@ -41,7 +49,7 @@ export default async function Page(props: {
           gender="f"
           clearToPath="/dashboard/categories"
         />
-        <Table query={query} currentPage={currentPage} />
+        <Table query={query} currentPage={currentPage} dict={dict} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />

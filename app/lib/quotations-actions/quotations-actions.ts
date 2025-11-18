@@ -8,29 +8,21 @@ import { DuplicateQuotationResponse } from "../definitions";
 
 // Schema para productos en la cotización
 const QuotationProductSchema = z.object({
-  productId: z.coerce.number({
-    invalid_type_error: "Product ID must be a number",
-  }),
-  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
-  price: z.coerce.number().min(0, "Price must be positive"),
+  productId: z.string().transform((val) => Number(val)), // Convertir string a number
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  price: z.number().min(0, "Price must be positive"),
 });
 
 const FormSchema = z.object({
   id: z.number(),
-  customerId: z.coerce.number({
-    invalid_type_error: "Please select a customer.",
-  }),
-  billingDetailsId: z.coerce.number({
-    invalid_type_error: "Please select billing details.",
-  }),
-  iva: z.boolean().default(false),
+  customerId: z.string().transform((val) => Number(val)),
+  billingDetailsId: z.string().transform((val) => Number(val)),
+  iva: z.string().transform((val) => val === "true" || val === "on"),
   notes: z.string().optional().default(""),
   status: z.enum(["pending", "paid"], {
     invalid_type_error: "Please select a valid status.",
   }),
-  products: z
-    .array(QuotationProductSchema)
-    .min(1, "At least one product is required"),
+  products: z.string(),
 });
 
 const CreateQuotation = FormSchema.omit({ id: true });
@@ -52,29 +44,25 @@ export type State = {
 };
 
 export const createQuotation = async (prevState: State, formData: FormData) => {
-  // Extraer productos del formData
-  const productsData = [];
-  let productIndex = 0;
-
-  while (formData.get(`products[${productIndex}][productId]`)) {
-    productsData.push({
-      productId: formData.get(`products[${productIndex}][productId]`),
-      quantity: formData.get(`products[${productIndex}][quantity]`),
-      price: formData.get(`products[${productIndex}][price]`),
-    });
-    productIndex++;
+  console.log("=== FormData Debug ===");
+  for (let [key, value] of formData.entries()) {
+    console.log(key, ":", value);
   }
 
   const validatedFields = CreateQuotation.safeParse({
     customerId: formData.get("customerId"),
     billingDetailsId: formData.get("billingDetailsId"),
-    iva: formData.get("iva") === "on" || formData.get("iva") === "true",
+    iva: formData.get("iva"),
     notes: formData.get("notes") || "",
     status: formData.get("status"),
-    products: productsData,
+    products: formData.get("products"), // JSON string
   });
 
   if (!validatedFields.success) {
+    console.log(
+      "Validation errors:",
+      validatedFields.error.flatten().fieldErrors
+    );
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing or invalid fields. Failed to create quotation.",
@@ -82,21 +70,93 @@ export const createQuotation = async (prevState: State, formData: FormData) => {
     };
   }
 
-  const { customerId, billingDetailsId, iva, notes, status, products } =
-    validatedFields.data;
+  const {
+    customerId,
+    billingDetailsId,
+    iva,
+    notes,
+    status,
+    products: productsJSON,
+  } = validatedFields.data;
 
-  // Calcular subtotal
-  const subtotal = products.reduce((sum, product) => {
+  let parsedProducts;
+  try {
+    parsedProducts = JSON.parse(productsJSON);
+    console.log("Parsed products:", parsedProducts);
+  } catch (error) {
+    console.log("JSON parse error:", error);
+    return {
+      errors: { products: ["Invalid products format"] },
+      message: "Invalid products data.",
+      success: false,
+    };
+  }
+
+  if (!Array.isArray(parsedProducts) || parsedProducts.length === 0) {
+    return {
+      errors: { products: ["At least one product is required"] },
+      message: "At least one product is required.",
+      success: false,
+    };
+  }
+
+  const validProducts = parsedProducts.filter(
+    (p) => p.productId && p.productId !== ""
+  );
+
+  if (validProducts.length === 0) {
+    return {
+      errors: { products: ["At least one valid product is required"] },
+      message: "At least one valid product is required.",
+      success: false,
+    };
+  }
+
+  const productValidationResults = validProducts.map((product, index) => {
+    const result = QuotationProductSchema.safeParse(product);
+    if (!result.success) {
+      console.log(
+        `Product ${index} validation error:`,
+        result.error.flatten().fieldErrors
+      );
+    }
+    return result;
+  });
+
+  const hasProductErrors = productValidationResults.some(
+    (result) => !result.success
+  );
+  if (hasProductErrors) {
+    const productErrors = productValidationResults
+      .filter((result) => !result.success)
+      .map((result) => result.error?.message || "Invalid product")
+      .join(", ");
+
+    return {
+      errors: { products: [productErrors] },
+      message: "Invalid product data.",
+      success: false,
+    };
+  }
+
+  const validatedProducts = productValidationResults
+    .filter((result) => result.success)
+    .map((result) => result.data!);
+
+  const subtotal = validatedProducts.reduce((sum, product) => {
     return sum + product.price * product.quantity;
   }, 0);
 
-  // Calcular total (con o sin IVA del 16%)
   const total = iva ? subtotal * 1.16 : subtotal;
 
+  console.log("=== Calculation Debug ===");
+  console.log("Subtotal:", subtotal);
+  console.log("IVA:", iva);
+  console.log("Total:", total);
+  console.log("Products to save:", validatedProducts);
+
   try {
-    // Crear la cotización con sus productos en una transacción
     const quotation = await prisma.$transaction(async (tx) => {
-      // Crear la cotización
       const newQuotation = await tx.quotation.create({
         data: {
           customerId,
@@ -110,15 +170,16 @@ export const createQuotation = async (prevState: State, formData: FormData) => {
         },
       });
 
-      // Crear los productos de la cotización
       await tx.quotationProduct.createMany({
-        data: products.map((product) => ({
+        data: validatedProducts.map((product) => ({
           quotationId: newQuotation.id,
           productId: product.productId,
           quantity: product.quantity,
           price: product.price,
         })),
       });
+
+      console.log("Created quotation products");
 
       return newQuotation;
     });
@@ -144,26 +205,14 @@ export const updateQuotation = async (
   prevState: State,
   formData: FormData
 ): Promise<State> => {
-  // Extraer productos del formData
-  const productsData = [];
-  let productIndex = 0;
-
-  while (formData.get(`products[${productIndex}][productId]`)) {
-    productsData.push({
-      productId: formData.get(`products[${productIndex}][productId]`),
-      quantity: formData.get(`products[${productIndex}][quantity]`),
-      price: formData.get(`products[${productIndex}][price]`),
-    });
-    productIndex++;
-  }
-
+  // Validar campos básicos
   const validatedFields = UpdateQuotation.safeParse({
     customerId: formData.get("customerId"),
     billingDetailsId: formData.get("billingDetailsId"),
-    iva: formData.get("iva") === "on" || formData.get("iva") === "true",
+    iva: formData.get("iva"),
     notes: formData.get("notes") || "",
     status: formData.get("status"),
-    products: productsData,
+    products: formData.get("products"), // JSON string
   });
 
   if (!validatedFields.success) {
@@ -174,15 +223,64 @@ export const updateQuotation = async (
     };
   }
 
-  const { customerId, billingDetailsId, iva, notes, status, products } =
-    validatedFields.data;
+  const {
+    customerId,
+    billingDetailsId,
+    iva,
+    notes,
+    status,
+    products: productsJSON,
+  } = validatedFields.data;
 
-  // Calcular subtotal
-  const subtotal = products.reduce((sum, product) => {
+  // Parsear productos
+  let parsedProducts;
+  try {
+    parsedProducts = JSON.parse(productsJSON);
+  } catch {
+    return {
+      errors: { products: ["Invalid products format"] },
+      message: "Invalid products data.",
+      success: false,
+    };
+  }
+
+  if (!Array.isArray(parsedProducts) || parsedProducts.length === 0) {
+    return {
+      errors: { products: ["At least one product is required"] },
+      message: "At least one product is required.",
+      success: false,
+    };
+  }
+
+  const validProducts = parsedProducts.filter(
+    (p) => p.productId && p.productId !== ""
+  );
+
+  // Validar productos
+  const productValidationResults = validProducts.map((product) =>
+    QuotationProductSchema.safeParse(product)
+  );
+
+  const hasProductErrors = productValidationResults.some(
+    (result) => !result.success
+  );
+  if (hasProductErrors) {
+    return {
+      errors: { products: ["Invalid product data"] },
+      message: "Invalid product data.",
+      success: false,
+    };
+  }
+
+  const validatedProducts = productValidationResults
+    .filter((result) => result.success)
+    .map((result) => result.data!);
+
+  // Calcular subtotal y total
+  const subtotal = validatedProducts.reduce((sum, product) => {
     return sum + product.price * product.quantity;
   }, 0);
 
-  // Calcular total (con o sin IVA del 16%)
   const total = iva ? subtotal * 1.16 : subtotal;
 
   try {
@@ -208,7 +306,7 @@ export const updateQuotation = async (
 
       // Crear los nuevos productos
       await tx.quotationProduct.createMany({
-        data: products.map((product) => ({
+        data: validatedProducts.map((product) => ({
           quotationId: Number(id),
           productId: product.productId,
           quantity: product.quantity,
@@ -216,6 +314,8 @@ export const updateQuotation = async (
         })),
       });
     });
+
+    revalidatePath("/dashboard/quotations");
     return {
       errors: {},
       message: "Quotation updated successfully!",

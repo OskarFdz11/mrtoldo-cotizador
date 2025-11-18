@@ -16,6 +16,7 @@ export async function fetchCustomers() {
         email: true,
         phone: true,
         company: true,
+        rfc: true,
       },
       orderBy: { id: "desc" },
     });

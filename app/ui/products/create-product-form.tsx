@@ -13,22 +13,33 @@ import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { useNotification } from "@/app/hooks/useNotifications";
 import NotificationModal from "@/app/ui/notification-modal";
-import { useRouter } from "next/navigation";
-import { CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { applyPersistedToFormData } from "@/app/lib/utils";
 import {
-  GlobalTransitionOverlay,
-  useTransitionOverlay,
-} from "@/app/ui/global-transition-overlay";
+  ArchiveBoxIcon,
+  BuildingStorefrontIcon,
+  CloudArrowUpIcon,
+  CubeIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  TagIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
+import { useI18n } from "@/app/ui/i18n-provider";
+import { Dictionary } from "@/app/lib/dictionaries";
+import SearchableSelect from "@/app/ui/searchable-select";
 
 export default function CreateProductForm({
   products,
   categories,
+  dict,
 }: {
   products: ProductField[];
   categories: CategoryField[];
+  dict: Dictionary;
 }) {
-  const router = useRouter();
+  const router = useLocaleRouter();
+  const { locale } = useI18n();
   const initialState: ProductFormState = {
     message: null,
     success: false,
@@ -36,7 +47,6 @@ export default function CreateProductForm({
   };
   const [state, formAction] = useActionState(createProduct, initialState);
   const [imageUrl, setImageUrl] = useState<string | null>("");
-  const [submitting, setSubmitting] = useState(false);
   const [publicId, setPublicId] = useState<string | null>("");
   const { notification, showSuccess, showError, hideNotification } =
     useNotification();
@@ -50,6 +60,7 @@ export default function CreateProductForm({
     name: string;
     description: string;
     category: string;
+    categoryId: string;
     price: string;
     brand: string;
     quantity: string;
@@ -58,6 +69,7 @@ export default function CreateProductForm({
     name: "",
     description: "",
     category: "",
+    categoryId: "",
     price: "",
     brand: "",
     quantity: "",
@@ -106,7 +118,7 @@ export default function CreateProductForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Creando producto...");
+      show(dict.products.creating);
       await formAction(fd);
     } finally {
     }
@@ -149,17 +161,20 @@ export default function CreateProductForm({
           {/* Name */}
           <div className="mb-4">
             <label htmlFor="name" className="mb-2 block text-sm font-medium">
-              Product Name
+              {dict.products.name}
             </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter Product Name"
-              value={formData.name}
-              onChange={(e) => updateData({ name: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                placeholder={dict.products.namePlaceholder}
+                value={formData.name}
+                onChange={(e) => updateData({ name: e.target.value })}
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+              <CubeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
             <div id="name-error" aria-live="polite" aria-atomic="true">
               {state.errors?.name &&
                 state.errors.name.map((error: string) => (
@@ -170,22 +185,52 @@ export default function CreateProductForm({
             </div>
           </div>
 
+          {/* Brand */}
+          <div className="mb-4">
+            <label htmlFor="brand" className="mb-2 block text-sm font-medium">
+              {dict.products.brand}
+            </label>
+            <div className="relative">
+              <input
+                id="brand"
+                name="brand"
+                type="text"
+                placeholder={dict.products.brandPlaceholder}
+                value={formData.brand}
+                onChange={(e) => updateData({ brand: e.target.value })}
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+              <BuildingStorefrontIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
+            <div id="brand-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.brand &&
+                state.errors.brand.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
           {/* Description */}
           <div className="mb-4">
             <label
               htmlFor="description"
               className="mb-2 block text-sm font-medium"
             >
-              Product Description
+              {dict.products.description}
             </label>
-            <textarea
-              id="description"
-              name="description"
-              placeholder="Enter Product Description"
-              value={formData.description}
-              onChange={(e) => updateData({ description: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
+            <div className="relative">
+              <textarea
+                id="description"
+                name="description"
+                placeholder={dict.products.descriptionPlaceholder}
+                value={formData.description}
+                onChange={(e) => updateData({ description: e.target.value })}
+                rows={3}
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+              <DocumentTextIcon className="pointer-events-none absolute left-3 top-3 h-[18px] w-[18px] text-gray-500" />
+            </div>
             <div id="description-error" aria-live="polite" aria-atomic="true">
               {state.errors?.description &&
                 state.errors.description.map((error: string) => (
@@ -195,42 +240,129 @@ export default function CreateProductForm({
                 ))}
             </div>
           </div>
+          {/* Category y Price */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Category con SearchableSelect */}
+            <div>
+              <label
+                htmlFor="category"
+                className="mb-2 block text-sm font-medium"
+              >
+                {dict.products.category}
+              </label>
+              <div className="relative">
+                <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 z-10" />
+                <SearchableSelect
+                  options={categories.map((category) => ({
+                    id: String(category.id),
+                    name: category.name,
+                    description: category.description,
+                  }))}
+                  value={formData.categoryId}
+                  onSelect={(value) => updateData({ categoryId: value })}
+                  placeholder={
+                    dict.products.selectCategory || "Seleccionar categoría"
+                  }
+                  searchPlaceholder={
+                    dict.products.searchCategoryPlaceholder ||
+                    "Buscar categoría..."
+                  }
+                  emptyMessage={
+                    dict.products?.noCategoriesFound ||
+                    "No se encontraron categorías"
+                  }
+                  filterFunction={(option, searchTerm) => {
+                    const category = categories.find(
+                      (c) => String(c.id) === option.id
+                    );
+                    if (!category) return false;
+                    const searchText =
+                      `${category.name} ${category.description}`.toLowerCase();
+                    return searchText.includes(searchTerm.toLowerCase());
+                  }}
+                />
+              </div>
+              <input
+                type="hidden"
+                name="categoryId"
+                value={formData.categoryId}
+              />
+              <div id="category-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.category &&
+                  state.errors.category.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
 
-          {/* Category */}
-          <div className="mb-4">
-            <label
-              htmlFor="category"
-              className="mb-2 block text-sm font-medium"
-            >
-              Product Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={(e) => updateData({ category: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <div id="category-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.category &&
-                state.errors.category.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
+            {/* Price */}
+            <div>
+              <label htmlFor="price" className="mb-2 block text-sm font-medium">
+                {dict.products.price}
+              </label>
+              <div className="relative">
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  step="0.01"
+                  placeholder={dict.products.pricePlaceholder}
+                  value={formData.price}
+                  onChange={(e) => updateData({ price: e.target.value })}
+                  className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                />
+                <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
+              <div id="price-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.price &&
+                  state.errors.price.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Stock */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                htmlFor="quantity"
+                className="mb-2 block text-sm font-medium"
+              >
+                {dict.products.stock}
+              </label>
+              <div className="relative">
+                <input
+                  id="quantity"
+                  name="quantity"
+                  type="number"
+                  placeholder={dict.products.stockPlaceholder}
+                  value={formData.quantity}
+                  onChange={(e) => updateData({ quantity: e.target.value })}
+                  className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                />
+                <ArchiveBoxIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
+              <div id="quantity-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.quantity &&
+                  state.errors.quantity.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
             </div>
           </div>
 
           {/* Image Upload */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium">Image</label>
+            <label className="mb-2 block text-sm font-medium">
+              {dict.products.image}
+            </label>
             {!imageUrl && (
               <CldUploadWidget
                 uploadPreset="products-images"
@@ -256,7 +388,7 @@ export default function CreateProductForm({
                     className="inline-flex items-center gap-2 rounded-lg border border-dashed border-blue-300 bg-blue-50 px-3 py-2 text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
                     <CloudArrowUpIcon className="h-5 w-5" />
-                    Upload Image
+                    {dict.products.imagePlaceholder}
                   </button>
                 )}
               </CldUploadWidget>
@@ -293,99 +425,26 @@ export default function CreateProductForm({
               ))}
             </div>
           </div>
-
-          {/* Price */}
-          <div className="mb-4">
-            <label htmlFor="price" className="mb-2 block text-sm font-medium">
-              Product Price
-            </label>
-            <input
-              id="price"
-              name="price"
-              type="number"
-              step="0.01"
-              placeholder="Enter Product Price"
-              value={formData.price}
-              onChange={(e) => updateData({ price: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
-            <div id="price-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.price &&
-                state.errors.price.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
-          </div>
-
-          {/* Brand */}
-          <div className="mb-4">
-            <label htmlFor="brand" className="mb-2 block text-sm font-medium">
-              Product Brand
-            </label>
-            <input
-              id="brand"
-              name="brand"
-              type="text"
-              placeholder="Enter Product Brand"
-              value={formData.brand}
-              onChange={(e) => updateData({ brand: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
-            <div id="brand-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.brand &&
-                state.errors.brand.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
-          </div>
-
-          {/* Stock */}
-          <div className="mb-4">
-            <label
-              htmlFor="quantity"
-              className="mb-2 block text-sm font-medium"
-            >
-              Product Stock
-            </label>
-            <input
-              id="quantity"
-              name="quantity"
-              type="number"
-              placeholder="Enter Product Stock"
-              value={formData.quantity}
-              onChange={(e) => updateData({ quantity: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
-            />
-            <div id="quantity-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.quantity &&
-                state.errors.quantity.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
-          </div>
         </div>
 
         <div className="mt-6 flex justify-end gap-4">
           <Link
-            href="/dashboard/products"
+            href={`/${locale}/dashboard/products`}
+            onClick={clearCompleteForm}
             className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
           >
-            Cancel
+            {dict.common.cancel}
           </Link>
-          <button
-            type="button"
-            onClick={handleClearForm}
-            className="flex h-10 items-center rounded-lg bg-gray-500 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-600"
-          >
-            Clear Form
-          </button>
-          <Button type="submit">Create Product</Button>
+          {/* <button
+              type="button"
+              onClick={handleClearForm}
+              className="flex h-10 items-center rounded-lg bg-gray-500 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-600"
+            >
+              Clear Form
+            </button> */}
+          <Button type="submit">
+            {dict.common.create} {dict.products.product}
+          </Button>
         </div>
       </form>
 

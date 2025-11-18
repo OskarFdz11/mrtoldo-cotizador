@@ -5,19 +5,26 @@ import { GlobeAltIcon } from "@heroicons/react/24/outline";
 
 const LOCALES = ["es", "en"] as const;
 const DEFAULT_LOCALE = "es";
+const LOCALE_COOKIE = "NEXT_LOCALE";
 
 function extractLocale(pathname: string): string {
   const seg = pathname.split("/")[1];
-  return LOCALES.includes(seg as any) ? seg : DEFAULT_LOCALE;
+  return (LOCALES as readonly string[]).includes(seg as any)
+    ? seg
+    : DEFAULT_LOCALE;
 }
 
 function stripLocale(pathname: string): string {
   const parts = pathname.split("/");
   const first = parts[1];
-  if (LOCALES.includes(first as any)) {
-    return "/" + parts.slice(2).join("/");
+  if ((LOCALES as readonly string[]).includes(first as any)) {
+    const stripped = "/" + parts.slice(2).join("/");
+    // Normaliza: "/" si quedó vacío o doble slash
+    return stripped === "//" || stripped === "/"
+      ? "/"
+      : stripped.replace(/\/+$/, "") || "/";
   }
-  return pathname;
+  return pathname || "/";
 }
 
 export default function LanguageToggle() {
@@ -28,6 +35,10 @@ export default function LanguageToggle() {
   const basePath = stripLocale(pathname) || "/";
 
   const switchLanguage = (newLocale: string) => {
+    try {
+      // 1 año
+      document.cookie = `${LOCALE_COOKIE}=${newLocale}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    } catch {}
     const nextPath =
       basePath === "/" ? `/${newLocale}` : `/${newLocale}${basePath}`;
     router.push(nextPath);
@@ -35,7 +46,7 @@ export default function LanguageToggle() {
 
   return (
     <div className="flex items-center gap-2">
-      {LOCALES.map((lng) => {
+      {(LOCALES as readonly string[]).map((lng) => {
         const active = lng === currentLocale;
         return (
           <button

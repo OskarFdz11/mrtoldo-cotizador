@@ -25,11 +25,14 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default function CreateCustomerForm({
   customers,
+  dict,
 }: {
   customers: CustomerField[];
+  dict: Dictionary;
 }) {
   const router = useRouter();
   const initialState: CustomerFormState = {
@@ -95,7 +98,7 @@ export default function CreateCustomerForm({
 
   const handleSubmit = async (fd: FormData) => {
     try {
-      show("Creando cliente...");
+      show(dict.customers.creating);
       await formAction(fd);
     } finally {
     }
@@ -106,48 +109,54 @@ export default function CreateCustomerForm({
   return (
     <form action={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        <div className="mb-4">
-          <label htmlFor="name" className="mb-2 block text-sm font-medium">
-            Name
-          </label>
-          <div className="relative">
-            <input
-              ref={nameRef}
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter first name"
-              value={formData.name}
-              onChange={(e) => updateData({ name: e.target.value })}
-              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
-            />
-            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {/* Name */}
+          <div className="mb-4">
+            <label htmlFor="name" className="mb-2 block text-sm font-medium">
+              {dict.customers.name}
+            </label>
+            <div className="relative">
+              <input
+                ref={nameRef}
+                id="name"
+                name="name"
+                type="text"
+                placeholder={dict.customers.namePlaceholder}
+                value={formData.name}
+                onChange={(e) => updateData({ name: e.target.value })}
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
-          {/* ...existing code... */}
+
+          {/* Lastname */}
+          <div className="mb-4">
+            <label
+              htmlFor="lastname"
+              className="mb-2 block text-sm font-medium"
+            >
+              {dict.customers.lastname}
+            </label>
+            <div className="relative">
+              <input
+                id="lastname"
+                name="lastname"
+                type="text"
+                value={formData.lastname}
+                onChange={(e) => updateData({ lastname: e.target.value })}
+                placeholder={dict.customers.lastnamePlaceholder}
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
+          </div>
         </div>
-
-        {/* Lastname */}
-        <div className="mb-4">
-          <label htmlFor="lastname" className="mb-2 block text-sm font-medium">
-            Lastname
-          </label>
-          <div className="relative">
-            <input
-              id="lastname"
-              name="lastname"
-              type="text"
-              value={formData.lastname}
-              onChange={(e) => updateData({ lastname: e.target.value })}
-              placeholder="Enter last name"
-              className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
-            />
-            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
-          </div>
-
-          {/* Email */}
-          <div className="mb-4 mt-2">
+        {/* Email */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="mb-4">
             <label htmlFor="email" className="mb-2 block text-sm font-medium">
-              Email
+              {dict.customers.email}
             </label>
             <div className="relative">
               <input
@@ -156,7 +165,7 @@ export default function CreateCustomerForm({
                 type="email"
                 value={formData.email}
                 onChange={(e) => updateData({ email: e.target.value })}
-                placeholder="Enter email"
+                placeholder={dict.customers.emailPlaceholder}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
               />
               <EnvelopeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -170,18 +179,46 @@ export default function CreateCustomerForm({
                 ))}
             </div>
           </div>
+          {/* Phone */}
+          <div className="mb-4">
+            <label htmlFor="phone" className="mb-2 block text-sm font-medium">
+              {dict.customers.phone}
+            </label>
+            <div className="relative">
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => updateData({ phone: e.target.value })}
+                placeholder={dict.customers.phonePlaceholder}
+                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
+              />
+              <PhoneIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            </div>
+            <div id="phone-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.phone &&
+                state.errors.phone.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Company */}
           <div className="mb-4">
             <label htmlFor="company" className="mb-2 block text-sm font-medium">
-              Company
+              {dict.customers.company}
             </label>
             <div className="relative">
               <input
                 id="company"
                 name="company"
                 type="text"
-                placeholder="Enter company"
+                placeholder={dict.customers.companyPlaceholder}
                 value={formData.company}
                 onChange={(e) => updateData({ company: e.target.value })}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
@@ -197,18 +234,17 @@ export default function CreateCustomerForm({
                 ))}
             </div>
           </div>
-
           {/* RFC */}
           <div className="mb-4">
             <label htmlFor="rfc" className="mb-2 block text-sm font-medium">
-              RFC
+              {dict.customers.rfc}
             </label>
             <div className="relative">
               <input
                 id="rfc"
                 name="rfc"
                 type="text"
-                placeholder="Enter RFC"
+                placeholder={dict.customers.rfcPlaceholder}
                 value={formData.rfc}
                 onChange={(e) => updateData({ rfc: e.target.value })}
                 className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
@@ -224,43 +260,16 @@ export default function CreateCustomerForm({
                 ))}
             </div>
           </div>
-
-          {/* Phone */}
-          <div className="mb-4">
-            <label htmlFor="phone" className="mb-2 block text-sm font-medium">
-              Phone
-            </label>
-            <div className="relative">
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => updateData({ phone: e.target.value })}
-                placeholder="Enter phone number"
-                className="block w-full rounded-md border border-gray-200 py-2 pl-10 pr-3 text-sm outline-2 placeholder:text-gray-500"
-              />
-              <PhoneIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
-            </div>
-            <div id="phone-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.phone &&
-                state.errors.phone.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
-          </div>
         </div>
-        <div className="mt-6 flex justify-end gap-4">
-          <Link
-            href="/dashboard/customers"
-            className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-          >
-            Cancel
-          </Link>
-          <Button type="submit">Create Customer</Button>
-        </div>
+      </div>
+      <div className="mt-6 flex justify-end gap-4">
+        <Link
+          href="/dashboard/customers"
+          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+        >
+          {dict.common.cancel}
+        </Link>
+        <Button type="submit">{dict.customers.createCustomer}</Button>
       </div>
     </form>
   );

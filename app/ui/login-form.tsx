@@ -12,10 +12,13 @@ import { useActionState } from "react";
 import { authenticate } from "@/app/lib/auth-actions/auth-actions";
 import { useSearchParams } from "next/navigation";
 import { Dictionary } from "../lib/dictionaries";
+import { useI18n } from "@/app/ui/i18n-provider";
 
 export default function LoginForm({ dict }: { dict: Dictionary }) {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const { locale } = useI18n();
+  const fallback = `/${locale}/dashboard`;
+  const callbackUrl = searchParams.get("callbackUrl") || fallback;
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
     undefined

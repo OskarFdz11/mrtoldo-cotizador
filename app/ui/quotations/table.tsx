@@ -6,13 +6,16 @@ import ConfirmDeleteButton from "../confirm-delete-button";
 import { deleteQuotation } from "@/app/lib/quotations-actions/quotations-actions";
 import DownloadPDFButton from "@/app/ui/quotations/download-pdf-button";
 import QuotationActions from "./quotations-actions-dropdown";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default async function QuotationsTable({
   query,
   currentPage,
+  dict,
 }: {
   query: string;
   currentPage: number;
+  dict: Dictionary;
 }) {
   const quotations = await fetchFilteredQuotations(query, currentPage);
 
@@ -35,16 +38,19 @@ export default async function QuotationsTable({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.239"
                   />
                 </svg>
                 <p className="mt-4 text-lg font-medium text-gray-900">
-                  No hay cotizaciones
+                  {dict.quotations.noQuotations}
                 </p>
                 <p className="mt-2 text-sm text-gray-500">
                   {query
-                    ? `No se encontraron cotizaciones para "${query}"`
-                    : "Comienza creando tu primera cotización"}
+                    ? dict.quotations.noQuotationsFound.replace(
+                        "{query}",
+                        query
+                      )
+                    : dict.quotations.noQuotationsSubtitle}
                 </p>
               </div>
             </div>
@@ -77,17 +83,15 @@ export default async function QuotationsTable({
                     <div className="space-y-3">
                       <div className="space-y-2">
                         <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Email
-                          </p>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1"></p>
                           <p className="text-sm text-gray-700 break-all">
                             {quotation.customer.email}
                           </p>
                         </div>
-
+                        {dict.customers.email}
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Empresa
+                            {dict.customers.company}
                           </p>
                           <p className="text-sm font-medium text-gray-900">
                             {quotation.customer.company}
@@ -97,7 +101,7 @@ export default async function QuotationsTable({
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                              Subtotal
+                              {dict.quotations.subtotal}
                             </p>
                             <p className="text-sm font-medium text-gray-900">
                               {formatCurrency(quotation.subtotal)}
@@ -122,7 +126,7 @@ export default async function QuotationsTable({
                         {/* Fecha arriba del total */}
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Fecha
+                            {dict.quotations.date}
                           </p>
                           <p className="text-sm text-gray-700">
                             {formatDateToLocal(String(quotation.date))}
@@ -132,7 +136,7 @@ export default async function QuotationsTable({
                         {/* Total destacado */}
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Total
+                            {dict.quotations.total}
                           </p>
                           <p className="text-xl font-bold text-gray-900">
                             {formatCurrency(quotation.total)}
@@ -172,25 +176,25 @@ export default async function QuotationsTable({
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[200px]"
                       >
-                        Cliente
+                        {dict.customers.email}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[150px] hidden lg:table-cell"
                       >
-                        Empresa
+                        {dict.customers.company}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px] hidden xl:table-cell"
                       >
-                        Subtotal
+                        {dict.quotations.subtotal}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px]"
                       >
-                        Total
+                        {dict.quotations.total}
                       </th>
                       <th
                         scope="col"
@@ -202,16 +206,16 @@ export default async function QuotationsTable({
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px] hidden lg:table-cell"
                       >
-                        Fecha
+                        {dict.quotations.date}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px]"
                       >
-                        Estado
+                        {dict.quotations.status}
                       </th>
                       <th className="px-3 py-5 font-medium text-left min-w-[120px]">
-                        Acciones
+                        {dict.common.actions}
                       </th>
                     </tr>
                   </thead>

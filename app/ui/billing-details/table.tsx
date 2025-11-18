@@ -2,13 +2,16 @@ import { UpdateBillingDetails } from "@/app/ui/billing-details/buttons"; // Solo
 import { fetchFilteredBillingDetails } from "@/app/lib/billing-details-actions/billing-details-data";
 import ConfirmDeleteButton from "@/app/ui/confirm-delete-button";
 import { deleteBillingDetails } from "@/app/lib/billing-details-actions/billing-details-actions";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default async function BillingDetailsTable({
   query,
   currentPage,
+  dict,
 }: {
   query: string;
   currentPage: number;
+  dict: Dictionary;
 }) {
   const billingDetails = (await fetchFilteredBillingDetails(query, currentPage))
     .billingDetails;
@@ -38,12 +41,15 @@ export default async function BillingDetailsTable({
                       />
                     </svg>
                     <p className="mt-4 text-lg font-medium text-gray-900">
-                      No hay detalles de pago
+                      {dict.billingDetails.noBillingDetails}
                     </p>
                     <p className="mt-2 text-sm text-gray-500">
                       {query
-                        ? `No se encontraron detalles de pago para "${query}"`
-                        : "Comienza agregando tu primer detalle de pago"}
+                        ? dict.billingDetails.noBillingDetailsFound.replace(
+                            "{query}",
+                            query
+                          )
+                        : dict.billingDetails.noBillingDetailsSubtitle}
                     </p>
                   </div>
                 </div>
@@ -76,27 +82,29 @@ export default async function BillingDetailsTable({
 
                           <div className="mt-2 space-y-1">
                             <p className="text-xs text-gray-500">
-                              RFC: {billing.rfc}
+                              {dict.billingDetails.rfc}: {billing.rfc}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Email: {billing.email}
+                              {dict.billingDetails.email}: {billing.email}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Teléfono: {billing.phone}
+                              {dict.billingDetails.phone}: {billing.phone}
                             </p>
                             {billing.cardNumber && (
                               <p className="text-xs text-gray-500">
-                                Número de tarjeta: {billing.cardNumber}
+                                {dict.billingDetails.cardNumber}:{" "}
+                                {billing.cardNumber}
                               </p>
                             )}
                             {billing.clabe && (
                               <p className="text-xs text-gray-500">
-                                CLABE: {billing.clabe}
+                                {dict.billingDetails.clabe}: {billing.clabe}
                               </p>
                             )}
                             {billing.checkAccount && (
                               <p className="text-xs text-gray-500">
-                                Cuenta de cheques: {billing.checkAccount}
+                                {dict.billingDetails.checkAccount}:{" "}
+                                {billing.checkAccount}
                               </p>
                             )}
                           </div>
@@ -131,23 +139,35 @@ export default async function BillingDetailsTable({
                       <tr>
                         <th className="px-4 py-5 font-medium sm:pl-6">ID</th>
                         <th className="px-4 py-5 font-medium sm:pl-6">
-                          Nombre
+                          {dict.billingDetails.name}
                         </th>
-                        <th className="px-3 py-5 font-medium">Apellido</th>
-                        <th className="px-3 py-5 font-medium">Empresa</th>
-                        <th className="px-3 py-5 font-medium">RFC</th>
-                        <th className="px-3 py-5 font-medium">Email</th>
-                        <th className="px-3 py-5 font-medium">Teléfono</th>
                         <th className="px-3 py-5 font-medium">
-                          Número de tarjeta
+                          {dict.billingDetails.lastname}
                         </th>
-                        <th className="px-3 py-5 font-medium">CLABE</th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.billingDetails.company}
+                        </th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.billingDetails.rfc}
+                        </th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.billingDetails.email}
+                        </th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.billingDetails.phone}
+                        </th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.billingDetails.cardNumber}
+                        </th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.billingDetails.clabe}
+                        </th>
 
                         <th className="px-3 py-5 font-medium">
-                          Cuenta de cheques
+                          {dict.billingDetails.checkAccount}
                         </th>
                         <th className="py-3 pl-6 pr-3 text-right font-medium">
-                          Acciones
+                          {dict.common.actions}
                         </th>
                       </tr>
                     </thead>

@@ -3,13 +3,16 @@ import { UpdateCustomer } from "@/app/ui/customers/buttons";
 import { fetchFilteredCustomers } from "@/app/lib/customer-actions/customer-data";
 import ConfirmDeleteButton from "@/app/ui/confirm-delete-button";
 import { deleteCustomer } from "@/app/lib/customer-actions/customer-actions";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default async function CustomersTable({
   query,
   currentPage,
+  dict,
 }: {
   query: string;
   currentPage: number;
+  dict: Dictionary;
 }) {
   const customers = (await fetchFilteredCustomers(query, currentPage))
     .customers;
@@ -37,12 +40,12 @@ export default async function CustomersTable({
                   />
                 </svg>
                 <p className="mt-4 text-lg font-medium text-gray-900">
-                  No hay clientes
+                  {dict.customers.noCustomers}
                 </p>
                 <p className="mt-2 text-sm text-gray-500">
                   {query
                     ? `No se encontraron clientes para "${query}"`
-                    : "Comienza agregando tu primer cliente"}
+                    : dict.customers.noCustomersSubtitle}
                 </p>
               </div>
             </div>
@@ -75,7 +78,7 @@ export default async function CustomersTable({
                       <div className="space-y-2">
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Email
+                            {dict.customers.email}
                           </p>
                           <p className="text-sm text-gray-700 break-all">
                             {customer.email}
@@ -84,7 +87,7 @@ export default async function CustomersTable({
 
                         <div>
                           <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                            Empresa
+                            {dict.customers.company}
                           </p>
                           <p className="text-sm font-medium text-gray-900">
                             {customer.company}
@@ -94,7 +97,7 @@ export default async function CustomersTable({
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                              RFC
+                              {dict.customers.rfc}
                             </p>
                             <p className="text-sm text-gray-700 break-all">
                               {customer.rfc}
@@ -102,7 +105,7 @@ export default async function CustomersTable({
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-1">
-                              Teléfono
+                              {dict.customers.phone}
                             </p>
                             <p className="text-sm text-gray-700">
                               {customer.phone}
@@ -147,40 +150,40 @@ export default async function CustomersTable({
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px]"
                       >
-                        Nombre
+                        {dict.customers.name}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px]"
                       >
-                        Apellido
+                        {dict.customers.lastname}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[200px]"
                       >
-                        Email
+                        {dict.customers.email}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[150px] hidden lg:table-cell"
                       >
-                        Empresa
+                        {dict.customers.company}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px] hidden xl:table-cell"
                       >
-                        RFC
+                        {dict.customers.rfc}
                       </th>
                       <th
                         scope="col"
                         className="px-3 py-5 font-medium min-w-[120px] hidden xl:table-cell"
                       >
-                        Teléfono
+                        {dict.customers.phone}
                       </th>
                       <th className="px-3 py-5 font-medium text-left min-w-[120px]">
-                        Acciones
+                        {dict.common.actions}
                       </th>
                     </tr>
                   </thead>

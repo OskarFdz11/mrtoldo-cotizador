@@ -88,6 +88,7 @@ export type CustomerField = {
   email: string;
   phone: string | null;
   company: string;
+  rfc: string;
 };
 
 export type CategoryField = {

@@ -2,13 +2,16 @@ import { UpdateCategory } from "@/app/ui/categories/buttons"; // Solo UpdateCate
 import { fetchFilteredCategories } from "@/app/lib/categories-actions/categories-data";
 import ConfirmDeleteButton from "@/app/ui/confirm-delete-button";
 import { deleteCategory } from "@/app/lib/categories-actions/categories-actions";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default async function CategoriesTable({
   query,
   currentPage,
+  dict,
 }: {
   query: string;
   currentPage: number;
+  dict: Dictionary;
 }) {
   const categories = (await fetchFilteredCategories(query, currentPage))
     .categories;
@@ -34,16 +37,19 @@ export default async function CategoriesTable({
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.239"
                       />
                     </svg>
                     <p className="mt-4 text-lg font-medium text-gray-900">
-                      No hay categorías
+                      {dict.categories.noCategories}
                     </p>
                     <p className="mt-2 text-sm text-gray-500">
                       {query
-                        ? `No se encontraron categorías para "${query}"`
-                        : "Comienza creando tu primera categoría"}
+                        ? dict.categories.noCategoriesFound.replace(
+                            "{query}",
+                            query
+                          )
+                        : dict.categories.noCategoriesSubtitle}
                     </p>
                   </div>
                 </div>
@@ -105,11 +111,13 @@ export default async function CategoriesTable({
                           ID
                         </th>
                         <th className="px-4 py-5 font-medium sm:pl-6">
-                          Nombre
+                          {dict.categories.name}
                         </th>
-                        <th className="px-3 py-5 font-medium">Descripción</th>
+                        <th className="px-3 py-5 font-medium">
+                          {dict.categories.description}
+                        </th>
                         <th className="px-3 py-5 font-medium text-right">
-                          Acciones
+                          {dict.common.actions}
                         </th>
                       </tr>
                     </thead>
