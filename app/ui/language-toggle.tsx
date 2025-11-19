@@ -26,7 +26,19 @@ function stripLocale(pathname: string): string {
   return pathname || "/";
 }
 
-export default function LanguageToggle() {
+type LanguageToggleProps = {
+  variant?: "auto" | "login" | "topbar" | "sidebar";
+  showTargetInstead?: boolean; // si quieres mostrar el idioma destino
+  className?: string; // override externo opcional
+  iconClassName?: string; // override opcional icono
+};
+
+export default function LanguageToggle({
+  variant = "auto",
+  showTargetInstead = false,
+  className,
+  iconClassName,
+}: LanguageToggleProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -49,6 +61,62 @@ export default function LanguageToggle() {
     }, 120);
   };
 
+  // Texto que se muestra
+  const label = showTargetInstead
+    ? nextLocale.toUpperCase()
+    : currentLocale.toUpperCase();
+
+  // Clases base
+  let baseTextClasses =
+    "inline-flex items-center gap-1 px-1.5 py-1 text-sm font-semibold tracking-wide focus:outline-none  transition";
+
+  // Segun variante
+  switch (variant) {
+    case "login":
+      // Mantener blanco siempre (como tu header azul en login)
+      baseTextClasses += " text-white hover:text-white/80";
+      break;
+    case "topbar":
+      // Modo barra azul móvil
+      baseTextClasses +=
+        " text-white hover:text-white/80 md:text-gray-700 md:hover:text-gray-900";
+      break;
+    case "sidebar":
+      // Para sidebar claro (solo gris)
+      baseTextClasses += " text-gray-600 hover:text-gray-900";
+      break;
+    case "auto":
+    default:
+      // Comportamiento actual por defecto
+      baseTextClasses +=
+        " text-white hover:text-white/80 md:text-gray-700 md:hover:text-gray-900";
+      break;
+  }
+
+  // Clases icono
+  let iconClasses = "h-4 w-4 transition-colors";
+  switch (variant) {
+    case "login":
+      // Ícono blanco o azulado — si lo quieres azul sobre fondo azul NO se vería,
+      // así que normalmente blanco es mejor. Si insistes en azul:
+      // iconClasses += " text-blue-200";
+      iconClasses += " text-white";
+      break;
+    case "sidebar":
+      iconClasses += " text-gray-500 group-hover:text-gray-700";
+      break;
+    case "topbar":
+    case "auto":
+    default:
+      iconClasses += " text-current";
+      break;
+  }
+
+  if (iconClassName) iconClasses = iconClassName;
+  const rootClasses = className
+    ? `${baseTextClasses} ${className}`
+    : baseTextClasses;
+
   return (
     <button
       type="button"
@@ -59,23 +127,10 @@ export default function LanguageToggle() {
           : "Switch language to Spanish"
       }
       title={currentLocale === "es" ? "Switch to English" : "Cambiar a Español"}
-      className={`
-        inline-flex items-center gap-1 px-2 py-1
-        text-sm font-semibold tracking-wide
-        focus:outline-none 
-        
-        /* Mobile (topbar azul) */
-        text-white hover:text-white/80
-        /* Desktop (sidebar / fondos claros) */
-        md:text-gray-700 md:hover:text-gray-900
-      `}
+      className={rootClasses}
     >
-      <LanguageIcon className="h-4 w-4 md:text-gray-600 md:hover:text-gray-800 transition-colors" />
-      {/* Variante A: mostrar el actual */}
-      <span>{currentLocale.toUpperCase()}</span>
-      {/* Variante B: mostrar el destino (descomenta para usarla)
-          <span>{nextLocale.toUpperCase()}</span>
-      */}
+      <LanguageIcon className={iconClasses} />
+      <span>{label}</span>
     </button>
   );
 }
