@@ -58,8 +58,12 @@ export default function NavLinks({
     <>
       {links.map((link) => {
         const LinkIcon = link.icon;
-        const href = `/${locale}${link.href}`;
-        const isActive = pathname === href || pathname.startsWith(href + "/");
+        const localizedHref = `/${locale}${link.href}`;
+        const isHome = link.href === "/dashboard";
+        const isActive = isHome
+          ? pathname === localizedHref
+          : pathname === localizedHref ||
+            pathname.startsWith(localizedHref + "/");
 
         const baseClasses = clsx(
           "flex h-[48px] items-center gap-2 rounded-md text-sm font-medium transition-colors",
@@ -74,9 +78,10 @@ export default function NavLinks({
         return (
           <Link
             key={link.name}
-            href={link.href}
+            href={localizedHref}
             onClick={onNavigate}
             className={baseClasses}
+            aria-current={isActive ? "page" : undefined}
           >
             <LinkIcon className="w-6" />
             <p

@@ -1,104 +1,76 @@
 "use client";
-
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useNotification } from "@/app/hooks/useNotifications";
-import NotificationModal from "@/app/ui/notification-modal";
-import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
+import { useI18n } from "@/app/ui/i18n-provider";
+import ActionResultModal from "@/app/ui/action-result-modal";
 
-type Gender = "m" | "f";
-
+type Gender = "m" | "f"; // si mantienes género en otro sitio
 type Props = {
-  // Pasa el nombre en singular: "producto", "cliente", "categoría", "detalle de pago", "cotización"
-  entity: string;
-  // Género gramatical del nombre (m por default)
-  gender?: Gender;
+  entityKey:
+    | "customers"
+    | "products"
+    | "quotations"
+    | "categories"
+    | "billingDetails";
   clearToPath: string;
 };
 
-function buildCopy(
-  entity: string,
-  action: "created" | "updated" | "deleted",
-  gender: Gender = "m"
-) {
-  const adjectives: Record<Gender, Record<typeof action, string>> = {
-    m: { created: "creado", updated: "actualizado", deleted: "eliminado" },
-    f: { created: "creada", updated: "actualizada", deleted: "eliminada" },
-  };
-
-  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-  return {
-    title: cap(`${entity} ${adjectives[gender][action]} correctamente`),
-    message: "La operación se completó correctamente.",
-  };
-}
-export default function FlashFromQuery({
-  entity,
-  gender = "m",
-  clearToPath,
-}: Props) {
+export default function FlashFromQuery({ entityKey, clearToPath }: Props) {
   const sp = useSearchParams();
   const router = useRouter();
+  const { dict } = useI18n();
 
-  const { notification, showSuccess, showError, hideNotification } =
-    useNotification();
+  const created = sp.get("created");
+  const updated = sp.get("updated");
+  const deleted = sp.get("deleted");
+  const errorMsg = sp.get("error");
 
-  const hideOverlay = useTransitionOverlay((s) => s.hide);
+  const show =
+    created !== null ||
+    updated !== null ||
+    deleted !== null ||
+    errorMsg !== null;
+
+  const action: "created" | "updated" | "deleted" | "custom" = errorMsg
+    ? "custom"
+    : created
+    ? "created"
+    : updated
+    ? "updated"
+    : deleted
+    ? "deleted"
+    : "custom";
+
+  // Para error podrías usar un modal distinto, aquí simplificado:
+  const titleOverride = errorMsg ? dict.forms?.error || "Error" : undefined;
+  const messageOverride = errorMsg || undefined;
 
   useEffect(() => {
-    const created = sp.get("created");
-    const updated = sp.get("updated");
-    const deleted = sp.get("deleted");
-    const errorMsg = sp.get("error");
-
-    const hideThen = (cb: () => void) => {
-      hideOverlay();
-      setTimeout(cb, 80);
-    };
-
-    if (created) {
-      const { title, message } = buildCopy(entity, "created", gender);
-      hideThen(() => {
-        showSuccess(title, message);
+    if (show && !errorMsg) {
+      // Limpia la URL para no mantener el query param
+      const timeout = setTimeout(() => {
         router.replace(clearToPath);
-      });
-    } else if (updated) {
-      const { title, message } = buildCopy(entity, "updated", gender);
-      hideThen(() => {
-        showSuccess(title, message);
+      }, 50);
+      return () => clearTimeout(timeout);
+    } else if (show && errorMsg) {
+      const timeout = setTimeout(() => {
         router.replace(clearToPath);
-      });
-    } else if (deleted) {
-      const { title, message } = buildCopy(entity, "deleted", gender);
-      hideThen(() => {
-        showSuccess(title, message);
-        router.replace(clearToPath);
-      });
-    } else if (errorMsg) {
-      hideThen(() => {
-        showError("Ocurrió un error", errorMsg);
-        router.replace(clearToPath);
-      });
+      }, 1500);
+      return () => clearTimeout(timeout);
     }
-  }, [
-    sp,
-    router,
-    clearToPath,
-    entity,
-    gender,
-    showSuccess,
-    showError,
-    hideOverlay,
-  ]);
+  }, [show, errorMsg, router, clearToPath]);
 
   return (
-    <NotificationModal
-      isOpen={notification.isOpen}
-      onClose={hideNotification}
-      type={notification.type}
-      title={notification.title}
-      message={notification.message}
+    <ActionResultModal
+      isOpen={show}
+      onClose={() => router.replace(clearToPath)}
+      action={action}
+      entityKey={entityKey}
+      titleOverride={titleOverride}
+      messageOverride={messageOverride}
+      // requireAccept si quieres que el usuario cierre manualmente
+      requireAccept={false}
+      autoCloseTime={2000}
     />
   );
 }

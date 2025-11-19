@@ -47,8 +47,7 @@ export default async function Page({
         fallback={<QuotationsTableInlineSkeleton />}
       >
         <FlashFromQuery
-          entity="cotización"
-          gender="f"
+          entityKey="quotations"
           clearToPath={`/${locale}/dashboard/quotations`}
         />
         <QuotationsTable query={query} currentPage={currentPage} dict={dict} />

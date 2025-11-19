@@ -1,4 +1,3 @@
-// app/ui/confirm-logout-button.tsx
 "use client";
 
 import { useState, useTransition } from "react";
@@ -6,11 +5,16 @@ import { PowerIcon } from "@heroicons/react/24/outline";
 import ConfirmLogoutModal from "./confirm-logout-modal";
 import { logout } from "@/app/lib/auth-actions/auth-actions";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/app/ui/i18n-provider";
 
-export default function LogoutButton() {
+export default function ConfirmLogoutButton() {
   const [showModal, setShowModal] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { dict } = useI18n();
+
+  const open = () => setShowModal(true);
+  const close = () => !isPending && setShowModal(false);
 
   const handleLogout = () => {
     startTransition(async () => {
@@ -28,17 +32,20 @@ export default function LogoutButton() {
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}
-        className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3"
+        onClick={open}
+        className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3 disabled:opacity-50"
         disabled={isPending}
+        aria-label={dict.auth?.logoutConfirm || "Cerrar sesión"}
       >
         <PowerIcon className="w-6" />
-        <div className="hidden md:block">Sign Out</div>
+        <span className="hidden md:block">
+          {dict.auth?.logoutConfirm || "Cerrar sesión"}
+        </span>
       </button>
 
       <ConfirmLogoutModal
         isOpen={showModal}
-        onClose={() => !isPending && setShowModal(false)}
+        onClose={close}
         onConfirm={handleLogout}
         isPending={isPending}
       />

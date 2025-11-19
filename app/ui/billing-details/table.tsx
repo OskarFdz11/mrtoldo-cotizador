@@ -214,11 +214,18 @@ export default async function BillingDetailsTable({
                           </td>
                           <td className="whitespace-nowrap bg-white py-5 pl-6 pr-3 text-right">
                             <div className="flex justify-end gap-2">
-                              <UpdateBillingDetails id={billing.id} />
+                              <UpdateBillingDetails
+                                id={billing.id}
+                                variant="icon"
+                              />
                               <ConfirmDeleteButton
                                 itemId={billing.id}
                                 deleteAction={deleteBillingDetails}
                                 entityName="detalle de facturación"
+                                entityLabel={
+                                  dict.billingDetails?.title ||
+                                  "Detalle de facturación"
+                                }
                                 itemName={`${billing.name} ${billing.lastname} - ${billing.company}`}
                               />
                             </div>

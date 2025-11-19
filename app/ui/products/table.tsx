@@ -256,6 +256,7 @@ export default async function ProductsTable({
                               itemId={product.id}
                               deleteAction={deleteProduct}
                               entityName="producto"
+                              entityLabel={dict.products?.product || "Producto"}
                               itemName={`${product.name} - ${product.brand}`}
                             />
                           </div>

@@ -1,8 +1,9 @@
 "use server";
 
-import { formatCurrency } from "../utils";
+import { formatCurrency } from "@/app/lib/utils";
 import { prisma } from "@/app/lib/prisma";
 import { unstable_noStore as noStore } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 export async function fetchCustomers() {
   noStore();
@@ -49,53 +50,56 @@ export async function fetchFilteredCustomers(
   query: string,
   currentPage: number
 ) {
+  noStore();
   const ITEMS_PER_PAGE = 6;
+
+  const q = (query ?? "").trim();
+  const hasQuery = q.length > 0;
+
+  const orFilters = hasQuery
+    ? [
+        { name: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { lastname: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { email: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { company: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { rfc: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        ...(Number.isNaN(Number(q)) ? [] : [{ phone: { equals: Number(q) } }]),
+      ]
+    : undefined;
+
+  // Misma condición para findMany y count
+  const where = {
+    deleted_at: null,
+    ...(orFilters ? { OR: orFilters } : {}),
+  } as const;
+
   try {
     const [customers, totalCount] = await Promise.all([
       prisma.customer.findMany({
-        where: {
-          OR: [
-            { deleted_at: null },
-            { name: { contains: query, mode: "insensitive" } },
-            { lastname: { contains: query, mode: "insensitive" } },
-            { email: { contains: query, mode: "insensitive" } },
-            { company: { contains: query, mode: "insensitive" } },
-            { rfc: { contains: query, mode: "insensitive" } },
-            { phone: { equals: Number(query) || undefined } },
-          ],
-        },
-        include: {
-          quotations: true,
-        },
+        where,
+        include: { quotations: true },
         orderBy: { id: "desc" },
         skip: (currentPage - 1) * ITEMS_PER_PAGE,
         take: ITEMS_PER_PAGE,
       }),
-      prisma.customer.count({
-        where: {
-          OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { email: { contains: query, mode: "insensitive" } },
-          ],
-        },
-      }),
+      prisma.customer.count({ where }),
     ]);
 
     const result = customers.map((customer) => {
       const total_quotations = customer.quotations.length;
       const total_pending = customer.quotations
-        .filter((inv) => inv.status === "pending")
-        .reduce((sum, inv) => sum + Number(inv.total), 0);
+        .filter((q) => q.status === "pending")
+        .reduce((sum, q) => sum + Number(q.total), 0);
       const total_paid = customer.quotations
-        .filter((inv) => inv.status === "paid")
-        .reduce((sum, inv) => sum + Number(inv.total), 0);
+        .filter((q) => q.status === "paid")
+        .reduce((sum, q) => sum + Number(q.total), 0);
 
       return {
         id: customer.id,
         name: customer.name,
         lastname: customer.lastname,
         company: customer.company,
-        phone: customer.phone,
+        phone: customer.phone?.toString() ?? "",
         rfc: customer.rfc,
         email: customer.email,
         image_url: (customer as any).image_url,
@@ -110,6 +114,6 @@ export async function fetchFilteredCustomers(
     return { customers: result, totalPages };
   } catch (err) {
     console.error("Database Error:", err);
-    throw new Error("Failed to fetch customer table.");
+    throw new Error("Failed to fetch filtered customers.");
   }
 }

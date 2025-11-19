@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/app/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function fetchProducts() {
@@ -73,10 +74,19 @@ export async function fetchFilteredProducts(
         where: {
           deleted_at: null,
           OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { description: { contains: query, mode: "insensitive" } },
-            { brand: { contains: query, mode: "insensitive" } },
-            { category: { name: { contains: query, mode: "insensitive" } } },
+            { name: { contains: query, mode: Prisma.QueryMode.insensitive } },
+            {
+              description: {
+                contains: query,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
+            { brand: { contains: query, mode: Prisma.QueryMode.insensitive } },
+            {
+              category: {
+                name: { contains: query, mode: Prisma.QueryMode.insensitive },
+              },
+            },
             {
               price: {
                 equals: isNaN(Number(query)) ? undefined : Number(query),
@@ -87,7 +97,7 @@ export async function fetchFilteredProducts(
         include: {
           category: true,
         },
-        orderBy: { id: "asc" },
+        orderBy: { id: "desc" },
         skip: (currentPage - 1) * ITEMS_PER_PAGE,
         take: ITEMS_PER_PAGE,
       }),
@@ -95,10 +105,19 @@ export async function fetchFilteredProducts(
         where: {
           deleted_at: null,
           OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { description: { contains: query, mode: "insensitive" } },
-            { brand: { contains: query, mode: "insensitive" } },
-            { category: { name: { contains: query, mode: "insensitive" } } },
+            { name: { contains: query, mode: Prisma.QueryMode.insensitive } },
+            {
+              description: {
+                contains: query,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
+            { brand: { contains: query, mode: Prisma.QueryMode.insensitive } },
+            {
+              category: {
+                name: { contains: query, mode: Prisma.QueryMode.insensitive },
+              },
+            },
             {
               price: {
                 equals: isNaN(Number(query)) ? undefined : Number(query),

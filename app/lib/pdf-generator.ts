@@ -49,7 +49,6 @@ interface QuotationData {
       cp?: string;
     };
   };
-
   products: QuotationProduct[];
 }
 
@@ -57,13 +56,8 @@ interface QuotationData {
 const M = 15; // margen lateral
 const COLORS = {
   black: [25, 25, 25] as [number, number, number],
-  dark: [45, 45, 45] as [number, number, number],
-  gray700: [80, 80, 80] as [number, number, number],
-  gray600: [120, 120, 120] as [number, number, number],
   gray500: [170, 170, 170] as [number, number, number],
   gray300: [215, 215, 215] as [number, number, number],
-  gray250: [230, 230, 230] as [number, number, number],
-  gray200: [238, 238, 238] as [number, number, number],
   gray150: [242, 242, 242] as [number, number, number],
   gray100: [247, 247, 247] as [number, number, number],
   white: [255, 255, 255] as [number, number, number],
@@ -135,7 +129,7 @@ export async function generateQuotationPDF(
 
   let y = 15;
 
-  // ============ ENCABEZADO COMPACTO ============
+  // ============ ENCABEZADO ============
   const logo = getLogoBase64();
   if (logo) {
     try {
@@ -198,13 +192,11 @@ export async function generateQuotationPDF(
   doc.text(`RFC: ${customer.rfc}`, pw / 2, y + 16);
   y += 23;
 
-  // ============ PRODUCTOS ============
+  // ============ PRODUCTOS (tabla resumida) ============
   y = sectionHeader(doc, "Productos", y);
-
-  // Solo título en columna Producto (sin descripción)
   const tableBody = products.map((p) => [
     String(p.product.id),
-    p.product.name, // <- solo título
+    p.product.name,
     String(p.quantity),
     formatCurrency(p.price),
     "-",
@@ -212,7 +204,6 @@ export async function generateQuotationPDF(
   ]);
 
   const available = pw - 2 * M;
-  // Ajuste de anchos (ligeramente más ancho producto y cantidad para evitar wrap)
   const widths = {
     code: available * 0.08,
     product: available * 0.44,
@@ -240,11 +231,8 @@ export async function generateQuotationPDF(
       textColor: COLORS.white,
       fontStyle: "bold",
       halign: "center",
-      fontSize: 7, // headers más pequeños
+      fontSize: 7,
       cellPadding: { top: 1.5, bottom: 1.5, left: 2, right: 2 },
-    },
-    bodyStyles: {
-      fillColor: COLORS.white,
     },
     alternateRowStyles: {
       fillColor: COLORS.gray150,
@@ -275,7 +263,6 @@ export async function generateQuotationPDF(
 
   // Subtotal
   doc.setDrawColor(...COLORS.gray500);
-  doc.setLineWidth(0.3);
   doc.rect(totalsX, y, totalsW, 7);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
@@ -296,11 +283,10 @@ export async function generateQuotationPDF(
     y += 7;
   }
 
-  // Total (negro con borde como header de la tabla)
+  // Total
   doc.setFillColor(...COLORS.black);
   doc.setDrawColor(...COLORS.gray500);
-  doc.setLineWidth(0.3);
-  doc.rect(totalsX, y, totalsW, 10, "FD"); // Fill + Draw (borde)
+  doc.rect(totalsX, y, totalsW, 10, "FD");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(...COLORS.white);
@@ -311,19 +297,15 @@ export async function generateQuotationPDF(
   doc.setTextColor(...COLORS.black);
   y += 14;
 
-  // ============ NOTAS (ANTES QUE DETALLES DE PAGO) ============
-  // Margen para que no se empalme con los totales
+  // Notas
   y += 6;
-
   if (quotation.notes) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.text("Notas:", M, y);
     y += 4;
-
     const notesW = pw - 2 * M;
     const lines = doc.splitTextToSize(quotation.notes, notesW - 8);
-    // Caja de notas con altura automática (capada a 36 para mantener compacto)
     const notesH = Math.min(lines.length * 3 + 8, 36);
     doc.setFillColor(...COLORS.gray150);
     doc.setDrawColor(...COLORS.gray300);
@@ -334,7 +316,7 @@ export async function generateQuotationPDF(
     y += notesH + 10;
   }
 
-  // ============ DETALLES DE PAGO (DESPUÉS DE NOTAS) ============
+  // Detalles de Pago
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8.5);
   doc.text("Detalles de Pago:", M, y);
@@ -347,13 +329,12 @@ export async function generateQuotationPDF(
   ]
     .filter((p) => !!p && String(p).trim() !== "")
     .join(", ");
-
   const cpPart = billingDetails?.address?.cp ?? "64600";
 
   const payLines: string[] = [
     billingDetails?.company ?? "MRTOLDO S.A. DE C.V.",
     `RFC: ${billingDetails?.rfc ?? "MRT180518HK0"}`,
-    ...(billingDetails?.cardNumber && billingDetails.cardNumber.trim() !== ""
+    ...(billingDetails?.cardNumber
       ? [`Número de Tarjeta: ${billingDetails.cardNumber}`]
       : []),
     ...(billingDetails?.clabe ? [`Clabe: ${billingDetails.clabe}`] : []),
@@ -367,9 +348,8 @@ export async function generateQuotationPDF(
 
   const payBoxH = payLines.length * 3 + 8;
   doc.setFillColor(...COLORS.gray150);
-  doc.setDrawColor(...COLORS.gray500);
+  doc.setDrawColor(...COLORS.gray300);
   doc.rect(M, y, pw - 2 * M, payBoxH, "FD");
-
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.5);
   let py = y + 5;
@@ -379,12 +359,12 @@ export async function generateQuotationPDF(
   });
   y += payBoxH;
 
-  // ============ ESPECIFICACIONES DE PRODUCTOS (SIN CAMBIOS DE LAYOUT) ============
+  // ============ ESPECIFICACIONES POR PRODUCTO (COMPACTO) ============
   for (const item of products) {
     doc.addPage();
     let yy = 20;
 
-    // Header compacto
+    // Header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.text("Especificaciones del Producto", M, yy);
@@ -392,30 +372,37 @@ export async function generateQuotationPDF(
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.text(`Cotización: ${quotation.id}`, pw - M, yy - 2, { align: "right" });
-    doc.text(formattedDate, pw - M, yy + 4, { align: "right" });
+    doc.text(
+      new Date(quotation.date).toLocaleDateString("es-MX", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      pw - M,
+      yy + 4,
+      { align: "right" }
+    );
 
     yy += 8;
     horizontalRule(doc, yy);
     yy += 12;
 
-    // Layout horizontal: imagen a la izquierda, info a la derecha
-    const frameW = 100;
-    const frameH = 75;
+    // Imagen grande centrada
+    const frameW = pw - 2 * M; // ocupar casi todo el ancho
+    const frameH = 120; // altura mayor
     const frameX = M;
     const frameY = yy;
 
-    (doc as any).setLineDashPattern?.([2, 3], 0);
-    doc.setDrawColor(...COLORS.gray500);
+    doc.setDrawColor(...COLORS.gray300);
     doc.rect(frameX, frameY, frameW, frameH);
-    (doc as any).setLineDashPattern?.([], 0);
 
-    // Imagen centrada
     const imgB64 = await fetchImageAsBase64(item.product.image_url);
     if (imgB64) {
-      const maxInnerW = frameW - 16;
-      const maxInnerH = frameH - 16;
+      // Ajuste manteniendo proporción (suponemos cuadrada 800x800)
       const originalW = 800;
       const originalH = 800;
+      const maxInnerW = frameW - 20;
+      const maxInnerH = frameH - 20;
       const ratio = Math.min(maxInnerW / originalW, maxInnerH / originalH);
       const drawW = originalW * ratio;
       const drawH = originalH * ratio;
@@ -425,113 +412,44 @@ export async function generateQuotationPDF(
       try {
         doc.addImage(imgB64, "JPEG", imgX, imgY, drawW, drawH);
       } catch {
-        doc.setFillColor(...COLORS.gray150);
+        doc.setFillColor(...COLORS.gray100);
         doc.rect(frameX + 4, frameY + 4, frameW - 8, frameH - 8, "F");
-        doc.setFontSize(8);
-        doc.setTextColor(...COLORS.gray600);
+        doc.setFontSize(9);
+        doc.setTextColor(...COLORS.gray500);
         doc.text(
           "Imagen no disponible",
           frameX + frameW / 2,
           frameY + frameH / 2,
-          {
-            align: "center",
-          }
+          { align: "center" }
         );
         doc.setTextColor(...COLORS.black);
       }
+    } else {
+      doc.setFillColor(...COLORS.gray100);
+      doc.rect(frameX + 4, frameY + 4, frameW - 8, frameH - 8, "F");
+      doc.setFontSize(9);
+      doc.setTextColor(...COLORS.gray500);
+      doc.text(
+        "Imagen no disponible",
+        frameX + frameW / 2,
+        frameY + frameH / 2,
+        { align: "center" }
+      );
+      doc.setTextColor(...COLORS.black);
     }
-
-    // Panel de información a la derecha
-    const panelX = frameX + frameW + 12;
-    const panelW = pw - M - panelX;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    const titleLines = doc.splitTextToSize(item.product.name, panelW);
-    doc.text(titleLines, panelX, frameY + 8);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(item.product.brand, panelX, frameY + 20);
-
-    doc.setFontSize(8);
-    const descLines = doc.splitTextToSize(
-      item.product.description.substring(0, 200),
-      panelW
-    );
-    doc.text(descLines.slice(0, 4), panelX, frameY + 28);
-
-    // Banner precio
-    const bannerY = frameY + frameH - 12;
-    doc.setFillColor(...COLORS.dark);
-    doc.rect(panelX, bannerY, panelW, 12, "F");
-    doc.setTextColor(...COLORS.white);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text(
-      formatCurrency(item.price) + " MXN",
-      panelX + panelW / 2,
-      bannerY + 8,
-      { align: "center" }
-    );
-    doc.setTextColor(...COLORS.black);
 
     yy = frameY + frameH + 20;
 
-    // Card de información (compacta)
-    const cardW = pw - 2 * M;
-    const cardH = 85;
-
-    doc.setDrawColor(...COLORS.black);
-    doc.setLineWidth(1);
-    doc.rect(M, yy, cardW, cardH);
-
-    let cardY = yy + 8;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text(item.product.name, M + 8, cardY);
-    cardY += 8;
-
-    doc.setDrawColor(...COLORS.black);
-    doc.setLineWidth(0.5);
-    doc.line(M + 8, cardY, pw - M - 8, cardY);
-    cardY += 8;
-
+    // Información del producto (tabla simple)
+    const infoHeaderY = yy;
+    doc.setFillColor(...COLORS.gray150);
+    doc.rect(M, infoHeaderY, pw - 2 * M, 8, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
-    doc.text(item.product.brand.toUpperCase(), M + 8, cardY);
-    cardY += 8;
+    doc.text("INFORMACIÓN DEL PRODUCTO", M + 4, infoHeaderY + 5);
+    yy += 10;
 
-    const descBoxH = 20;
-    doc.setFillColor(...COLORS.gray150);
-    doc.setDrawColor(...COLORS.gray300);
-    doc.rect(M + 8, cardY, cardW - 16, descBoxH, "FD");
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-    const shortDesc = doc.splitTextToSize(item.product.description, cardW - 24);
-    doc.text(shortDesc.slice(0, 3), M + 12, cardY + 4);
-    cardY += descBoxH + 6;
-
-    doc.setFillColor(...COLORS.black);
-    doc.rect(M + 8, cardY, cardW - 16, 12, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(...COLORS.white);
-    doc.text(formatCurrency(item.price) + " MXN", M + cardW / 2, cardY + 8, {
-      align: "center",
-    });
-    doc.setTextColor(...COLORS.black);
-
-    yy += cardH + 12;
-
-    // Header de info
-    doc.setFillColor(...COLORS.gray150);
-    doc.rect(M, yy, cardW, 8, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.text("INFORMACIÓN DEL PRODUCTO", M + 4, yy + 5);
-    yy += 8;
-
+    // Estructura: tres filas, dos columnas lógicas (etiqueta/valor|etiqueta/valor)
     const infoData = [
       ["Código:", String(item.product.id), "Marca:", item.product.brand],
       [
@@ -548,19 +466,40 @@ export async function generateQuotationPDF(
       ],
     ];
 
-    const colWidth = cardW / 2;
+    const rowHeight = 8;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
+    const tableW = pw - 2 * M;
+    const midX = M + tableW / 2;
 
     infoData.forEach((row) => {
       doc.setDrawColor(...COLORS.gray300);
-      doc.rect(M, yy, cardW, 8);
-      doc.text(row[0], M + 3, yy + 5);
-      doc.text(row[1], M + colWidth - 3, yy + 5, { align: "right" });
-      doc.text(row[2], M + colWidth + 3, yy + 5);
-      doc.text(row[3], pw - M - 3, yy + 5, { align: "right" });
-      yy += 8;
+      doc.rect(M, yy, tableW, rowHeight);
+      // Col 1
+      doc.text(row[0], M + 4, yy + 5);
+      doc.text(row[1], midX - 4, yy + 5, { align: "right" });
+      // Col 2
+      doc.text(row[2], midX + 4, yy + 5);
+      doc.text(row[3], M + tableW - 4, yy + 5, { align: "right" });
+      yy += rowHeight;
     });
+
+    // (Opcional) si quisieras descripción corta debajo descomentá:
+    /*
+    const desc = item.product.description;
+    if (desc) {
+      yy += 10;
+      const descLines = doc.splitTextToSize(desc, pw - 2 * M);
+      const boxH = Math.min(descLines.length * 4 + 8, 40);
+      doc.setFillColor(...COLORS.gray100);
+      doc.setDrawColor(...COLORS.gray300);
+      doc.rect(M, yy, pw - 2 * M, boxH, "FD");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text(descLines.slice(0, Math.floor((boxH - 8) / 4)), M + 4, yy + 5);
+      yy += boxH;
+    }
+    */
   }
 
   return new Uint8Array(doc.output("arraybuffer"));

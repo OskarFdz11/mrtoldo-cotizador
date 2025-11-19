@@ -1,35 +1,25 @@
 "use client";
-
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import ConfirmDeleteModal from "./confirm-delete-modal";
 import SuccessModal from "./success-modal";
+import { useI18n } from "@/app/ui/i18n-provider";
+import type { Dictionary } from "@/app/lib/dictionaries";
 
 interface ConfirmDeleteButtonProps {
-  /** ID del elemento a eliminar */
   itemId: string | number;
-  /** Acción del servidor para eliminar */
   deleteAction: (
     id: string | number
   ) => Promise<void | { success: boolean; message: string }>;
-  /** Nombre del tipo de elemento (ej: "cotización", "cliente", "producto") */
+
   entityName: string;
-  /** Nombre o descripción específica del elemento (opcional) */
+  entityLabel?: string;
+
   itemName?: string;
-  /** Texto personalizado del botón (opcional) */
-  buttonLabel?: string;
-  /** Mostrar solo icono o texto también */
   iconOnly?: boolean;
-  /** Clase CSS personalizada para el botón */
   buttonClassName?: string;
-  /** Título personalizado del modal */
-  modalTitle?: string;
-  /** Mensaje personalizado del modal */
-  modalMessage?: string;
-  /** Mensaje de éxito personalizado */
-  successMessage?: string;
-  /** Callback opcional después de eliminar exitosamente */
+  dict?: Dictionary;
   onDeleteSuccess?: () => void;
 }
 
@@ -37,13 +27,11 @@ export default function ConfirmDeleteButton({
   itemId,
   deleteAction,
   entityName,
+  entityLabel,
   itemName,
-  buttonLabel,
   iconOnly = true,
   buttonClassName = "rounded-md border p-2 hover:bg-gray-100 text-red-600 hover:text-red-500",
-  modalTitle,
-  modalMessage,
-  successMessage,
+  dict: dictProp,
   onDeleteSuccess,
 }: ConfirmDeleteButtonProps) {
   const router = useRouter();
@@ -51,50 +39,48 @@ export default function ConfirmDeleteButton({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
-  // Textos por defecto basados en entityName
-  const defaultTitle = modalTitle || `¿Eliminar ${entityName}?`;
-  const defaultMessage = modalMessage || "Esta acción no se puede deshacer.";
-  const defaultSuccessMessage =
-    successMessage ||
-    `¡${
-      entityName.charAt(0).toUpperCase() + entityName.slice(1)
-    } eliminado exitosamente!`;
-  const defaultButtonLabel = buttonLabel || `Eliminar ${entityName}`;
+  const { dict: contextDict } = useI18n();
+  const dict = dictProp || contextDict;
+
+  const label = entityLabel?.trim() || entityName;
+
+  const titleShort = `${
+    dict.common?.deleteShort || dict.common?.delete || "Eliminar"
+  } ${label}?`;
+
+  const successTitle =
+    dict.forms?.deleteSuccess ||
+    `¡${label.charAt(0).toUpperCase() + label.slice(1)} ${
+      dict.common?.deleted || "eliminado"
+    }!`;
+
+  const deletingSpinnerLabel = dict.common?.deleting || "Eliminando...";
+  const buttonLabel = `${dict.common?.delete || "Eliminar"} ${label}`;
 
   const handleConfirm = () => {
     startTransition(async () => {
       try {
         const result = await deleteAction(itemId);
-
-        if (result && typeof result === "object" && "success" in result) {
-          if (!result.success) {
-            alert(
-              result.message || `Ocurrió un error al eliminar ${entityName}.`
-            );
-            setIsConfirmOpen(false);
-            return;
-          }
+        if (
+          result &&
+          typeof result === "object" &&
+          "success" in result &&
+          !result.success
+        ) {
+          alert(result.message || dict.forms?.error || "Ocurrió un error.");
+          setIsConfirmOpen(false);
+          return;
         }
         setIsConfirmOpen(false);
         setIsSuccessOpen(true);
-
-        // Ejecutar callback personalizado si existe
-        if (onDeleteSuccess) {
-          onDeleteSuccess();
-        }
-
-        // Refrescar la página para actualizar los datos
+        onDeleteSuccess?.();
         router.refresh();
-      } catch (error) {
-        console.error(`Error deleting ${entityName}:`, error);
-        alert(`Ocurrió un error al eliminar ${entityName}.`);
+      } catch (err) {
+        console.error("Delete error:", err);
+        alert(dict.forms?.error || `Ocurrió un error al eliminar ${label}.`);
         setIsConfirmOpen(false);
       }
     });
-  };
-
-  const handleSuccessClose = () => {
-    setIsSuccessOpen(false);
   };
 
   return (
@@ -104,38 +90,42 @@ export default function ConfirmDeleteButton({
         onClick={() => setIsConfirmOpen(true)}
         disabled={isPending}
         className={buttonClassName}
-        title={defaultButtonLabel}
+        title={buttonLabel}
       >
         {isPending ? (
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin"></div>
-            {!iconOnly && <span className="text-xs">Eliminando...</span>}
+            {!iconOnly && (
+              <span className="text-xs">{deletingSpinnerLabel}</span>
+            )}
           </div>
         ) : (
           <>
             <TrashIcon className="w-5 h-5" />
-            {!iconOnly && <span className="ml-1">{defaultButtonLabel}</span>}
+            {!iconOnly && <span className="ml-1">{buttonLabel}</span>}
           </>
         )}
       </button>
 
-      {/* Modal de confirmación */}
       <ConfirmDeleteModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirm}
-        title={defaultTitle}
-        message={defaultMessage}
+        title={titleShort}
+        message={
+          dict.common?.deleteWarning || "Esta acción no se puede deshacer."
+        }
         itemName={itemName}
       />
 
-      {/* Modal de éxito */}
       <SuccessModal
         isOpen={isSuccessOpen}
-        onClose={handleSuccessClose}
-        title={defaultSuccessMessage}
-        message="La operación se completó correctamente."
-        autoCloseTime={2000}
+        onClose={() => setIsSuccessOpen(false)}
+        title={successTitle}
+        message={
+          dict.forms?.operationOk || "La operación se completó correctamente."
+        }
+        autoCloseTime={1800}
       />
     </>
   );

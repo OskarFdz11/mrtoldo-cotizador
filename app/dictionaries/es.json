@@ -11,7 +11,15 @@
     "yes": "Sí",
     "no": "No",
     "close": "Cerrar",
-    "accept": "Aceptar"
+    "accept": "Aceptar",
+    "ok": "OK",
+    "deleteShort": "¿Eliminar",
+    "deleting": "Eliminando...",
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "deleted": "eliminado",
+    "updated": "actualizado",
+    "created": "creado",
+    "operationCompleted": "La operación se completó correctamente."
   },
   "auth": {
     "loginTitle": "Por favor inicia sesión.",
@@ -19,7 +27,12 @@
     "emailPlaceholder": "Ingresa tu correo electrónico",
     "password": "Contraseña",
     "passwordPlaceholder": "Ingresa tu contraseña",
-    "loginButton": "Iniciar sesión"
+    "loginButton": "Iniciar sesión",
+    "logoutTitle": "¿Cerrar sesión?",
+    "logoutMessage": "¿Estás seguro de que quieres cerrar tu sesión? Tendrás que volver a iniciar sesión para acceder al dashboard.",
+    "logoutConfirm": "Cerrar sesión",
+    "logoutCancel": "Cancelar",
+    "logoutPending": "Cerrando sesión..."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -83,10 +96,13 @@
     "productUpdated": "Producto actualizado correctamente",
     "productDeleted": "Producto eliminado correctamente",
     "confirmDelete": "¿Estás seguro de que quieres eliminar este producto?",
-    "deleteWarning": "Esta acción no se puede deshacer."
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "createdTitle": "Producto creado correctamente",
+    "updatedTitle": "Producto actualizado correctamente"
   },
   "customers": {
     "title": "Clientes",
+    "singleTitle": "Cliente",
     "createCustomer": "Crear Cliente",
     "searchPlaceholder": "Buscar clientes...",
     "creating": "Creando cliente...",
@@ -104,7 +120,12 @@
     "phone": "Teléfono",
     "phonePlaceholder": "Ingresa el teléfono",
     "rfc": "RFC",
-    "rfcPlaceholder": "Ingresa el RFC"
+    "rfcPlaceholder": "Ingresa el RFC",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este cliente?",
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "customer": "cliente",
+    "createdTitle": "Cliente creado correctamente",
+    "updatedTitle": "Cliente actualizado correctamente"
   },
   "categories": {
     "title": "Categorías",
@@ -119,7 +140,11 @@
     "descriptionPlaceholder": "Ingresa la descripción",
     "noCategories": "No hay categorías",
     "noCategoriesFound": "No se encontraron categorías para \"{query}\"",
-    "noCategoriesSubtitle": "Comienza creando tu primera categoría"
+    "noCategoriesSubtitle": "Comienza creando tu primera categoría",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar esta categoría?",
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "createdTitle": "Categoría creada correctamente",
+    "updatedTitle": "Categoría actualizada correctamente"
   },
   "quotations": {
     "title": "Cotizaciones",
@@ -151,10 +176,34 @@
     "setStatus": "Establecer el estado de la cotización",
     "statusPending": "Pendiente",
     "statusPaid": "Pagada",
-    "downloadPdf": "Descargar PDF",
     "noQuotations": "No hay cotizaciones",
     "noQuotationsFound": "No se encontraron cotizaciones para \"{query}\"",
-    "noQuotationsSubtitle": "Comienza creando tu primera cotización"
+    "noQuotationsSubtitle": "Comienza creando tu primera cotización",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar esta cotización?",
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "edit": "Editar",
+    "quotation": "cotización",
+    "duplicate": "Duplicar",
+    "duplicating": "Duplicando...",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "confirmDeleteTitle": "¿Eliminar cotización?",
+    "confirmDeleteMessage": "Esta acción no se puede deshacer.",
+    "duplicateSuccessTitle": "¡Cotización duplicada!",
+    "duplicateSuccessMessage": "Nueva cotización creada: {id}",
+    "deleteSuccessTitle": "¡Cotización eliminada!",
+    "deleteSuccessMessage": "La cotización {id} se eliminó correctamente.",
+    "createdTitle": "Cotización creada correctamente",
+    "updatedTitle": "Cotización actualizada correctamente",
+    "download": "Descargar",
+    "generating": "Generando...",
+    "generatingPdf": "Generando PDF...",
+    "downloadingPdf": "Descargando PDF...",
+    "downloadPdf": "Descargar PDF",
+    "notValidPdf": "El PDF generado no es válido.",
+    "downloadError": "Error al descargar el PDF. Por favor, inténtalo de nuevo.",
+    "filePrefix": "cotización_",
+    "inventoryError": "Stock insuficiente para completar la operación."
   },
   "billingDetails": {
     "title": "Detalles de Pago",
@@ -193,7 +242,11 @@
     "city": "Ciudad",
     "cityPlaceholder": "Ingresa la ciudad",
     "cp": "Código Postal",
-    "cpPlaceholder": "Ingresa el código postal"
+    "cpPlaceholder": "Ingresa el código postal",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este detalle de pago?",
+    "deleteWarning": "Esta acción no se puede deshacer.",
+    "createdTitle": "Detalle de pago creado correctamente",
+    "updatedTitle": "Detalle de pago actualizado correctamente"
   },
   "forms": {
     "required": "Este campo es obligatorio",
@@ -202,6 +255,9 @@
     "processing": "Procesando...",
     "createSuccess": "Creado exitosamente",
     "updateSuccess": "Actualizado exitosamente",
-    "deleteSuccess": "Eliminado exitosamente"
+    "deleteSuccess": "Eliminado exitosamente",
+    "error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "operationOk": "La operación se completó correctamente.",
+    "successTitle": "¡Operación exitosa!"
   }
 }

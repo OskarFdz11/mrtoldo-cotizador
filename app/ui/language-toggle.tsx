@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { GlobeAltIcon } from "@heroicons/react/24/outline";
+import { LanguageIcon } from "@heroicons/react/24/outline";
 
 const LOCALES = ["es", "en"] as const;
 const DEFAULT_LOCALE = "es";
@@ -32,46 +32,50 @@ export default function LanguageToggle() {
 
   const currentLocale = extractLocale(pathname);
   const basePath = stripLocale(pathname) || "/";
+  const nextLocale = currentLocale === "es" ? "en" : "es";
 
   const switchLanguage = (newLocale: string) => {
     if (newLocale === currentLocale) return;
-
     try {
       document.cookie = `${LOCALE_COOKIE}=${newLocale}; Path=/; Max-Age=31536000; SameSite=Lax`;
     } catch {}
-
     const nextPath =
       basePath === "/" ? `/${newLocale}` : `/${newLocale}${basePath}`;
-
     router.push(nextPath);
-
     setTimeout(() => {
       if (window.location.pathname !== nextPath) {
         window.location.href = nextPath;
       }
-    }, 100);
+    }, 120);
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {(LOCALES as readonly string[]).map((lng) => {
-        const active = lng === currentLocale;
-        return (
-          <button
-            key={lng}
-            onClick={() => switchLanguage(lng)}
-            className={`flex items-center gap-1 rounded px-2 py-1 text-sm transition-colors ${
-              active
-                ? "bg-blue-600 text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-            aria-pressed={active}
-          >
-            <GlobeAltIcon className="h-4 w-4" />
-            <span className="font-medium">{lng.toUpperCase()}</span>
-          </button>
-        );
-      })}
-    </div>
+    <button
+      type="button"
+      onClick={() => switchLanguage(nextLocale)}
+      aria-label={
+        currentLocale === "es"
+          ? "Cambiar idioma a inglés"
+          : "Switch language to Spanish"
+      }
+      title={currentLocale === "es" ? "Switch to English" : "Cambiar a Español"}
+      className={`
+        inline-flex items-center gap-1 px-2 py-1
+        text-sm font-semibold tracking-wide
+        focus:outline-none 
+        
+        /* Mobile (topbar azul) */
+        text-white hover:text-white/80
+        /* Desktop (sidebar / fondos claros) */
+        md:text-gray-700 md:hover:text-gray-900
+      `}
+    >
+      <LanguageIcon className="h-4 w-4 md:text-gray-600 md:hover:text-gray-800 transition-colors" />
+      {/* Variante A: mostrar el actual */}
+      <span>{currentLocale.toUpperCase()}</span>
+      {/* Variante B: mostrar el destino (descomenta para usarla)
+          <span>{nextLocale.toUpperCase()}</span>
+      */}
+    </button>
   );
 }

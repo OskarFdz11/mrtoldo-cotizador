@@ -22,7 +22,7 @@ export default async function CategoriesTable({
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden rounded-md bg-gray-50 p-2 md:pt-0">
-              {/* ✅ Condición para cuando no hay categorías */}
+              {/* Condición para cuando no hay categorías */}
               {!categories || categories.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
                   <div className="text-gray-400 text-center">
@@ -142,11 +142,14 @@ export default async function CategoriesTable({
                           </td>
                           <td className="whitespace-nowrap bg-white py-5 pl-6 pr-3 text-right">
                             <div className="flex justify-end gap-2">
-                              <UpdateCategory id={category.id} />
+                              <UpdateCategory id={category.id} variant="icon" />
                               <ConfirmDeleteButton
                                 itemId={category.id}
                                 deleteAction={deleteCategory}
                                 entityName="categoría"
+                                entityLabel={
+                                  dict.categories?.singleTitle || "Categoría"
+                                }
                                 itemName={category.name}
                               />
                             </div>

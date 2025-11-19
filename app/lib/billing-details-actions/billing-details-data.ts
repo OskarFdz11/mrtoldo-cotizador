@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/app/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function fetchBillingDetails() {
@@ -87,62 +88,40 @@ export async function fetchFilteredBillingDetails(
   noStore();
   const ITEMS_PER_PAGE = 6;
 
-  try {
-    const whereCondition = {
-      OR: [
-        { deleted_at: null },
-        { name: { contains: query, mode: "insensitive" as const } },
-        { lastname: { contains: query, mode: "insensitive" as const } },
-        { company: { contains: query, mode: "insensitive" as const } },
-        { email: { contains: query, mode: "insensitive" as const } },
-        { rfc: { contains: query, mode: "insensitive" as const } },
-        { clabe: { contains: query, mode: "insensitive" as const } },
-        { checkAccount: { contains: query, mode: "insensitive" as const } },
-        // Buscar en campos de dirección también
-        {
-          address: {
-            street: { contains: query, mode: "insensitive" as const },
-          },
-        },
-        {
-          address: {
-            city: { contains: query, mode: "insensitive" as const },
-          },
-        },
-        {
-          address: {
-            colony: { contains: query, mode: "insensitive" as const },
-          },
-        },
-        // Solo buscar por teléfono si el query es numérico
-        ...(query && !isNaN(Number(query)) && query.length >= 3
-          ? [{ phone: { equals: BigInt(query) } }]
-          : []),
-      ],
-    };
+  const q = (query ?? "").trim();
+  const hasQuery = q.length > 0;
 
+  const orFilters = hasQuery
+    ? [
+        { name: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { lastname: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { company: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { email: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { rfc: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { clabe: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        { checkAccount: { contains: q, mode: Prisma.QueryMode.insensitive } },
+        {
+          phone:
+            hasQuery && !isNaN(Number(q)) ? { equals: BigInt(q) } : undefined,
+        },
+      ]
+    : undefined;
+
+  const where = {
+    deleted_at: null,
+    ...(orFilters ? { OR: orFilters } : {}),
+  } as const;
+
+  try {
     const [billingDetails, totalCount] = await Promise.all([
       prisma.billingDetails.findMany({
-        where: { ...whereCondition, deleted_at: null },
-        include: {
-          address: true,
-          quotations: {
-            select: {
-              id: true,
-              total: true,
-              status: true,
-            },
-          },
-          _count: {
-            select: { quotations: true },
-          },
-        },
-        orderBy: { name: "asc" },
+        where,
+        orderBy: { id: "desc" },
         skip: (currentPage - 1) * ITEMS_PER_PAGE,
         take: ITEMS_PER_PAGE,
       }),
       prisma.billingDetails.count({
-        where: whereCondition,
+        where,
       }),
     ]);
 
@@ -165,7 +144,6 @@ export async function fetchFilteredBillingDetails(
   }
 }
 
-// Función adicional para obtener billing details básicos (para selects/dropdowns)
 export async function fetchBillingDetailsField() {
   noStore();
   try {

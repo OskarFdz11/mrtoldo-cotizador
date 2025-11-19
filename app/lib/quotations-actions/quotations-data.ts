@@ -2,6 +2,7 @@
 
 import { formatCurrency } from "../utils";
 import { prisma } from "@/app/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function fetchRevenue() {
@@ -134,9 +135,21 @@ export async function fetchFilteredQuotations(
       where: {
         deleted_at: null,
         OR: [
-          { customer: { name: { contains: query, mode: "insensitive" } } },
-          { customer: { email: { contains: query, mode: "insensitive" } } },
-          { customer: { company: { contains: query, mode: "insensitive" } } },
+          {
+            customer: {
+              name: { contains: query, mode: Prisma.QueryMode.insensitive },
+            },
+          },
+          {
+            customer: {
+              email: { contains: query, mode: Prisma.QueryMode.insensitive },
+            },
+          },
+          {
+            customer: {
+              company: { contains: query, mode: Prisma.QueryMode.insensitive },
+            },
+          },
           { total: { equals: Number(query) || undefined } },
           { status: { equals: query ? String(query) : undefined } },
         ],
@@ -175,8 +188,16 @@ export async function fetchQuotationsPages(query: string) {
 
   const orConditions: any[] = [
     { deleted_at: null },
-    { customer: { name: { contains: query, mode: "insensitive" } } },
-    { customer: { email: { contains: query, mode: "insensitive" } } },
+    {
+      customer: {
+        name: { contains: query, mode: Prisma.QueryMode.insensitive },
+      },
+    },
+    {
+      customer: {
+        email: { contains: query, mode: Prisma.QueryMode.insensitive },
+      },
+    },
     { total: { equals: Number(query) || undefined } },
   ];
 

@@ -46,7 +46,7 @@ export default async function Page({
         fallback={<BillingDetailsTableInlineSkeleton />}
       >
         <FlashFromQuery
-          entity="detalles de pago"
+          entityKey="billingDetails"
           clearToPath={`/${locale}/dashboard/billing-details`}
         />
         <Table query={query} currentPage={currentPage} dict={dict} />

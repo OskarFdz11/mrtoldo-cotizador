@@ -226,11 +226,14 @@ export default async function CustomersTable({
                         </td>
                         <td className="whitespace-nowrap py-3 px-3">
                           <div className="flex items-center gap-2">
-                            <UpdateCustomer id={customer.id} />
+                            <UpdateCustomer id={customer.id} variant="icon" />
                             <ConfirmDeleteButton
                               itemId={customer.id}
                               deleteAction={deleteCustomer}
                               entityName="cliente"
+                              entityLabel={
+                                dict.customers?.singleTitle || "Cliente"
+                              }
                               itemName={`${customer.name} ${customer.lastname}`}
                             />
                           </div>

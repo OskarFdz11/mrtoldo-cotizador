@@ -13,20 +13,28 @@ import {
   duplicateQuotation,
 } from "@/app/lib/quotations-actions/quotations-actions";
 import { useRouter } from "next/navigation";
-import SuccessModal from "../success-modal";
-import ConfirmDeleteModal from "../confirm-delete-modal";
+import SuccessModal from "@/app/ui/success-modal";
+import ConfirmDeleteModal from "@/app/ui/confirm-delete-modal";
+import { useI18n } from "@/app/ui/i18n-provider";
+import type { Dictionary } from "@/app/lib/dictionaries";
 
 interface QuotationActionsProps {
   quotationId: number;
   customerName: string;
   customerLastName?: string;
+  dict?: Dictionary; // opcional si quieres inyectar directamente
 }
 
 export default function QuotationActions({
   quotationId,
   customerName,
   customerLastName,
+  dict: dictProp,
 }: QuotationActionsProps) {
+  const router = useRouter();
+  const { dict: contextDict, locale } = useI18n();
+  const dict = dictProp || contextDict;
+
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -36,10 +44,35 @@ export default function QuotationActions({
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [newQuotationId, setNewQuotationId] = useState<number | null>(null);
 
-  const router = useRouter();
+  // Labels traducidos
+  const editLabel = dict.quotations?.edit || "Editar";
+  const duplicateLabel = dict.quotations?.duplicate || "Duplicar";
+  const duplicatingLabel = dict.quotations?.duplicating || "Duplicando...";
+  const deleteLabel = dict.quotations?.delete || "Eliminar";
+  const deletingLabel = dict.quotations?.deleting || "Eliminando...";
+  const confirmDeleteTitle =
+    dict.quotations?.confirmDeleteTitle || "¿Eliminar cotización?";
+  const confirmDeleteMessage =
+    dict.quotations?.confirmDeleteMessage ||
+    "Esta acción no se puede deshacer.";
+
+  const duplicateSuccessTitle =
+    dict.quotations?.duplicateSuccessTitle || "¡Cotización duplicada!";
+  const duplicateSuccessMessageTemplate =
+    dict.quotations?.duplicateSuccessMessage || "Nueva cotización creada: {id}";
+
+  const deleteSuccessTitle =
+    dict.quotations?.deleteSuccessTitle || "¡Cotización eliminada!";
+  const deleteSuccessMessageTemplate =
+    dict.quotations?.deleteSuccessMessage ||
+    "La cotización {id} se eliminó correctamente.";
+
+  const itemDisplayName = `#${quotationId} — ${customerName} ${
+    customerLastName || ""
+  }`.trim();
 
   const handleEdit = () => {
-    router.push(`/dashboard/quotations/${quotationId}/edit`);
+    router.push(`/${locale}/dashboard/quotations/${quotationId}/edit`);
   };
 
   const handleDuplicate = async () => {
@@ -50,7 +83,11 @@ export default function QuotationActions({
         setNewQuotationId(response.quotationId);
         setShowDuplicateSuccessModal(true);
       } else {
-        alert(response?.message || "Error al duplicar la cotización");
+        alert(
+          response?.message ||
+            dict.forms?.error ||
+            "Error al duplicar la cotización"
+        );
       }
     } finally {
       setIsDuplicating(false);
@@ -69,24 +106,36 @@ export default function QuotationActions({
       setShowDeleteSuccessModal(true);
       router.refresh();
     } catch {
-      alert("Error al eliminar la cotización");
+      alert(dict.forms?.error || "Error al eliminar la cotización");
       setShowDeleteModal(false);
     } finally {
       setIsDeleting(false);
     }
   };
 
+  const duplicateSuccessMessage = newQuotationId
+    ? duplicateSuccessMessageTemplate.replace("{id}", `#${newQuotationId}`)
+    : duplicateSuccessMessageTemplate.replace("{id}", "");
+
+  const deleteSuccessMessage = deleteSuccessMessageTemplate.replace(
+    "{id}",
+    `#${quotationId}`
+  );
+
   return (
     <>
       <Menu as="div" className="relative inline-block">
-        <MenuButton className="rounded-md border p-2 hover:bg-gray-100 text-gray-600 hover:text-gray-500 transition-colors">
+        <MenuButton
+          aria-label={dict.common?.actions || "Acciones"}
+          className="rounded-md border p-2 hover:bg-gray-100 text-gray-600 hover:text-gray-500 transition-colors"
+        >
           <EllipsisVerticalIcon className="w-5 h-5" />
         </MenuButton>
 
         <MenuItems
           anchor="bottom end"
           transition
-          className="absolute right-0 z-[9999] mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 border border-gray-200 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+          className="absolute right-0 z-[60] mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 border border-gray-200 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
         >
           <MenuItem>
             <button
@@ -94,7 +143,7 @@ export default function QuotationActions({
               className="flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-none transition-colors"
             >
               <PencilIcon className="w-4 h-4 mr-3" />
-              Editar
+              {editLabel}
             </button>
           </MenuItem>
 
@@ -106,31 +155,13 @@ export default function QuotationActions({
             >
               {isDuplicating ? (
                 <span className="flex items-center">
-                  <svg
-                    className="animate-spin w-4 h-4 mr-3"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                  Duplicando...
+                  <span className="w-4 h-4 mr-3 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+                  {duplicatingLabel}
                 </span>
               ) : (
                 <>
                   <DocumentDuplicateIcon className="w-4 h-4 mr-3" />
-                  Duplicar
+                  {duplicateLabel}
                 </>
               )}
             </button>
@@ -142,26 +173,36 @@ export default function QuotationActions({
               disabled={isDeleting}
               className="flex w-full items-center px-4 py-2 text-sm text-red-600 data-focus:bg-red-50 data-focus:outline-none disabled:opacity-50 transition-colors"
             >
-              <TrashIcon className="w-4 h-4 mr-3" />
-              Eliminar
+              {isDeleting ? (
+                <span className="flex items-center">
+                  <span className="w-4 h-4 mr-3 border-2 border-red-200 border-t-red-600 rounded-full animate-spin" />
+                  {deletingLabel}
+                </span>
+              ) : (
+                <>
+                  <TrashIcon className="w-4 h-4 mr-3" />
+                  {deleteLabel}
+                </>
+              )}
             </button>
           </MenuItem>
         </MenuItems>
       </Menu>
 
-      {/* Modales */}
+      {/* Modal eliminar */}
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
-        title="¿Eliminar cotización?"
-        message={`¿Estás seguro de que quieres eliminar la cotización? Esta acción no se puede deshacer.`}
-        itemName={`Cotización #${quotationId} de ${customerName} ${
-          customerLastName || ""
-        }`}
+        title={confirmDeleteTitle}
+        message={confirmDeleteMessage}
+        itemName={itemDisplayName}
         isLoading={isDeleting}
+        confirmLabel={dict.quotations?.delete || "Eliminar"}
+        cancelLabel={dict.common?.cancel || "Cancelar"}
       />
 
+      {/* Modal duplicar éxito */}
       <SuccessModal
         isOpen={showDuplicateSuccessModal}
         onClose={() => {
@@ -169,16 +210,17 @@ export default function QuotationActions({
           setNewQuotationId(null);
           router.refresh();
         }}
-        title="¡Cotización duplicada exitosamente!"
-        message={`Nueva cotización creada: #${newQuotationId}`}
+        title={duplicateSuccessTitle}
+        message={duplicateSuccessMessage}
         autoCloseTime={3000}
       />
 
+      {/* Modal eliminar éxito */}
       <SuccessModal
         isOpen={showDeleteSuccessModal}
         onClose={() => setShowDeleteSuccessModal(false)}
-        title="¡Cotización eliminada exitosamente!"
-        message={`La cotización #${quotationId} ha sido eliminada correctamente.`}
+        title={deleteSuccessTitle}
+        message={deleteSuccessMessage}
         autoCloseTime={2000}
       />
     </>

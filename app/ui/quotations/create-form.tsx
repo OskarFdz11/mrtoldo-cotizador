@@ -160,8 +160,7 @@ export default function CreateQuotationForm({
   );
 
   const handleSubmit = async (fd: FormData) => {
-    // Valida antes de mostrar loader
-    const validProducts = selectedProducts.filter((p) => !!p.productId);
+    const validProducts = selectedProducts.filter((p) => p.productId);
     if (validProducts.length === 0) {
       alert(
         dict.quotations?.atLeastOneProduct ||
@@ -170,11 +169,9 @@ export default function CreateQuotationForm({
       return;
     }
 
-    // Setea campos desde persistencia y estado local
     fd.set("customerId", persisted.customerId);
     fd.set("billingDetailsId", persisted.billingDetailsId);
     fd.set("notes", persisted.notes);
-    fd.set("status", persisted.status);
     fd.set("iva", iva.toString());
     fd.set("products", JSON.stringify(validProducts));
 
@@ -370,6 +367,14 @@ export default function CreateQuotationForm({
                 {e}
               </p>
             ))}
+
+            <div id="inventory-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.inventory?.map((e) => (
+                <p key={e} className="mt-2 text-sm text-red-600">
+                  {e}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -447,7 +452,8 @@ export default function CreateQuotationForm({
                   name="status"
                   type="radio"
                   value="pending"
-                  defaultChecked
+                  checked={persisted.status === "pending"}
+                  onChange={(e) => updateData({ status: e.target.value })}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -464,6 +470,8 @@ export default function CreateQuotationForm({
                   name="status"
                   type="radio"
                   value="paid"
+                  checked={persisted.status === "paid"}
+                  onChange={(e) => updateData({ status: e.target.value })}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label

@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/app/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function fetchCategories() {
@@ -44,8 +45,13 @@ export async function fetchFilteredCategories(
         where: {
           deleted_at: null,
           OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { description: { contains: query, mode: "insensitive" } },
+            { name: { contains: query, mode: Prisma.QueryMode.insensitive } },
+            {
+              description: {
+                contains: query,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
           ],
         },
         include: {
@@ -58,8 +64,13 @@ export async function fetchFilteredCategories(
       prisma.category.count({
         where: {
           OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { description: { contains: query, mode: "insensitive" } },
+            { name: { contains: query, mode: Prisma.QueryMode.insensitive } },
+            {
+              description: {
+                contains: query,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
           ],
         },
       }),

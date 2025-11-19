@@ -280,6 +280,8 @@ export default async function QuotationsTable({
                             <QuotationActions
                               quotationId={quotation.id}
                               customerName={quotation.customer.name}
+                              customerLastName={quotation.customer.lastname}
+                              dict={dict}
                             />
                           </div>
                         </td>

@@ -11,7 +11,15 @@
     "yes": "Yes",
     "no": "No",
     "close": "Close",
-    "accept": "Accept"
+    "accept": "Accept",
+    "ok": "OK",
+    "deleteShort": "Delete",
+    "deleting": "Deleting...",
+    "deleteWarning": "This action cannot be undone.",
+    "deleted": "Deleted",
+    "created": "created",
+    "updated": "updated",
+    "operationCompleted": "The operation completed successfully."
   },
   "auth": {
     "loginTitle": "Please log in to continue.",
@@ -19,7 +27,12 @@
     "emailPlaceholder": "Enter your email address",
     "password": "Password",
     "passwordPlaceholder": "Enter password",
-    "loginButton": "Log in"
+    "loginButton": "Log in",
+    "logoutTitle": "Sign out?",
+    "logoutMessage": "Are you sure you want to sign out? You will need to log in again to access the dashboard.",
+    "logoutConfirm": "Sign Out",
+    "logoutCancel": "Cancel",
+    "logoutPending": "Signing out..."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -83,11 +96,13 @@
     "productUpdated": "Product updated successfully",
     "productDeleted": "Product deleted successfully",
     "confirmDelete": "Are you sure you want to delete this product?",
-    "deleteWarning": "This action cannot be undone."
+    "deleteWarning": "This action cannot be undone.",
+    "createdTitle": "Product created successfully",
+    "updatedTitle": "Product updated successfully"
   },
   "customers": {
     "title": "Customers",
-
+    "singleTitle": "Customer",
     "createCustomer": "Create Customer",
     "creating": "Creating customer...",
     "updating": "Updating customer...",
@@ -105,7 +120,12 @@
     "phone": "Phone",
     "phonePlaceholder": "Enter phone",
     "rfc": "RFC",
-    "rfcPlaceholder": "Enter RFC"
+    "rfcPlaceholder": "Enter RFC",
+    "confirmDelete": "Are you sure you want to delete this customer?",
+    "deleteWarning": "This action cannot be undone.",
+    "customer": "customer",
+    "createdTitle": "Customer created successfully",
+    "updatedTitle": "Customer updated successfully"
   },
   "categories": {
     "title": "Categories",
@@ -120,7 +140,12 @@
     "descriptionPlaceholder": "Enter description",
     "noCategories": "No categories",
     "noCategoriesFound": "No categories found for \"{query}\"",
-    "noCategoriesSubtitle": "Get started by creating your first category"
+    "noCategoriesSubtitle": "Get started by creating your first category",
+    "confirmDelete": "Are you sure you want to delete this category?",
+    "deleteWarning": "This action cannot be undone.",
+    "category": "category",
+    "createdTitle": "Category created successfully",
+    "updatedTitle": "Category updated successfully"
   },
   "quotations": {
     "title": "Quotations",
@@ -152,10 +177,34 @@
     "setStatus": "Set the quotation status",
     "statusPending": "Pending",
     "statusPaid": "Paid",
-    "downloadPdf": "Download PDF",
     "noQuotations": "No quotations",
     "noQuotationsFound": "No quotations found for \"{query}\"",
-    "noQuotationsSubtitle": "Get started by adding your first quotation"
+    "noQuotationsSubtitle": "Get started by adding your first quotation",
+    "confirmDelete": "Are you sure you want to delete this quotation?",
+    "deleteWarning": "This action cannot be undone.",
+    "quotation": "quotation",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "duplicating": "Duplicating...",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "confirmDeleteTitle": "Delete quotation?",
+    "confirmDeleteMessage": "This action cannot be undone.",
+    "duplicateSuccessTitle": "Quotation duplicated!",
+    "duplicateSuccessMessage": "New quotation created: {id}",
+    "deleteSuccessTitle": "Quotation deleted!",
+    "deleteSuccessMessage": "Quotation {id} deleted successfully.",
+    "createdTitle": "Quotation created successfully",
+    "updatedTitle": "Quotation updated successfully",
+    "download": "Download",
+    "generating": "Generating...",
+    "generatingPdf": "Generating PDF...",
+    "downloadingPdf": "Downloading PDF...",
+    "downloadPdf": "Download PDF",
+    "notValidPdf": "The generated PDF is not valid.",
+    "downloadError": "Error downloading the PDF. Please try again.",
+    "filePrefix": "quotation_",
+    "inventoryError": "Insufficient stock to complete the operation."
   },
   "billingDetails": {
     "title": "Billing Details",
@@ -194,7 +243,12 @@
     "city": "City",
     "cityPlaceholder": "Enter city",
     "cp": "Postal Code",
-    "cpPlaceholder": "Enter postal code"
+    "cpPlaceholder": "Enter postal code",
+    "confirmDelete": "Are you sure you want to delete this billing detail?",
+    "deleteWarning": "This action cannot be undone.",
+    "billingDetail": "billing detail",
+    "createdTitle": "Billing detail created successfully",
+    "updatedTitle": "Billing detail updated successfully"
   },
   "forms": {
     "required": "This field is required",
@@ -203,6 +257,9 @@
     "processing": "Processing...",
     "createSuccess": "Created successfully",
     "updateSuccess": "Updated successfully",
-    "deleteSuccess": "Deleted successfully"
+    "deleteSuccess": "Deleted successfully",
+    "error": "An error occurred. Please try again.",
+    "operationOk": "The operation was completed successfully.",
+    "successTitle": "Successful Operation!"
   }
 }
