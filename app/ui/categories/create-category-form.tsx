@@ -14,6 +14,8 @@ import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import { useI18n } from "@/app/ui/i18n-provider";
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
 
 export default function CreateCategoryForm({
   categories,
@@ -22,7 +24,7 @@ export default function CreateCategoryForm({
   categories: CategoryField[];
   dict: Dictionary;
 }) {
-  const router = useRouter();
+  const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
   const initialState: CategoryFormState = {
     message: null,
@@ -31,7 +33,6 @@ export default function CreateCategoryForm({
   };
   const [state, formAction] = useActionState(createCategory, initialState);
   const nameRef = useRef<HTMLInputElement>(null);
-  const { show, hide } = useTransitionOverlay();
 
   const {
     data: formData,
@@ -50,33 +51,25 @@ export default function CreateCategoryForm({
     clearData();
   }, [clearData]);
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
+  const handleSuccess = useCallback(() => {
+    const currentName = formData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/categories?created=${encodeURIComponent(
+        currentName
+      )}`
+    );
+    clearCompleteForm();
+  }, [localeRouter, locale, clearCompleteForm, formData.name]);
 
-  useEffect(() => {
-    if (state.success) {
-      const currentName = nameRef.current?.value || categories[0]?.name || "";
-      // Redirige a la lista con el flag de "created"
-      clearCompleteForm();
-      router.replace(
-        `/dashboard/categories?created=${encodeURIComponent(currentName)}`
-      );
-    }
-  }, [state.success, router, categories]);
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.categories.creating,
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show(dict.categories.creating);
-      await formAction(fd);
-    } finally {
-    }
+    startSubmission();
+    await formAction(fd);
   };
 
   if (!isLoaded) return null;

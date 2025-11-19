@@ -4,7 +4,13 @@ import {
   BillingDetailsFormState,
   updateBillingDetails,
 } from "@/app/lib/billing-details-actions/billing-details-actions";
-import { useActionState, useEffect, useRef, useState } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import { useRouter } from "next/navigation";
@@ -23,34 +29,22 @@ import {
 } from "@heroicons/react/24/outline";
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { useI18n } from "@/app/ui/i18n-provider";
-
-export type BillingDetailsEditFormProps = {
-  billingDetails: {
-    id: number;
-    name: string;
-    lastname: string;
-    company: string;
-    rfc: string;
-    clabe: string;
-    checkAccount: string;
-    cardNumber: string;
-    phone: string | null;
-    email: string;
-    address: {
-      id: number;
-      street: string;
-      outsideNumber: string;
-      colony: string;
-      city: string;
-      cp: string;
-    } | null;
-  };
-};
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
+import {
+  BillingDetailsEditFormProps,
+  BillingDetailsField,
+} from "@/app/lib/definitions";
+import { Dictionary } from "@/app/lib/dictionaries";
 
 export default function EditBillingDetailsForm({
   billingDetails,
-}: BillingDetailsEditFormProps) {
-  const router = useRouter();
+  dict,
+}: {
+  billingDetails: BillingDetailsField;
+  dict: Dictionary;
+}) {
+  const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
   const initialState: BillingDetailsFormState = {
     message: null,
@@ -65,36 +59,25 @@ export default function EditBillingDetailsForm({
     updateBillingDetailsWithId,
     initialState
   );
-  const { show, hide } = useTransitionOverlay();
 
-  const nameRef = useRef<HTMLInputElement>(null);
+  const handleSuccess = useCallback(() => {
+    const currentName = FormData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/billing-details?updated=${encodeURIComponent(
+        currentName
+      )}`
+    );
+  }, [localeRouter, locale, FormData.name]);
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
-
-  useEffect(() => {
-    if (state.success) {
-      const currentName = nameRef.current?.value || billingDetails.name || "";
-
-      router.replace(
-        `/dashboard/billing-details?updated=${encodeURIComponent(currentName)}`
-      );
-    }
-  }, [state.success, router, billingDetails.name]);
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.billingDetails.updating || "Actualizando detalles de pago...",
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show("Actualizando detalles de pago...");
-      await formAction(fd);
-    } finally {
-    }
+    startSubmission();
+    await formAction(fd);
   };
 
   return (

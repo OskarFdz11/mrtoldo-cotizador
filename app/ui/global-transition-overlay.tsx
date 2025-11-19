@@ -1,6 +1,5 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { TailSpin } from "react-loader-spinner";
 import { create } from "zustand";
 
@@ -19,7 +18,8 @@ export const useTransitionOverlay = create<TransitionState>((set) => ({
 }));
 
 export const GlobalTransitionOverlay = () => {
-  const { active, label } = useTransitionOverlay();
+  const active = useTransitionOverlay((s) => s.active);
+  const label = useTransitionOverlay((s) => s.label);
 
   if (!active) return null;
 

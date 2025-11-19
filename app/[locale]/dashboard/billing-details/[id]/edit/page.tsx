@@ -3,15 +3,23 @@ import Breadcrumbs from "@/app/ui/quotations/breadcrumbs";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { fetchBillingDetailById } from "@/app/lib/billing-details-actions/billing-details-data";
+import { Locale } from "@/app/lib/i18n";
+import { getDictionary } from "@/app/lib/dictionaries";
 
 export const metadata: Metadata = {
   title: "Edit Billing Details",
 };
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ id: string; locale: Locale }>;
+}) {
   const params = await props.params;
   const id = params.id;
-  const [billingDetails] = await Promise.all([fetchBillingDetailById(id)]);
+  const locale = params.locale;
+  const [billingDetails, dict] = await Promise.all([
+    fetchBillingDetailById(id),
+    getDictionary(locale ?? "es"),
+  ]);
   if (!billingDetails) {
     notFound();
   }
@@ -28,7 +36,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           },
         ]}
       />
-      <Form billingDetails={billingDetails} />
+      <Form billingDetails={billingDetails} dict={dict} />
     </main>
   );
 }

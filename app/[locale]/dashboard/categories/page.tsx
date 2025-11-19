@@ -47,7 +47,7 @@ export default async function Page({
         <FlashFromQuery
           entity="categoría"
           gender="f"
-          clearToPath="/dashboard/categories"
+          clearToPath={`/${locale}/dashboard/categories`}
         />
         <Table query={query} currentPage={currentPage} dict={dict} />
       </Suspense>

@@ -49,7 +49,7 @@ export default async function Page({
         <FlashFromQuery
           entity="cotización"
           gender="f"
-          clearToPath="/dashboard/quotations"
+          clearToPath={`/${locale}/dashboard/quotations`}
         />
         <QuotationsTable query={query} currentPage={currentPage} dict={dict} />
       </Suspense>

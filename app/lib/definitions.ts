@@ -120,7 +120,8 @@ export type BillingDetailsField = {
   rfc: string;
   clabe: string;
   checkAccount: string;
-  phone: string | null; // Como string para serialización
+  cardNumber: string;
+  phone: string | null;
   email: string;
   address?: {
     id: string | number;
@@ -129,6 +130,29 @@ export type BillingDetailsField = {
     colony: string;
     city: string;
     cp: string;
+  };
+};
+
+export type BillingDetailsEditFormProps = {
+  billingDetails: {
+    id: number;
+    name: string;
+    lastname: string;
+    company: string;
+    rfc: string;
+    clabe: string;
+    checkAccount: string;
+    cardNumber: string;
+    phone: string | null;
+    email: string;
+    address: {
+      id: number;
+      street: string;
+      outsideNumber: string;
+      colony: string;
+      city: string;
+      cp: string;
+    } | null;
   };
 };
 

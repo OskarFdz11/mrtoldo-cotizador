@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import { GlobalTransitionOverlay } from "@/app/ui/global-transition-overlay";
 
 export default function RootLayout({
   children,
@@ -7,7 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children} <GlobalTransitionOverlay />
+      </body>
     </html>
   );
 }

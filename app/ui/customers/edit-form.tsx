@@ -1,7 +1,7 @@
 // app/ui/customers/edit-form.tsx
 "use client";
 
-import { useActionState, useState, useEffect } from "react";
+import { useActionState, useState, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -15,13 +15,10 @@ import {
   PhoneIcon,
   BuildingOffice2Icon,
 } from "@heroicons/react/24/outline";
-import { useNotification } from "@/app/hooks/useNotifications";
-import NotificationModal from "@/app/ui/notification-modal";
-import { useRouter } from "next/navigation";
-import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import { useI18n } from "@/app/ui/i18n-provider";
 import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
 
 export default function EditCustomerForm({
   customer,
@@ -43,7 +40,6 @@ export default function EditCustomerForm({
     initialState
   );
 
-  // Estados controlados
   const [formData, setFormData] = useState({
     name: customer.name,
     lastname: customer.lastname,
@@ -53,54 +49,31 @@ export default function EditCustomerForm({
     rfc: customer.rfc || "",
   });
 
-  const { notification, showSuccess, showError, hideNotification } =
-    useNotification();
-  const { show, hide } = useTransitionOverlay();
-
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
+  const handleSuccess = useCallback(() => {
+    const currentName = formData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/customers?updated=${encodeURIComponent(
+        currentName
+      )}`
+    );
+  }, [localeRouter, locale, formData.name]);
 
-  useEffect(() => {
-    if (state.success) {
-      showSuccess(
-        "Cliente actualizado",
-        "El cliente se actualizó correctamente."
-      );
-    } else if (state.message && state.success === false) {
-      showError("Error al actualizar cliente", state.message);
-    }
-  }, [state.success, state.message, showSuccess, showError]);
-
-  const handleCloseModal = () => {
-    hideNotification();
-    if (notification.type === "success") {
-      localeRouter.push("/dashboard/customers");
-    }
-  };
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.customers.updating || "Actualizando cliente...",
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show(dict.customers?.updating || "Actualizando cliente...");
-
-      // Preparar FormData con datos actuales
-      Object.entries(formData).forEach(([key, value]) => {
-        fd.set(key, value);
-      });
-
-      await formAction(fd);
-    } finally {
-    }
+    startSubmission();
+    Object.entries(formData).forEach(([key, value]) => {
+      fd.set(key, value);
+    });
+    await formAction(fd);
   };
 
   return (
@@ -306,14 +279,6 @@ export default function EditCustomerForm({
           <Button type="submit">{dict.common?.save || "Guardar"}</Button>
         </div>
       </form>
-
-      <NotificationModal
-        isOpen={notification.isOpen}
-        onClose={handleCloseModal}
-        type={notification.type}
-        title={notification.title}
-        message={notification.message}
-      />
     </>
   );
 }

@@ -11,8 +11,6 @@ import {
 import { CategoryField, ProductField } from "@/app/lib/definitions";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
-import { useNotification } from "@/app/hooks/useNotifications";
-import NotificationModal from "@/app/ui/notification-modal";
 import {
   ArchiveBoxIcon,
   BuildingStorefrontIcon,
@@ -23,11 +21,11 @@ import {
   TagIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
 import { useI18n } from "@/app/ui/i18n-provider";
 import { Dictionary } from "@/app/lib/dictionaries";
 import SearchableSelect from "@/app/ui/searchable-select";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
 
 export default function CreateProductForm({
   products,
@@ -40,16 +38,16 @@ export default function CreateProductForm({
 }) {
   const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
+
   const initialState: ProductFormState = {
     message: null,
     success: false,
     errors: {},
   };
   const [state, formAction] = useActionState(createProduct, initialState);
+
   const [imageUrl, setImageUrl] = useState<string | null>("");
   const [publicId, setPublicId] = useState<string | null>("");
-  const { notification, showSuccess, showError, hideNotification } =
-    useNotification();
 
   const {
     data: formData,
@@ -59,8 +57,7 @@ export default function CreateProductForm({
   } = useFormPersistence<{
     name: string;
     description: string;
-    category: string;
-    categoryId: string;
+    categoryId: string; // Usamos categoryId en estado local
     price: string;
     brand: string;
     quantity: string;
@@ -68,7 +65,6 @@ export default function CreateProductForm({
   }>("create-product-form", {
     name: "",
     description: "",
-    category: "",
     categoryId: "",
     price: "",
     brand: "",
@@ -76,62 +72,50 @@ export default function CreateProductForm({
     imageUrl: "",
   });
 
-  const { show, hide } = useTransitionOverlay();
-
   const clearCompleteForm = useCallback(() => {
     clearData();
     setImageUrl("");
     setPublicId("");
-    updateData({ imageUrl: "" });
-  }, [clearData]);
+    updateData({
+      imageUrl: "",
+      categoryId: "",
+      name: "",
+      description: "",
+      price: "",
+      brand: "",
+      quantity: "",
+    });
+  }, [clearData, updateData]);
 
   useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
-
-  useEffect(() => {
-    if (state.success) {
-      const productName = formData.name || "";
-      // limpiar persistencia antes de navegar (para que no queden valores al volver)
+    return () => {
       clearCompleteForm();
-      // redirigir a la tabla y pasar el nombre para mostrar el modal allí
-      localeRouter.replace(
-        `/dashboard/products?created=${encodeURIComponent(productName)}`
-      );
-    } else if (state.message && state.success === false) {
-      showError("Error al crear producto", state.message);
-    }
-  }, [state.success, state.message]);
+    };
+  }, [clearCompleteForm]);
 
-  const handleCloseModal = () => {
-    hideNotification();
-    if (notification.type === "success") {
-      localeRouter.push("/dashboard/products");
-    }
-  };
+  const handleSuccess = useCallback(() => {
+    const currentName = formData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/products?created=${encodeURIComponent(currentName)}`
+    );
+    clearCompleteForm();
+  }, [localeRouter, locale, clearCompleteForm, formData.name]);
+
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.products.creating,
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show(dict.products.creating);
-      await formAction(fd);
-    } finally {
-    }
-  };
+    fd.set("category", formData.categoryId);
+    fd.set("imageUrl", imageUrl || "");
 
-  const handleClearForm = () => {
-    clearData();
-    setImageUrl("");
-    setPublicId("");
+    startSubmission();
+    await formAction(fd);
   };
 
   useEffect(() => {
-    // Solo limpiar cuando el componente se monta y no hay datos válidos
     if (isLoaded) {
       const isEmpty =
         !formData.name &&
@@ -140,10 +124,11 @@ export default function CreateProductForm({
         !formData.brand &&
         !formData.imageUrl;
       if (isEmpty) {
-        clearCompleteForm();
+        setImageUrl("");
+        setPublicId("");
       }
     }
-  }, [isLoaded]);
+  }, [isLoaded, formData]);
 
   if (!isLoaded) {
     return (
@@ -211,6 +196,7 @@ export default function CreateProductForm({
                 ))}
             </div>
           </div>
+
           {/* Description */}
           <div className="mb-4">
             <label
@@ -240,9 +226,9 @@ export default function CreateProductForm({
                 ))}
             </div>
           </div>
-          {/* Category y Price */}
+
+          {/* Category + Price */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/* Category con SearchableSelect */}
             <div>
               <label
                 htmlFor="category"
@@ -253,10 +239,10 @@ export default function CreateProductForm({
               <div className="relative">
                 <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 z-10" />
                 <SearchableSelect
-                  options={categories.map((category) => ({
-                    id: String(category.id),
-                    name: category.name,
-                    description: category.description,
+                  options={categories.map((c) => ({
+                    id: String(c.id),
+                    name: c.name,
+                    description: c.description,
                   }))}
                   value={formData.categoryId}
                   onSelect={(value) => updateData({ categoryId: value })}
@@ -284,7 +270,7 @@ export default function CreateProductForm({
               </div>
               <input
                 type="hidden"
-                name="categoryId"
+                name="category"
                 value={formData.categoryId}
               />
               <div id="category-error" aria-live="polite" aria-atomic="true">
@@ -297,7 +283,6 @@ export default function CreateProductForm({
               </div>
             </div>
 
-            {/* Price */}
             <div>
               <label htmlFor="price" className="mb-2 block text-sm font-medium">
                 {dict.products.price}
@@ -378,7 +363,6 @@ export default function CreateProductForm({
                     setImageUrl(url);
                     updateData({ imageUrl: url });
                   }
-                  console.log("Upload success, info:", info);
                 }}
               >
                 {({ open }) => (
@@ -406,7 +390,10 @@ export default function CreateProductForm({
                 <button
                   type="button"
                   aria-label="Remove image"
-                  onClick={() => setImageUrl("")}
+                  onClick={() => {
+                    setImageUrl("");
+                    updateData({ imageUrl: "" });
+                  }}
                   className="absolute -top-2 -right-2 grid h-7 w-7 place-items-center rounded-full bg-white text-gray-600 shadow ring-1 ring-black/10 hover:bg-red-50 hover:text-red-600"
                 >
                   <XMarkIcon className="h-4 w-4" />
@@ -415,8 +402,6 @@ export default function CreateProductForm({
             )}
 
             <input type="hidden" name="imageUrl" value={imageUrl ?? ""} />
-            {/* <input type="hidden" name="imagePublicId" value={publicId ?? ""} /> */}
-
             <div id="image-error" aria-live="polite" aria-atomic="true">
               {state.errors?.imageUrl?.map((e) => (
                 <p key={e} className="mt-2 text-sm text-red-500">
@@ -435,26 +420,11 @@ export default function CreateProductForm({
           >
             {dict.common.cancel}
           </Link>
-          {/* <button
-              type="button"
-              onClick={handleClearForm}
-              className="flex h-10 items-center rounded-lg bg-gray-500 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-600"
-            >
-              Clear Form
-            </button> */}
           <Button type="submit">
             {dict.common.create} {dict.products.product}
           </Button>
         </div>
       </form>
-
-      <NotificationModal
-        isOpen={notification.isOpen}
-        onClose={handleCloseModal}
-        type={notification.type}
-        title={notification.title}
-        message={notification.message}
-      />
     </>
   );
 }

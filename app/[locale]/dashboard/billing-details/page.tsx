@@ -47,7 +47,7 @@ export default async function Page({
       >
         <FlashFromQuery
           entity="detalles de pago"
-          clearToPath="/dashboard/billing-details"
+          clearToPath={`/${locale}/dashboard/billing-details`}
         />
         <Table query={query} currentPage={currentPage} dict={dict} />
       </Suspense>

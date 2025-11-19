@@ -1,7 +1,6 @@
-// app/ui/products/edit-form.tsx
 "use client";
 
-import { useActionState, useState, useEffect, useCallback } from "react";
+import { useActionState, useState, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -11,9 +10,6 @@ import {
 import { CategoryField, ProductField } from "@/app/lib/definitions";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
-import { useNotification } from "@/app/hooks/useNotifications";
-import NotificationModal from "@/app/ui/notification-modal";
-import { useRouter } from "next/navigation";
 import {
   CloudArrowUpIcon,
   XMarkIcon,
@@ -24,14 +20,11 @@ import {
   BuildingStorefrontIcon,
   ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
-import {
-  GlobalTransitionOverlay,
-  useTransitionOverlay,
-} from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import SearchableSelect from "@/app/ui/searchable-select";
 import { useI18n } from "@/app/ui/i18n-provider";
 import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
 
 export default function EditProductForm({
   product,
@@ -44,6 +37,7 @@ export default function EditProductForm({
 }) {
   const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
+
   const updateProductWithId = updateProduct.bind(null, product.id);
   const initialState: ProductFormState = {
     message: null,
@@ -52,7 +46,6 @@ export default function EditProductForm({
   };
   const [state, formAction] = useActionState(updateProductWithId, initialState);
 
-  // Estados controlados
   const [formData, setFormData] = useState({
     name: product.name,
     description: product.description,
@@ -65,65 +58,42 @@ export default function EditProductForm({
     product.image_url || ""
   );
 
-  const { notification, showSuccess, showError, hideNotification } =
-    useNotification();
-  const { show, hide } = useTransitionOverlay();
-
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
+  const handleSuccess = useCallback(() => {
+    const currentName = formData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/products?updated=${encodeURIComponent(currentName)}`
+    );
+  }, [localeRouter, locale, formData.name]);
 
-  useEffect(() => {
-    if (state.success) {
-      showSuccess(
-        "Producto actualizado",
-        "El producto se actualizó correctamente."
-      );
-    } else if (state.message && state.success === false) {
-      showError("Error al actualizar producto", state.message);
-    }
-  }, [state.success, state.message, showSuccess, showError]);
-
-  const handleCloseModal = () => {
-    hideNotification();
-    if (notification.type === "success") {
-      localeRouter.push("/dashboard/products");
-    }
-  };
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.products.updating || "Actualizando producto...",
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show(dict.products.updating || "Actualizando producto...");
+    startSubmission();
 
-      // Preparar FormData con datos actuales
-      fd.set("name", formData.name);
-      fd.set("description", formData.description);
-      fd.set("categoryId", formData.categoryId);
-      fd.set("price", formData.price);
-      fd.set("brand", formData.brand);
-      fd.set("quantity", formData.quantity);
-      fd.set("imageUrl", imageUrl || "");
+    fd.set("name", formData.name);
+    fd.set("description", formData.description);
+    fd.set("category", formData.categoryId);
+    fd.set("price", formData.price);
+    fd.set("brand", formData.brand);
+    fd.set("quantity", formData.quantity);
+    fd.set("imageUrl", imageUrl || "");
 
-      await formAction(fd);
-    } finally {
-    }
+    await formAction(fd);
   };
 
   return (
     <>
       <form action={handleSubmit}>
         <div className="rounded-md bg-gray-50 p-4 md:p-6">
-          {/* Información básica del producto */}
+          {/* Información básica */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {/* Name */}
             <div>
@@ -210,7 +180,7 @@ export default function EditProductForm({
             </div>
           </div>
 
-          {/* Category y Price */}
+          {/* Category, Price, Stock */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Category con SearchableSelect */}
             <div>
@@ -223,10 +193,10 @@ export default function EditProductForm({
               <div className="relative">
                 <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 z-10" />
                 <SearchableSelect
-                  options={categories.map((category) => ({
-                    id: String(category.id),
-                    name: category.name,
-                    description: category.description,
+                  options={categories.map((c) => ({
+                    id: String(c.id),
+                    name: c.name,
+                    description: c.description,
                   }))}
                   value={formData.categoryId}
                   onSelect={(value) => updateField("categoryId", value)}
@@ -291,7 +261,6 @@ export default function EditProductForm({
             </div>
 
             {/* Stock */}
-
             <div>
               <label
                 htmlFor="quantity"
@@ -322,7 +291,7 @@ export default function EditProductForm({
             </div>
           </div>
 
-          {/* Imagen del producto */}
+          {/* Imagen */}
           <div className="border-t pt-6">
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium">
@@ -378,7 +347,6 @@ export default function EditProductForm({
               )}
 
               <input type="hidden" name="imageUrl" value={imageUrl ?? ""} />
-
               <div id="image-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.imageUrl?.map((e) => (
                   <p key={e} className="mt-2 text-sm text-red-500">
@@ -400,16 +368,6 @@ export default function EditProductForm({
           <Button type="submit">{dict.common.save}</Button>
         </div>
       </form>
-
-      <NotificationModal
-        isOpen={notification.isOpen}
-        onClose={handleCloseModal}
-        type={notification.type}
-        title={notification.title}
-        message={notification.message}
-      />
-
-      <GlobalTransitionOverlay />
     </>
   );
 }

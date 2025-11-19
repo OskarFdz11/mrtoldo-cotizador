@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useRef } from "react";
+import { useActionState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 import {
@@ -8,7 +8,6 @@ import {
   CustomerFormState,
 } from "@/app/lib/customer-actions/customer-actions";
 import { CustomerField } from "@/app/lib/definitions";
-import { useRouter } from "next/navigation";
 import { useFormPersistence } from "@/app/hooks/useFormPersisence";
 import {
   BuildingOfficeIcon,
@@ -17,9 +16,10 @@ import {
   PhoneIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import { useI18n } from "@/app/ui/i18n-provider";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
 
 export default function CreateCustomerForm({
   customers,
@@ -28,7 +28,7 @@ export default function CreateCustomerForm({
   customers: CustomerField[];
   dict: Dictionary;
 }) {
-  const router = useRouter();
+  const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
   const initialState: CustomerFormState = {
     message: null,
@@ -39,8 +39,6 @@ export default function CreateCustomerForm({
     createCustomer,
     initialState
   );
-
-  const { show, hide } = useTransitionOverlay();
 
   const {
     data: formData,
@@ -69,34 +67,25 @@ export default function CreateCustomerForm({
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
+  const handleSuccess = useCallback(() => {
+    const currentName = formData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/customers?created=${encodeURIComponent(
+        currentName
+      )}`
+    );
+    clearCompleteForm();
+  }, [localeRouter, locale, clearCompleteForm, formData.name]);
 
-  useEffect(() => {
-    if (state.success) {
-      const currentName = nameRef.current?.value || customers[0]?.name || "";
-      // Redirige a la lista con el flag de "created"
-
-      router.replace(
-        `/dashboard/customers?created=${encodeURIComponent(currentName)}`
-      );
-      clearCompleteForm();
-    }
-  }, [state.success, router, customers]);
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.customers.creating,
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show(dict.customers.creating);
-      await formAction(fd);
-    } finally {
-    }
+    startSubmission();
+    await formAction(fd);
   };
 
   if (!isLoaded) return null;

@@ -42,7 +42,10 @@ export default async function Page({
         key={query + currentPage}
         fallback={<ProductsTableInlineSkeleton />}
       >
-        <FlashFromQuery entity="producto" clearToPath="/dashboard/products" />
+        <FlashFromQuery
+          entity="producto"
+          clearToPath={`/${locale}/dashboard/products`}
+        />
         <Table query={query} currentPage={currentPage} dict={dict} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">

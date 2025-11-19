@@ -3,15 +3,23 @@ import Breadcrumbs from "@/app/ui/quotations/breadcrumbs";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { fetchCategoryById } from "@/app/lib/categories-actions/categories-data";
+import { Locale } from "@/app/lib/i18n";
+import { getDictionary } from "@/app/lib/dictionaries";
 
 export const metadata: Metadata = {
   title: "Edit Category",
 };
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ id: string; locale: Locale }>;
+}) {
   const params = await props.params;
   const id = params.id;
-  const [category] = await Promise.all([fetchCategoryById(id)]);
+  const locale = params.locale;
+  const [category, dict] = await Promise.all([
+    fetchCategoryById(id),
+    getDictionary(locale ?? "es"),
+  ]);
   if (!category) {
     notFound();
   }
@@ -28,7 +36,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           },
         ]}
       />
-      <Form category={category} />
+      <Form category={category} dict={dict} />
     </main>
   );
 }

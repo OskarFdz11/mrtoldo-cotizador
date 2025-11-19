@@ -45,7 +45,10 @@ export default async function Page({
         key={query + currentPage}
         fallback={<CustomersTableInlineSkeleton rows={8} />}
       >
-        <FlashFromQuery entity="cliente" clearToPath="/dashboard/customers" />
+        <FlashFromQuery
+          entity="cliente"
+          clearToPath={`/${locale}/dashboard/customers`}
+        />
         <Table query={query} currentPage={currentPage} dict={dict} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">

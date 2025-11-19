@@ -32,6 +32,7 @@ import {
 import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { Dictionary } from "@/app/lib/dictionaries";
 import { useI18n } from "@/app/ui/i18n-provider";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
 
 export default function CreateBillingDetailsForm({
   billingDetails,
@@ -91,40 +92,30 @@ export default function CreateBillingDetailsForm({
   });
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
 
   const clearCompleteForm = useCallback(() => {
     clearData();
   }, [clearData]);
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
+  const handleSuccess = useCallback(() => {
+    const currentName = formData.name || "";
+    router.replace(
+      `/${locale}/dashboard/billing-details?created=${encodeURIComponent(
+        currentName
+      )}`
+    );
+    clearCompleteForm();
+  }, [router, locale, clearCompleteForm, formData.name]);
 
-  useEffect(() => {
-    if (state.success) {
-      const currentName =
-        nameRef.current?.value || billingDetails[0]?.name || "";
-      clearCompleteForm();
-      router.replace(
-        `/dashboard/billing-details?created=${encodeURIComponent(currentName)}`
-      );
-    }
-  }, [state.success, router, billingDetails[0]?.name]);
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.billingDetails.creating,
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show(dict.billingDetails.creating);
-      applyPersistedToFormData(fd, formData);
-      await formAction(fd);
-    } finally {
-    }
+    startSubmission();
+    await formAction(fd);
   };
 
   if (!isLoaded) return null;

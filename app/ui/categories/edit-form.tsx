@@ -4,24 +4,24 @@ import {
   CategoryFormState,
   updateCategory,
 } from "@/app/lib/categories-actions/categories-actions";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
-import { useRouter } from "next/navigation";
 import { DocumentTextIcon, TagIcon } from "@heroicons/react/24/outline";
-import { useTransitionOverlay } from "@/app/ui/global-transition-overlay";
 import { useI18n } from "@/app/ui/i18n-provider";
+import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
+import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
+import { Dictionary } from "@/app/lib/dictionaries";
+import { CategoryField } from "@/app/lib/definitions";
 
-export type CategoryEditFormProps = {
-  category: {
-    id: number;
-    name: string;
-    description: string;
-  };
-};
-
-export default function EditCategoryForm({ category }: CategoryEditFormProps) {
-  const router = useRouter();
+export default function EditCategoryForm({
+  category,
+  dict,
+}: {
+  category: CategoryField;
+  dict: Dictionary;
+}) {
+  const localeRouter = useLocaleRouter();
   const { locale } = useI18n();
   const initialState: CategoryFormState = {
     message: null,
@@ -34,34 +34,24 @@ export default function EditCategoryForm({ category }: CategoryEditFormProps) {
     initialState
   );
   const nameRef = useRef<HTMLInputElement>(null);
-  const { show, hide } = useTransitionOverlay();
+  const handleSuccess = useCallback(() => {
+    const currentName = FormData.name || "";
+    localeRouter.replace(
+      `/${locale}/dashboard/categories?updated=${encodeURIComponent(
+        currentName
+      )}`
+    );
+  }, [localeRouter, locale, FormData.name]);
 
-  useEffect(() => {
-    if (
-      !state.success &&
-      state.errors &&
-      Object.keys(state.errors).length > 0
-    ) {
-      hide();
-    }
-  }, [state.errors, state.success, hide]);
-
-  useEffect(() => {
-    if (state.success) {
-      const currentName = nameRef.current?.value || category.name || "";
-      // Redirige a la lista con el flag de "updated"
-      router.replace(
-        `/dashboard/categories?updated=${encodeURIComponent(currentName)}`
-      );
-    }
-  }, [state.success, router, category.name]);
+  const { startSubmission } = useFormSubmission(
+    state,
+    dict.categories.updating || "Actualizando categoría...",
+    handleSuccess
+  );
 
   const handleSubmit = async (fd: FormData) => {
-    try {
-      show("Actualizando detalles de pago...");
-      await formAction(fd);
-    } finally {
-    }
+    startSubmission();
+    await formAction(fd);
   };
 
   return (
