@@ -1,8 +1,13 @@
 "use client";
 
-import { useActionState, useState, useEffect, useCallback } from "react";
+import {
+  useActionState,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   CustomerField,
   ProductField,
@@ -28,6 +33,7 @@ import SearchableSelect from "@/app/ui/searchable-select";
 import { useI18n } from "@/app/ui/i18n-provider";
 import { useLocaleRouter } from "@/app/hooks/useLocaleRouter";
 import { useFormSubmission } from "@/app/hooks/useFormSubmussion";
+import ActionResultModal from "@/app/ui/action-result-modal";
 
 type QuotationProduct = {
   productId: string;
@@ -80,6 +86,30 @@ export default function CreateQuotationForm({
     status: "pending",
     productsJSON: "[]",
   });
+
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [clientErrors, setClientErrors] = useState<{
+    customerId?: boolean;
+    billingDetailsId?: boolean;
+    products?: boolean;
+  }>({});
+
+  const hasServerFieldErrors = useMemo(() => {
+    const e = state.errors || {};
+    const keys = Object.keys(e);
+    return keys.some(
+      (k) =>
+        k !== "general" &&
+        Array.isArray((e as any)[k]) &&
+        (e as any)[k]?.length > 0
+    );
+  }, [state.errors]);
+
+  useEffect(() => {
+    if (hasServerFieldErrors && !state.success) {
+      setShowValidationModal(true);
+    }
+  }, [hasServerFieldErrors, state.success]);
 
   // Hidratar estado desde persistencia
   useEffect(() => {
@@ -161,12 +191,22 @@ export default function CreateQuotationForm({
 
   const handleSubmit = async (fd: FormData) => {
     const validProducts = selectedProducts.filter((p) => p.productId);
-    if (validProducts.length === 0) {
-      alert(
-        dict.quotations?.atLeastOneProduct ||
-          "Debe seleccionar al menos un producto"
-      );
+
+    const missing: {
+      customerId?: boolean;
+      billingDetailsId?: boolean;
+      products?: boolean;
+    } = {};
+    if (!persisted.customerId) missing.customerId = true;
+    if (!persisted.billingDetailsId) missing.billingDetailsId = true;
+    if (validProducts.length === 0) missing.products = true;
+
+    if (missing.customerId || missing.billingDetailsId || missing.products) {
+      setClientErrors(missing);
+      setShowValidationModal(true);
       return;
+    } else {
+      setClientErrors({});
     }
 
     fd.set("customerId", persisted.customerId);
@@ -180,6 +220,16 @@ export default function CreateQuotationForm({
   };
 
   if (!isLoaded) return null;
+
+  const customerError =
+    clientErrors.customerId || (state.errors?.customerId?.length ?? 0) > 0;
+  const billingError =
+    clientErrors.billingDetailsId ||
+    (state.errors?.billingDetailsId?.length ?? 0) > 0;
+  const productsError =
+    clientErrors.products || (state.errors?.products?.length ?? 0) > 0;
+
+  const requiredMsg = dict.forms?.required || "Este campo es requerido";
 
   return (
     <form action={handleSubmit}>
@@ -208,6 +258,7 @@ export default function CreateQuotationForm({
                   `${c.name} ${c.lastname} ${c.email} ${c.company}`.toLowerCase();
                 return text.includes(term.toLowerCase());
               }}
+              error={customerError}
             />
           </div>
           <div id="customer-error" aria-live="polite" aria-atomic="true">
@@ -216,6 +267,9 @@ export default function CreateQuotationForm({
                 {e}
               </p>
             ))}
+            {customerError && !(state.errors?.customerId?.length ?? 0) && (
+              <p className="mt-2 text-sm text-red-500">{requiredMsg}</p>
+            )}
           </div>
         </div>
 
@@ -246,6 +300,7 @@ export default function CreateQuotationForm({
                   `${b.company} ${b.name} ${b.lastname} ${b.rfc}`.toLowerCase();
                 return text.includes(term.toLowerCase());
               }}
+              error={billingError}
             />
           </div>
           <div id="billingDetails-error" aria-live="polite" aria-atomic="true">
@@ -254,6 +309,9 @@ export default function CreateQuotationForm({
                 {e}
               </p>
             ))}
+            {billingError && !(state.errors?.billingDetailsId?.length ?? 0) && (
+              <p className="mt-2 text-sm text-red-500">{requiredMsg}</p>
+            )}
           </div>
         </div>
 
@@ -308,6 +366,7 @@ export default function CreateQuotationForm({
                       const text = `${p.name} ${p.brand}`.toLowerCase();
                       return text.includes(term.toLowerCase());
                     }}
+                    error={productsError}
                   />
                   <input
                     type="hidden"
@@ -367,7 +426,13 @@ export default function CreateQuotationForm({
                 {e}
               </p>
             ))}
-
+            {productsError && !(state.errors?.products?.length ?? 0) && (
+              <p className="mt-2 text-sm text-red-500">
+                {dict.quotations?.atLeastOneProduct ||
+                  "Debe seleccionar al menos un producto"}
+              </p>
+            )}
+            {/* Inventario */}
             <div id="inventory-error" aria-live="polite" aria-atomic="true">
               {state.errors?.inventory?.map((e) => (
                 <p key={e} className="mt-2 text-sm text-red-600">
@@ -505,6 +570,20 @@ export default function CreateQuotationForm({
           {dict.quotations?.createQuotation || "Crear Cotización"}
         </Button>
       </div>
+      <ActionResultModal
+        isOpen={showValidationModal}
+        onClose={() => setShowValidationModal(false)}
+        action="custom"
+        variant="error"
+        titleOverride={
+          dict.forms?.validationErrorTitle || "Faltan campos requeridos"
+        }
+        messageOverride={
+          dict.forms?.validationErrorMessage ||
+          "Por favor completa los campos marcados como requeridos."
+        }
+        requireAccept
+      />
     </form>
   );
 }

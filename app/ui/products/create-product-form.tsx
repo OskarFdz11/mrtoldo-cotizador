@@ -236,10 +236,9 @@ export default function CreateProductForm({
               >
                 {dict.products.category}
               </label>
-              <div className="relative bg-white">
+              <div className="relative">
                 <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 z-10" />
                 <SearchableSelect
-                  className="bg-white"
                   options={categories.map((c) => ({
                     id: String(c.id),
                     name: c.name,
