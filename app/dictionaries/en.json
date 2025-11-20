@@ -260,6 +260,8 @@
     "deleteSuccess": "Deleted successfully",
     "error": "An error occurred. Please try again.",
     "operationOk": "The operation was completed successfully.",
-    "successTitle": "Successful Operation!"
+    "successTitle": "Successful Operation!",
+    "validationErrorTitle": "Required fields missing",
+    "validationErrorMessage": "Please complete the fields marked as required."
   }
 }

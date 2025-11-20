@@ -27,7 +27,8 @@ interface SearchableSelectProps {
     searchTerm: string
   ) => boolean;
   disabled?: boolean;
-  noSearch?: boolean; // opcional si quieres un dropdown sin barra de búsqueda
+  noSearch?: boolean;
+  error?: boolean;
 }
 
 export default function SearchableSelect({
@@ -42,6 +43,7 @@ export default function SearchableSelect({
   filterFunction,
   disabled = false,
   noSearch = false,
+  error = false,
 }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -144,6 +146,7 @@ export default function SearchableSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={isOpen ? "searchable-select-list" : undefined}
+        aria-invalid={error || undefined}
         className={clsx(
           "relative block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-8 text-sm text-left",
           "outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200",

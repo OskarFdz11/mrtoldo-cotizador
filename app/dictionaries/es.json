@@ -249,7 +249,6 @@
     "updatedTitle": "Detalle de pago actualizado correctamente"
   },
   "forms": {
-    "required": "Este campo es obligatorio",
     "invalidEmail": "Correo electrónico inválido",
     "invalidPrice": "Precio inválido",
     "processing": "Procesando...",
@@ -258,6 +257,9 @@
     "deleteSuccess": "Eliminado exitosamente",
     "error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
     "operationOk": "La operación se completó correctamente.",
-    "successTitle": "¡Operación exitosa!"
+    "successTitle": "¡Operación exitosa!",
+    "required": "Este campo es requerido",
+    "validationErrorTitle": "Faltan campos requeridos",
+    "validationErrorMessage": "Por favor completa los campos marcados como requeridos."
   }
 }

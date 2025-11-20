@@ -5,23 +5,33 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { DuplicateQuotationResponse } from "../definitions";
 
+const NumericId = z
+  .string()
+  .min(1, "Required")
+  .transform((val) => Number(val))
+  .refine((n) => Number.isFinite(n) && n > 0, { message: "Required" });
+
 // Schema para productos en la cotización
 const QuotationProductSchema = z.object({
-  productId: z.string().transform((val) => Number(val)), // Convertir string a number
+  productId: z
+    .string()
+    .min(1, "Required")
+    .transform((val) => Number(val))
+    .refine((n) => Number.isFinite(n) && n > 0, { message: "Required" }),
   quantity: z.number().min(1, "Quantity must be at least 1"),
   price: z.number().min(0, "Price must be positive"),
 });
 
 const FormSchema = z.object({
   id: z.number(),
-  customerId: z.string().transform((val) => Number(val)),
-  billingDetailsId: z.string().transform((val) => Number(val)),
+  customerId: NumericId,
+  billingDetailsId: NumericId,
   iva: z.string().transform((val) => val === "true" || val === "on"),
   notes: z.string().optional().default(""),
   status: z.enum(["pending", "paid"], {
     invalid_type_error: "Please select a valid status.",
   }),
-  products: z.string(), // JSON array string
+  products: z.string(),
 });
 
 const CreateQuotation = FormSchema.omit({ id: true });
