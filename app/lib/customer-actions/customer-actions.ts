@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { prisma } from "../prisma";
 
 export type CustomerFormState = {
@@ -70,10 +69,10 @@ export const createCustomer = async (
       data: {
         name,
         lastname,
-        email: email?.trim() === "" ? undefined : email,
-        company: company?.trim() === "" ? undefined : company,
-        rfc: rfc?.trim() === "" ? undefined : rfc,
-        phone: phone ?? undefined,
+        email: email?.trim() || "",
+        company: company?.trim() || "",
+        rfc: rfc?.trim() || "",
+        phone: phone || BigInt(0),
       },
     });
     revalidatePath("/dashboard/customers");
@@ -124,10 +123,10 @@ export const updateCustomer = async (
       data: {
         name,
         lastname,
-        email: email?.trim() === "" ? undefined : email,
-        company: company?.trim() === "" ? undefined : company,
-        rfc: rfc?.trim() === "" ? undefined : rfc,
-        phone: phone ?? undefined,
+        email: email?.trim() || "",
+        company: company?.trim() || "",
+        rfc: rfc?.trim() || "",
+        phone: phone || BigInt(0),
       },
     });
     revalidatePath("/dashboard/customers");

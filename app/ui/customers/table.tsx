@@ -17,6 +17,7 @@ export default async function CustomersTable({
   const customers = (await fetchFilteredCustomers(query, currentPage))
     .customers;
 
+
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
@@ -108,7 +109,7 @@ export default async function CustomersTable({
                               {dict.customers.phone}
                             </p>
                             <p className="text-sm text-gray-700">
-                              {customer.phone}
+                              {String(customer.phone) === "0" ? "" : String(customer.phone)}
                             </p>
                           </div>
                         </div>

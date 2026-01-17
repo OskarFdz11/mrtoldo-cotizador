@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { prisma } from "../prisma";
 
 export type BillingDetailsFormState = {
@@ -26,8 +25,8 @@ export type BillingDetailsFormState = {
   };
 };
 const CreateBillingDetails = z.object({
-  name: z.string().min(1, "Name is required."),
-  lastname: z.string().min(1, "Lastname is required."),
+  name: z.string().optional(),
+  lastname: z.string().optional(),
   company: z.string().min(1, "Company is required."),
   rfc: z.string().min(1, "RFC is required."),
   cardNumber: z.string().min(1, "Card Number is required."),
@@ -44,8 +43,8 @@ const CreateBillingDetails = z.object({
 });
 
 const UpdateBillingDetails = z.object({
-  name: z.string().min(1, "Name is required."),
-  lastname: z.string().min(1, "Lastname is required."),
+  name: z.string().optional(),
+  lastname: z.string().optional(),
   company: z.string().min(1, "Company is required."),
   rfc: z.string().min(1, "RFC is required."),
   cardNumber: z.string().min(1, "Card Number is required."),
@@ -63,7 +62,7 @@ const UpdateBillingDetails = z.object({
 
 export const createBillingDetails = async (
   prevState: BillingDetailsFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<BillingDetailsFormState> => {
   const validatedFields = CreateBillingDetails.safeParse({
     name: formData.get("name"),
@@ -152,7 +151,7 @@ export const createBillingDetails = async (
 export const updateBillingDetails = async (
   id: number | string,
   prevState: BillingDetailsFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<BillingDetailsFormState> => {
   const validatedFields = UpdateBillingDetails.safeParse({
     name: formData.get("name"),
