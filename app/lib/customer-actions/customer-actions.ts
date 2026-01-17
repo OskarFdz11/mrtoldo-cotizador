@@ -21,24 +21,30 @@ export type CustomerFormState = {
 const CreateCustomer = z.object({
   name: z.string().min(1, "Name is required."),
   lastname: z.string().min(1, "Lastname is required."),
-  email: z.string().email("Invalid email address."),
-  company: z.string().min(1, "Company is required."),
-  rfc: z.string().min(1, "RFC is required."),
-  phone: z.coerce.bigint({ invalid_type_error: "Phone must be a number." }),
+  email: z.string().optional(),
+  company: z.string().optional(),
+  rfc: z.string().optional(),
+  phone: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : v),
+    z.coerce.bigint().optional(),
+  ),
 });
 
 const UpdateCustomer = z.object({
   name: z.string().min(1, "Name is required."),
   lastname: z.string().min(1, "Lastname is required."),
-  email: z.string().email("Invalid email address."),
-  company: z.string().min(1, "Company is required."),
-  rfc: z.string().min(1, "RFC is required."),
-  phone: z.coerce.bigint({ invalid_type_error: "Phone must be a number." }),
+  email: z.string().optional(),
+  company: z.string().optional(),
+  rfc: z.string().optional(),
+  phone: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : v),
+    z.coerce.bigint().optional(),
+  ),
 });
 
 export const createCustomer = async (
   prevState: CustomerFormState,
-  formData: FormData
+  formData: FormData,
 ) => {
   const validatedFields = CreateCustomer.safeParse({
     name: formData.get("name"),
@@ -64,10 +70,10 @@ export const createCustomer = async (
       data: {
         name,
         lastname,
-        email,
-        company,
-        rfc,
-        phone,
+        email: email?.trim() === "" ? undefined : email,
+        company: company?.trim() === "" ? undefined : company,
+        rfc: rfc?.trim() === "" ? undefined : rfc,
+        phone: phone ?? undefined,
       },
     });
     revalidatePath("/dashboard/customers");
@@ -91,7 +97,7 @@ export const createCustomer = async (
 export const updateCustomer = async (
   id: number | string,
   prevState: CustomerFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<CustomerFormState> => {
   const validatedFields = UpdateCustomer.safeParse({
     name: formData.get("name"),
@@ -118,10 +124,10 @@ export const updateCustomer = async (
       data: {
         name,
         lastname,
-        email,
-        company,
-        rfc,
-        phone,
+        email: email?.trim() === "" ? undefined : email,
+        company: company?.trim() === "" ? undefined : company,
+        rfc: rfc?.trim() === "" ? undefined : rfc,
+        phone: phone ?? undefined,
       },
     });
     revalidatePath("/dashboard/customers");
