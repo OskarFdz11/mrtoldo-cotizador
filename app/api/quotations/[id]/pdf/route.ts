@@ -5,19 +5,18 @@ import { getQuotationDataForPDF } from "@/app/lib/quotations-actions/quotations-
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const quotationId = parseInt(params.id);
+    const { id } = await params;
+    const quotationId = parseInt(id);
 
     if (isNaN(quotationId)) {
       return NextResponse.json(
         { error: "ID de cotización inválido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
-    console.log("Generando PDF para cotización:", quotationId);
 
     const quotationData = await getQuotationDataForPDF(quotationId);
 
@@ -26,11 +25,9 @@ export async function GET(
     if (!quotationData) {
       return NextResponse.json(
         { error: "Cotización no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
-
-    console.log("Datos obtenidos, generando PDF...", quotationData);
 
     // Convert Decimal values to numbers and format the data properly
     const formattedData = {
@@ -48,16 +45,19 @@ export async function GET(
       customer: {
         name: quotationData.customer.name,
         lastname: quotationData.customer.lastname,
-        email: quotationData.customer.email,
-        company: quotationData.customer.company,
-        rfc: quotationData.customer.rfc,
-        phone: String(quotationData.customer.phone),
+        email: quotationData.customer.email || "",
+        company: quotationData.customer.company || "",
+        rfc: quotationData.customer.rfc || "",
+        phone:
+          quotationData.customer.phone === BigInt(0)
+            ? ""
+            : String(quotationData.customer.phone),
       },
       billingDetails: bd
         ? {
             company: bd.company ?? undefined,
             rfc: bd.rfc ?? undefined,
-            phone: bd.phone != null ? String(bd.phone) : undefined, // BigInt -> string
+            phone: bd.phone === BigInt(0) ? undefined : String(bd.phone),
             email: bd.email ?? undefined,
             cardNumber: bd.cardNumber ?? undefined,
             clabe: bd.clabe ?? undefined,
@@ -86,10 +86,7 @@ export async function GET(
       })),
     };
 
-    console.log("Datos formateados, generando PDF...");
     const pdfBuffer = await generateQuotationPDF(formattedData);
-
-    console.log("PDF generado exitosamente, tamaño:", pdfBuffer.length);
 
     // Retornar PDF
     return new Response(Buffer.from(pdfBuffer), {
@@ -105,7 +102,7 @@ export async function GET(
     console.error("Error generating PDF:", error);
     console.error(
       "Stack trace:",
-      error instanceof Error ? error.stack : "No stack trace"
+      error instanceof Error ? error.stack : "No stack trace",
     );
     return NextResponse.json(
       {
@@ -116,7 +113,7 @@ export async function GET(
             ? error.stack
             : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
