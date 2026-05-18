@@ -1,8 +1,24 @@
+## Featured Projects
 
-Mrtoldo Cotizador Project
+### MrToldo Sales Quotation System
+A full stack quotation management platform for custom manufacturing businesses.
 
-Try it out!: https://mrtoldo-cotizador-staging.vercel.app/
+#### Tech Stack
+- Next.js
+- TypeScript
+- TailwindCSS
+- Node.js
+- MongoDB
+- Vercel
+
+#### Features
+- Authentication & protected routes
+- Dynamic quotation workflows
+- Responsive dashboard UI
+- Customer and quotation management
+- Scalable architecture
+
+🔗 Live Demo:
+https://mrtoldo-cotizador-staging.vercel.app
 admin@staging.com
 staging123
-
-oskar.fdz111@gmail.com
