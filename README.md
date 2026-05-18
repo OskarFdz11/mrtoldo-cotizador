@@ -20,5 +20,5 @@ A full stack quotation management platform for custom manufacturing businesses.
 
 🔗 Live Demo:
 https://mrtoldo-cotizador-staging.vercel.app
-admin@staging.com
-staging123
+- admin@staging.com
+- staging123
